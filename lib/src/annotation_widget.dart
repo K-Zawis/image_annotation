@@ -7,10 +7,61 @@ import 'annotation_option.dart';
 import 'text_annotation.dart';
 import 'annotation_painter.dart';
 
+/// A widget that enables users to annotate images with shapes and text.
+///
+/// This widget supports line, rectangle, oval shape annotations,
+/// and text annotations. It provides gesture callbacks for drawing interactions
+/// and allows customization based on annotation type.
+///
+/// ## Example
+///
+/// ```dart
+/// import 'dart:developer';
+///
+/// import 'package:flutter/material.dart';
+/// import 'package:image_annotation/image_annotation.dart';
+///
+/// class ImageAnnotationPage extends StatelessWidget {
+///   final String imagePath;
+///
+///  ImageAnnotationPage({
+///    required this.imagePath,
+///    super.key,
+///  });
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     return ImageAnnotation(
+///       imagePath: imagePath,
+///       annotationType: AnnotationOption.rectangle,
+///       onDrawStart:(details) => log(
+///         "onDrawStart: ${details.localPosition.toString()}",
+///         level: 800,
+///         name: 'INFO',
+///       ),
+///       onDrawEnd: (details) => log(
+///         "onDrawEnd: ${details.localPosition.toString()}",
+///         level: 800,
+///         name: 'INFO',
+///       ),
+///     );
+///   }
+/// }
+/// ```
+///
+/// Use the [annotationType] parameter to specify the type of annotation to apply.
+/// Gesture callbacks [onDrawStart] and [onDrawEnd] can be used to handle annotation events.
 class ImageAnnotation extends StatefulWidget {
+  /// Path to the image used for annotations.
   final String imagePath;
+
+  /// Type of annotation to apply (for example: [AnnotationOption.rectangle] or [AnnotationOption.text]).
   final AnnotationOption annotationType;
+
+  /// Callback triggered when drawing starts.
   final GestureDragStartCallback? onDrawStart;
+
+  /// Callback triggered when drawing ends.
   final GestureDragEndCallback? onDrawEnd;
 
   const ImageAnnotation({
@@ -26,12 +77,20 @@ class ImageAnnotation extends StatefulWidget {
 }
 
 class _ImageAnnotationState extends State<ImageAnnotation> {
-  // List of annotation points for different shapes
+  /// Stores all annotations as lists of points.
   List<List<Offset>> annotations = [];
-  List<Offset> currentAnnotation = []; // Current annotation points
+
+  /// Points for the current annotation being drawn.
+  List<Offset> currentAnnotation = [];
+
+  /// Stores text annotations with position and styling details.
   List<TextAnnotation> textAnnotations = [];
+
+  /// Dimensions of the image to be annotated.
   Size? imageSize;
-  Offset? imageOffset; // Offset of the image on the screen
+
+  /// Offset of the image's top-left corner relative to the widget.
+  Offset? imageOffset;
 
   @override
   void initState() {
@@ -39,7 +98,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     loadImageSize();
   }
 
-  // Load image size asynchronously and set imageSize state
+  /// Loads the image dimensions asynchronously and sets [imageSize].
   void loadImageSize() async {
     final image = Image.asset(widget.imagePath);
     final completer = Completer<ui.Image>();
@@ -59,7 +118,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     });
   }
 
-  // Calculate the image size to fit the screen while maintaining the aspect ratio
+  /// Calculates the size of the image while maintaining its aspect ratio.
   Size calculateImageSize(ui.Image image) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -81,22 +140,25 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     return Size(width, height);
   }
 
-  // Calculate the offset of the image on the screen
+  /// Calculates the position of the image relative to the widget.
   void calculateImageOffset() {
-    if (imageSize != null) {
-      final imageWidget = context.findRenderObject() as RenderBox?;
-      final imagePosition = imageWidget?.localToGlobal(Offset.zero);
-      final widgetPosition =
-          (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
-      final offsetX = imagePosition!.dx - widgetPosition.dx;
-      final offsetY = imagePosition.dy - widgetPosition.dy;
-      setState(() {
-        imageOffset = Offset(offsetX, offsetY);
-      });
-    }
+    if (imageSize == null) return;
+
+    final imageWidget = context.findRenderObject() as RenderBox?;
+
+    final imagePosition = imageWidget?.localToGlobal(Offset.zero);
+    final widgetPosition =
+        (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
+
+    final offsetX = imagePosition!.dx - widgetPosition.dx;
+    final offsetY = imagePosition.dy - widgetPosition.dy;
+
+    setState(() {
+      imageOffset = Offset(offsetX, offsetY);
+    });
   }
 
-  // Start a new annotation
+  /// Initializes a new annotation path.
   void startNewAnnotation() {
     setState(() {
       currentAnnotation = [];
@@ -104,7 +166,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     });
   }
 
-  // Draw shape based on the current position
+  /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
     if (position.dx >= 0 &&
         position.dy >= 0 &&
@@ -116,9 +178,13 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     }
   }
 
-  // Add a text annotation to the list
+  /// Adds a text annotation at the specified [position].
   void addTextAnnotation(
-      Offset position, String text, Color textColor, double fontSize) {
+    Offset position,
+    String text,
+    Color textColor,
+    double fontSize,
+  ) {
     setState(() {
       textAnnotations.add(TextAnnotation(
         position: position,
@@ -129,7 +195,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     });
   }
 
-  // Clear the last added annotation
+  /// Removes the last annotation (shape or text).
   void clearLastAnnotation() {
     setState(() {
       if (annotations.isNotEmpty) {
@@ -141,7 +207,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     });
   }
 
-  // Clear all annotations
+  /// Clears all annotations.
   void clearAllAnnotations() {
     setState(() {
       annotations.clear();
@@ -150,8 +216,11 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     });
   }
 
-  // Show a dialog to add text annotation
-  void _showTextAnnotationDialog(BuildContext context, Offset localPosition) {
+  /// Displays a dialog for adding a text annotation.
+  void _showTextAnnotationDialog(
+    BuildContext context,
+    Offset localPosition,
+  ) {
     String text = '';
 
     showDialog(
@@ -187,7 +256,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     );
   }
 
-  // Build the widget
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -195,7 +263,8 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     });
 
     if (imageSize == null || imageOffset == null) {
-      return const CircularProgressIndicator(); // Placeholder or loading indicator while the image size and offset are being retrieved
+      // TODO: Implement an actual placeholder
+      return const CircularProgressIndicator();
     }
 
     return GestureDetector(
