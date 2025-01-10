@@ -9,7 +9,7 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 enum AnnotationOption { line, rectangle, oval, text }
@@ -65,22 +65,22 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
               ListTile(
-                title: Text('Line'),
+                title: const Text('Line'),
                 onTap: () => _handleDrawerOptionTap(AnnotationOption.line),
                 selected: selectedOption == AnnotationOption.line,
               ),
               ListTile(
-                title: Text('Rectangular'),
+                title: const Text('Rectangular'),
                 onTap: () => _handleDrawerOptionTap(AnnotationOption.rectangle),
                 selected: selectedOption == AnnotationOption.rectangle,
               ),
               ListTile(
-                title: Text('Oval'),
+                title: const Text('Oval'),
                 onTap: () => _handleDrawerOptionTap(AnnotationOption.oval),
                 selected: selectedOption == AnnotationOption.oval,
               ),
               ListTile(
-                title: Text('Text'),
+                title: const Text('Text'),
                 onTap: () => _handleDrawerOptionTap(AnnotationOption.text),
                 selected: selectedOption == AnnotationOption.text,
               ),

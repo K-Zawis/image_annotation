@@ -9,15 +9,17 @@ import 'annotation_painter.dart';
 class ImageAnnotation extends StatefulWidget {
   final String imagePath;
   final String annotationType;
+  final Function(DragUpdateDetails details)? onDraw;
 
   const ImageAnnotation({
     super.key,
     required this.imagePath,
     required this.annotationType,
+    this.onDraw,
   });
 
   @override
-  _ImageAnnotationState createState() => _ImageAnnotationState();
+  State<ImageAnnotation> createState() => _ImageAnnotationState();
 }
 
 class _ImageAnnotationState extends State<ImageAnnotation> {
@@ -214,6 +216,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
               child: GestureDetector(
                 onPanUpdate: (details) {
                   drawShape(details.localPosition);
+                  if (widget.onDraw != null) widget.onDraw!(details);
                 },
                 child: CustomPaint(
                   painter: AnnotationPainter(
