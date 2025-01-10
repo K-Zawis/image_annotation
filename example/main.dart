@@ -12,27 +12,11 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-enum AnnotationOption { line, rectangle, oval, text }
-
 class _MyAppState extends State<MyApp> {
   // Define the scaffold key as final to prevent unintentional changes.
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   AnnotationOption selectedOption = AnnotationOption.line; // Default option.
-
-// Helper function to return the annotation type as a string based on the selected option.
-  String chooseAnnotationType(AnnotationOption option) {
-    switch (option) {
-      case AnnotationOption.line:
-        return 'line';
-      case AnnotationOption.rectangle:
-        return 'rectangle';
-      case AnnotationOption.oval:
-        return 'oval';
-      case AnnotationOption.text:
-        return 'text';
-    }
-  }
 
 // Function to handle tapping on the drawer options and update the selected option.
   void _handleDrawerOptionTap(AnnotationOption option) {
@@ -90,7 +74,7 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: ImageAnnotation(
             imagePath: 'assets/images/your_image.jpg',
-            annotationType: chooseAnnotationType(selectedOption),
+            annotationType: selectedOption,
           ),
         ),
       ),

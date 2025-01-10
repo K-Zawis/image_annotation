@@ -2,20 +2,23 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+
+import 'annotation_option.dart';
 import 'text_annotation.dart';
 import 'annotation_painter.dart';
 
-// ImageAnnotation class
 class ImageAnnotation extends StatefulWidget {
   final String imagePath;
-  final String annotationType;
+  final AnnotationOption annotationType;
   final GestureDragStartCallback? onDrawStart;
+  final GestureDragEndCallback? onDrawEnd;
 
   const ImageAnnotation({
     super.key,
     required this.imagePath,
     required this.annotationType,
     this.onDrawStart,
+    this.onDrawEnd,
   });
 
   @override
@@ -26,8 +29,8 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   // List of annotation points for different shapes
   List<List<Offset>> annotations = [];
   List<Offset> currentAnnotation = []; // Current annotation points
-  List<TextAnnotation> textAnnotations = []; // List of text annotations
-  Size? imageSize; // Size of the image
+  List<TextAnnotation> textAnnotations = [];
+  Size? imageSize;
   Offset? imageOffset; // Offset of the image on the screen
 
   @override
@@ -48,6 +51,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     );
 
     final loadedImage = await completer.future;
+
+    if (!mounted) return;
+
     setState(() {
       imageSize = calculateImageSize(loadedImage);
     });
@@ -161,7 +167,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
                 if (text.isNotEmpty) {
                   // Add the text annotation
                   addTextAnnotation(localPosition, text, Colors.black, 16.0);
@@ -171,7 +177,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: const Text('Cancel'),
             ),
@@ -196,7 +202,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       onLongPress: clearAllAnnotations,
       onDoubleTap: clearLastAnnotation,
       onTapDown: (details) {
-        if (widget.annotationType == 'text') {
+        if (widget.annotationType == AnnotationOption.text) {
           _showTextAnnotationDialog(context, details.localPosition);
         } else {
           startNewAnnotation();
@@ -218,9 +224,13 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                   drawShape(details.localPosition);
                 },
                 onPanStart: widget.onDrawStart,
+                onPanEnd: widget.onDrawEnd,
                 child: CustomPaint(
                   painter: AnnotationPainter(
-                      annotations, textAnnotations, widget.annotationType),
+                    annotations,
+                    textAnnotations,
+                    widget.annotationType,
+                  ),
                   size: imageSize!,
                 ),
               ),
