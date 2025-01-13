@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:image_annotation/src/annotation_action.dart';
 
+import 'annotation_controller.dart';
 import 'annotation_option.dart';
 import 'text_annotation.dart';
 import 'annotation_painter.dart';
@@ -64,12 +66,16 @@ class ImageAnnotation extends StatefulWidget {
   /// Callback triggered when drawing ends.
   final GestureDragEndCallback? onDrawEnd;
 
-  const ImageAnnotation({
+  /// Controller for handling events.
+  ImageAnnotationController? controller;
+
+  ImageAnnotation({
     super.key,
     required this.imagePath,
     required this.annotationType,
     this.onDrawStart,
     this.onDrawEnd,
+    this.controller,
   });
 
   @override
@@ -95,7 +101,29 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   @override
   void initState() {
     super.initState();
+    widget.controller ??= ImageAnnotationController();
+    widget.controller!.setOnActionTriggered( _handleControllerAction);
     loadImageSize();
+  }
+
+  @override
+  void dispose() {
+    widget.controller!.dispose();
+    super.dispose();
+  }
+
+  void _handleControllerAction(AnnotationAction action) {
+    switch (action) {
+      case AnnotationAction.undo:
+        clearLastAnnotation();
+        break;
+      case AnnotationAction.clear:
+        clearAllAnnotations();
+        break;
+      case AnnotationAction.finish:
+        startNewAnnotation();
+        break;
+    }
   }
 
   /// Loads the image dimensions asynchronously and sets [imageSize].
