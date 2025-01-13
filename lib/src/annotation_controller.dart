@@ -10,17 +10,9 @@ class ImageAnnotationController extends ChangeNotifier {
   double _currentStrokeWidth = 2.0;
 
   /// Internal callback for the widget to listen to specific actions
-  void Function(AnnotationAction action)? _onActionTriggered;
+  final void Function(AnnotationAction action) _onActionTriggered;
 
-  /// Sets the callback function that will handle the actions (undo, clear, finish).
-  /// This should only be set once and is handled by [ImageAnnotationWidget]. Calling 
-  /// this multiple times will result in an exception.
-  void setOnActionTriggered(void Function(AnnotationAction action) callback) {
-    if (_onActionTriggered != null) {
-      throw Exception('Action handler is already set!');
-    }
-    _onActionTriggered = callback;
-  }
+  ImageAnnotationController(this._onActionTriggered);
 
   Color get color => _currentColor;
 
@@ -38,7 +30,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Triggers callback function
   void _triggerAction(AnnotationAction action) =>
-      _onActionTriggered?.call(action);
+      _onActionTriggered.call(action);
 
   /// Notifies listeners to undo the last annotation
   void undo() => _triggerAction(AnnotationAction.undo);
@@ -48,10 +40,4 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Notifies listeners to finish the current annotation.
   void finish() => _triggerAction(AnnotationAction.finish);
-
-  @override
-  void dispose() {
-    _onActionTriggered = null;
-    super.dispose();
-  }
 }

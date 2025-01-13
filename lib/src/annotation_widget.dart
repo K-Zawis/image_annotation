@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:image_annotation/src/annotation_action.dart';
 
+import 'annotation_action.dart';
+import 'paint_boundary_widget.dart';
 import 'annotation_controller.dart';
 import 'annotation_option.dart';
 import 'text_annotation.dart';
-import 'annotation_painter.dart';
 
 /// A widget that enables users to annotate images with shapes and text.
 ///
@@ -57,7 +57,8 @@ class ImageAnnotation extends StatefulWidget {
   /// Path to the image used for annotations.
   final String imagePath;
 
-  /// Type of annotation to apply (for example: [AnnotationOption.rectangle] or [AnnotationOption.text]).
+  /// Type of annotation to apply (for example: [AnnotationOption.rectangle] or
+  /// [AnnotationOption.text]).
   final AnnotationOption annotationType;
 
   /// Callback triggered when drawing starts.
@@ -66,8 +67,13 @@ class ImageAnnotation extends StatefulWidget {
   /// Callback triggered when drawing ends.
   final GestureDragEndCallback? onDrawEnd;
 
-  /// Controller for handling events.
-  final ImageAnnotationController? controller;
+  /// Optional custom UI builder. Allows users to create their own UI using the
+  /// [ImageAnnotationController] and image annotating widget.
+  final Widget Function(
+    BuildContext context,
+    ImageAnnotationController controller,
+    Widget imageChild,
+  )? builder;
 
   const ImageAnnotation({
     super.key,
@@ -75,7 +81,7 @@ class ImageAnnotation extends StatefulWidget {
     required this.annotationType,
     this.onDrawStart,
     this.onDrawEnd,
-    this.controller,
+    this.builder,
   });
 
   @override
@@ -98,20 +104,19 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   /// Offset of the image's top-left corner relative to the widget.
   Offset? imageOffset;
 
-  late ImageAnnotationController _controller;
+  /// Controller for handling events.
+  late final ImageAnnotationController _controller;
 
   @override
   void initState() {
     super.initState();
-    // Initialize controller: if passed, use it, otherwise create a new one
-    _controller = widget.controller ?? ImageAnnotationController();
-    _controller.setOnActionTriggered( _handleControllerAction);
+    _controller = ImageAnnotationController(_handleControllerAction);
     loadImageSize();
   }
 
   @override
   void dispose() {
-    widget.controller!.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -298,6 +303,22 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       return const CircularProgressIndicator();
     }
 
+    if (widget.builder != null) {
+      return widget.builder!(
+        context,
+        _controller,
+        ImageAnnotationPaintBoundary(
+          imagePath: widget.imagePath,
+          imageSize: imageSize!,
+          imageOffset: imageOffset!,
+          drawShape: drawShape,
+          annotations: annotations,
+          textAnnotations: textAnnotations,
+          annotationType: widget.annotationType,
+        ),
+      );
+    }
+
     return GestureDetector(
       onLongPress: clearAllAnnotations,
       onDoubleTap: clearLastAnnotation,
@@ -308,36 +329,15 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
           startNewAnnotation();
         }
       },
-      child: RepaintBoundary(
-        child: Stack(
-          children: [
-            Image.asset(
-              widget.imagePath,
-              width: imageSize!.width,
-              height: imageSize!.height,
-            ),
-            Positioned(
-              left: imageOffset!.dx,
-              top: imageOffset!.dy,
-              child: GestureDetector(
-                onPanUpdate: (details) {
-                  drawShape(details.localPosition);
-                },
-                onPanStart: widget.onDrawStart,
-                onPanEnd: widget.onDrawEnd,
-                child: CustomPaint(
-                  painter: AnnotationPainter(
-                    annotations,
-                    textAnnotations,
-                    widget.annotationType,
-                  ),
-                  size: imageSize!,
-                ),
-              ),
-            ),
-          ],
+      child: ImageAnnotationPaintBoundary(
+          imagePath: widget.imagePath,
+          imageSize: imageSize!,
+          imageOffset: imageOffset!,
+          drawShape: drawShape,
+          annotations: annotations,
+          textAnnotations: textAnnotations,
+          annotationType: widget.annotationType,
         ),
-      ),
     );
   }
 }
