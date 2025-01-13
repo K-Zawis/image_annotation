@@ -67,9 +67,9 @@ class ImageAnnotation extends StatefulWidget {
   final GestureDragEndCallback? onDrawEnd;
 
   /// Controller for handling events.
-  ImageAnnotationController? controller;
+  final ImageAnnotationController? controller;
 
-  ImageAnnotation({
+  const ImageAnnotation({
     super.key,
     required this.imagePath,
     required this.annotationType,
@@ -98,11 +98,14 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   /// Offset of the image's top-left corner relative to the widget.
   Offset? imageOffset;
 
+  late ImageAnnotationController _controller;
+
   @override
   void initState() {
     super.initState();
-    widget.controller ??= ImageAnnotationController();
-    widget.controller!.setOnActionTriggered( _handleControllerAction);
+    // Initialize controller: if passed, use it, otherwise create a new one
+    _controller = widget.controller ?? ImageAnnotationController();
+    _controller.setOnActionTriggered( _handleControllerAction);
     loadImageSize();
   }
 
