@@ -315,6 +315,8 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
           annotations: annotations,
           textAnnotations: textAnnotations,
           annotationType: widget.annotationType,
+          onDrawEnd: widget.onDrawEnd,
+          onDrawStart: widget.onDrawStart,
         ),
       );
     }
@@ -330,14 +332,16 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
         }
       },
       child: ImageAnnotationPaintBoundary(
-          imagePath: widget.imagePath,
-          imageSize: imageSize!,
-          imageOffset: imageOffset!,
-          drawShape: drawShape,
-          annotations: annotations,
-          textAnnotations: textAnnotations,
-          annotationType: widget.annotationType,
-        ),
+        imagePath: widget.imagePath,
+        imageSize: imageSize!,
+        imageOffset: imageOffset!,
+        drawShape: drawShape,
+        annotations: annotations,
+        textAnnotations: textAnnotations,
+        annotationType: widget.annotationType,
+        onDrawEnd: widget.onDrawEnd,
+        onDrawStart: widget.onDrawStart,
+      ),
     );
   }
 }
