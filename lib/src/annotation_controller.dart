@@ -66,7 +66,7 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  set annotationOption(AnnotationOption newAnnotationOption) {
+  set annotationType(AnnotationOption newAnnotationOption) {
     if (_currentAnnotationType == newAnnotationOption) return;
 
     _currentAnnotationType = newAnnotationOption;
