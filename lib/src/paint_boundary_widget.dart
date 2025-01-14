@@ -1,31 +1,36 @@
 import 'package:flutter/material.dart';
-
+import 'annotation_controller.dart';
 import 'annotation_painter.dart';
-import 'text_annotation.dart';
-import 'annotation_option.dart';
+import 'annotation_models.dart';
 
 class ImageAnnotationPaintBoundary extends StatelessWidget {
   final String imagePath;
   final Size imageSize;
   final Offset imageOffset;
-  final Function(Offset) drawShape;
   final GestureDragStartCallback? onDrawStart;
   final GestureDragEndCallback? onDrawEnd;
-  final List<List<Offset>> annotations;
-  final List<TextAnnotation> textAnnotations;
-  final AnnotationOption annotationType;
+  final ImageAnnotationController controller;
+
+  /// Updates the current annotation path with the given [position].
+  void drawShape(Offset position) {
+    if (controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
+
+    if (position.dx >= 0 &&
+        position.dy >= 0 &&
+        position.dx <= imageSize.width &&
+        position.dy <= imageSize.height) {
+      (controller.currentAnnotation! as ShapeAnnotation).add(position);
+    }
+  }
 
   const ImageAnnotationPaintBoundary({
     Key? key,
     required this.imagePath,
     required this.imageSize,
     required this.imageOffset,
-    required this.drawShape,
+    required this.controller,
     this.onDrawStart,
     this.onDrawEnd,
-    required this.annotations,
-    required this.textAnnotations,
-    required this.annotationType,
   }) : super(key: key);
 
   @override
@@ -49,9 +54,7 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
               onPanEnd: onDrawEnd,
               child: CustomPaint(
                 painter: AnnotationPainter(
-                  annotations,
-                  textAnnotations,
-                  annotationType,
+                  controller.annotations,
                 ),
                 size: imageSize,
               ),

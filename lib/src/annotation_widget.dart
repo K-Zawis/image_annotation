@@ -3,11 +3,10 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-import 'annotation_action.dart';
 import 'paint_boundary_widget.dart';
 import 'annotation_controller.dart';
 import 'annotation_option.dart';
-import 'text_annotation.dart';
+import 'annotation_models.dart';
 
 /// A widget that enables users to annotate images with shapes and text.
 ///
@@ -67,12 +66,25 @@ class ImageAnnotation extends StatefulWidget {
   /// Callback triggered when drawing ends.
   final GestureDragEndCallback? onDrawEnd;
 
-  /// Optional custom UI builder. Allows users to create their own UI using the
-  /// [ImageAnnotationController] and image annotating widget.
+  /// Color of the annotations
+  final Color? color;
+
+  /// Stroke width of the current [ShapeAnnotation]
+  final double? strokeWidth;
+
+  /// Font size of the current [TextAnnotation]
+  final double? fontSize;
+
+  /// Optional custom UI builder.
+  ///
+  /// Allows users to create their own UI using the
+  /// [ImageAnnotationController] and image annotating widget. 
+  /// 
+  /// Note: Disables default gesture controls.
   final Widget Function(
     BuildContext context,
     ImageAnnotationController controller,
-    Widget imageChild,
+    Widget paintBoundary,
   )? builder;
 
   const ImageAnnotation({
@@ -82,6 +94,9 @@ class ImageAnnotation extends StatefulWidget {
     this.onDrawStart,
     this.onDrawEnd,
     this.builder,
+    this.color,
+    this.strokeWidth,
+    this.fontSize,
   });
 
   @override
@@ -89,15 +104,6 @@ class ImageAnnotation extends StatefulWidget {
 }
 
 class _ImageAnnotationState extends State<ImageAnnotation> {
-  /// Stores all annotations as lists of points.
-  List<List<Offset>> annotations = [];
-
-  /// Points for the current annotation being drawn.
-  List<Offset> currentAnnotation = [];
-
-  /// Stores text annotations with position and styling details.
-  List<TextAnnotation> textAnnotations = [];
-
   /// Dimensions of the image to be annotated.
   Size? imageSize;
 
@@ -110,7 +116,12 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   @override
   void initState() {
     super.initState();
-    _controller = ImageAnnotationController(_handleControllerAction);
+    _controller = ImageAnnotationController(
+      widget.annotationType,
+      color: widget.color,
+      strokeWidth: widget.strokeWidth,
+      fontSize: widget.fontSize,
+    );
     loadImageSize();
   }
 
@@ -118,20 +129,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  void _handleControllerAction(AnnotationAction action) {
-    switch (action) {
-      case AnnotationAction.undo:
-        clearLastAnnotation();
-        break;
-      case AnnotationAction.clear:
-        clearAllAnnotations();
-        break;
-      case AnnotationAction.finish:
-        startNewAnnotation();
-        break;
-    }
   }
 
   /// Loads the image dimensions asynchronously and sets [imageSize].
@@ -194,64 +191,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     });
   }
 
-  /// Initializes a new annotation path.
-  void startNewAnnotation() {
-    setState(() {
-      currentAnnotation = [];
-      annotations.add(currentAnnotation);
-    });
-  }
-
-  /// Updates the current annotation path with the given [position].
-  void drawShape(Offset position) {
-    if (position.dx >= 0 &&
-        position.dy >= 0 &&
-        position.dx <= imageSize!.width &&
-        position.dy <= imageSize!.height) {
-      setState(() {
-        currentAnnotation.add(position);
-      });
-    }
-  }
-
-  /// Adds a text annotation at the specified [position].
-  void addTextAnnotation(
-    Offset position,
-    String text,
-    Color textColor,
-    double fontSize,
-  ) {
-    setState(() {
-      textAnnotations.add(TextAnnotation(
-        position: position,
-        text: text,
-        textColor: textColor,
-        fontSize: fontSize,
-      ));
-    });
-  }
-
-  /// Removes the last annotation (shape or text).
-  void clearLastAnnotation() {
-    setState(() {
-      if (annotations.isNotEmpty) {
-        annotations.removeLast();
-      }
-      if (textAnnotations.isNotEmpty) {
-        textAnnotations.removeLast();
-      }
-    });
-  }
-
-  /// Clears all annotations.
-  void clearAllAnnotations() {
-    setState(() {
-      annotations.clear();
-      textAnnotations.clear();
-      currentAnnotation = [];
-    });
-  }
-
   /// Displays a dialog for adding a text annotation.
   void _showTextAnnotationDialog(
     BuildContext context,
@@ -275,7 +214,14 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                 Navigator.of(context).pop();
                 if (text.isNotEmpty) {
                   // Add the text annotation
-                  addTextAnnotation(localPosition, text, Colors.black, 16.0);
+                  _controller.add(
+                    TextAnnotation(
+                      position: localPosition,
+                      text: text,
+                      textColor: _controller.color,
+                      fontSize: _controller.fontSize,
+                    ),
+                  );
                 }
               },
               child: const Text('Add'),
@@ -311,10 +257,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
           imagePath: widget.imagePath,
           imageSize: imageSize!,
           imageOffset: imageOffset!,
-          drawShape: drawShape,
-          annotations: annotations,
-          textAnnotations: textAnnotations,
-          annotationType: widget.annotationType,
+          controller: _controller,
           onDrawEnd: widget.onDrawEnd,
           onDrawStart: widget.onDrawStart,
         ),
@@ -322,23 +265,26 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     }
 
     return GestureDetector(
-      onLongPress: clearAllAnnotations,
-      onDoubleTap: clearLastAnnotation,
+      onLongPress: _controller.clearAnnotations,
+      onDoubleTap: _controller.undoAnnotation,
       onTapDown: (details) {
-        if (widget.annotationType == AnnotationOption.text) {
+        if (_controller.annotationType == AnnotationOption.text) {
           _showTextAnnotationDialog(context, details.localPosition);
         } else {
-          startNewAnnotation();
+          _controller.add(
+            ShapeAnnotation(
+              _controller.annotationType,
+              color: _controller.color,
+              strokeWidth: _controller.strokeWidth,
+            ),
+          );
         }
       },
       child: ImageAnnotationPaintBoundary(
         imagePath: widget.imagePath,
         imageSize: imageSize!,
         imageOffset: imageOffset!,
-        drawShape: drawShape,
-        annotations: annotations,
-        textAnnotations: textAnnotations,
-        annotationType: widget.annotationType,
+        controller: _controller,
         onDrawEnd: widget.onDrawEnd,
         onDrawStart: widget.onDrawStart,
       ),
