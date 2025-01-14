@@ -85,7 +85,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Notifies listeners to undo the last annotation
   void undoAnnotation() {
-    if (_annotations.isEmpty) return;
+    if (!canUndo) return;
 
     final lastAnnotation = _annotations.removeLast();
     _redoStack.add(lastAnnotation);
@@ -95,7 +95,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Notifies listeners to redo the last annotation
   void redoAnnotation() {
-    if (_redoStack.isEmpty) return;
+    if (!canRedo) return;
 
     final lastUndone = _redoStack.removeLast();
     _annotations.add(lastUndone);
@@ -105,7 +105,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Notifies listeners to clear all annotations.
   void clearAnnotations() {
-    if (_annotations.isEmpty) return;
+    if (!canUndo) return;
 
     final clearedAnnotations = List.of(_annotations);
     _annotations.clear();
