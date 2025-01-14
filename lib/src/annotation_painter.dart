@@ -62,7 +62,7 @@ class AnnotationPainter extends CustomPainter {
           annotation.points.first,
           annotation.points.last,
         );
-        canvas.drawRect(oval, paint);
+        canvas.drawOval(oval, paint);
         break;
 
       default:

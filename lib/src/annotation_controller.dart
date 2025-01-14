@@ -53,14 +53,14 @@ class ImageAnnotationController extends ChangeNotifier {
   }
 
   set strokeWidth(double newWidth) {
-    if (_currentStrokeWidth == newWidth) return;
+    if (_currentStrokeWidth == newWidth || newWidth <= 0.0) return;
 
     _currentStrokeWidth = newWidth;
     notifyListeners();
   }
 
   set fontSize(double newFontSize) {
-    if (_currentFontSize == newFontSize) return;
+    if (_currentFontSize == newFontSize || newFontSize <= 0.0) return;
 
     _currentFontSize = newFontSize;
     notifyListeners();
