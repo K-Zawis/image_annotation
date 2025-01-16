@@ -75,7 +75,9 @@ class ImageAnnotation extends StatefulWidget {
   /// Font size of the current [TextAnnotation]
   final double? fontSize;
 
-  /// Whether the [ShapeAnnotation] is considered complete onPanEnd (immedietly after drawing).
+  /// Whether the [ShapeAnnotation] is considered complete immedietly after drawing.
+  ///
+  /// Will cause [ShapeAnnotation] to be added to [_controller.annotations] when onPanStart is fired.
   ///
   /// Default behaviour sets this to false.
   final bool finalizeOnRelease;

@@ -105,7 +105,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
     final clearedAnnotations = List.of(_annotations);
     _annotations.clear();
-    _redoStack.addAll(clearedAnnotations);
+    _redoStack.addAll(clearedAnnotations.reversed);
 
     notifyListeners();
   }
