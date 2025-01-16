@@ -4,7 +4,7 @@ import 'annotation_painter.dart';
 import 'annotation_models.dart';
 
 class ImageAnnotationPaintBoundary extends StatelessWidget {
-  final String imagePath;
+  final Image imageWidget;
   final Size imageSize;
   final Offset imageOffset;
   final GestureDragStartCallback? onDrawStart;
@@ -25,7 +25,7 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
 
   const ImageAnnotationPaintBoundary({
     Key? key,
-    required this.imagePath,
+    required this.imageWidget,
     required this.imageSize,
     required this.imageOffset,
     required this.controller,
@@ -38,11 +38,7 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
     return RepaintBoundary(
       child: Stack(
         children: [
-          Image.asset(
-            imagePath,
-            width: imageSize.width,
-            height: imageSize.height,
-          ),
+          imageWidget,
           Positioned(
             left: imageOffset.dx,
             top: imageOffset.dy,

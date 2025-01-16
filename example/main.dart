@@ -28,6 +28,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: create a new example 
     return MaterialApp(
       title: 'Image Annotation Demo',
       home: Scaffold(
@@ -75,6 +76,7 @@ class _MyAppState extends State<MyApp> {
           child: ImageAnnotation(
             imagePath: 'assets/images/your_image.jpg',
             annotationType: selectedOption,
+            sourceType: ImageSourceType.asset,
           ),
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'annotation_option.dart';
+import 'annotation_enums.dart';
 import 'annotation_models.dart';
 
 // AnnotationPainter class

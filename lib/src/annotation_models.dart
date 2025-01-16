@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'annotation_option.dart';
+import 'annotation_enums.dart';
 
 abstract class Annotation {
   final Color color;

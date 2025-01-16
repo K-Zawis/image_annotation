@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'annotation_models.dart';
-import 'annotation_option.dart';
+import 'annotation_enums.dart';
 
 class ImageAnnotationController extends ChangeNotifier {
   /// Currently displayed annotations on the canvas
@@ -108,5 +108,13 @@ class ImageAnnotationController extends ChangeNotifier {
     _redoStack.add(clearedAnnotations);
 
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _annotations.clear();
+    _redoStack.clear();
+
+    super.dispose();
   }
 }

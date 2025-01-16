@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
 import 'paint_boundary_widget.dart';
 import 'annotation_controller.dart';
-import 'annotation_option.dart';
+import 'annotation_enums.dart';
 import 'annotation_models.dart';
 
 /// A widget that enables users to annotate images with shapes and text.
@@ -35,6 +36,7 @@ import 'annotation_models.dart';
 ///     return ImageAnnotation(
 ///       imagePath: imagePath,
 ///       annotationType: AnnotationOption.rectangle,
+///       sourceType: ImageSourceType.asset,
 ///       onDrawStart:(details) => log(
 ///         "onDrawStart: ${details.localPosition.toString()}",
 ///         level: 800,
@@ -59,6 +61,9 @@ class ImageAnnotation extends StatefulWidget {
   /// Type of annotation to apply (for example: [AnnotationOption.rectangle] or
   /// [AnnotationOption.text]).
   final AnnotationOption annotationType;
+
+  /// Specifies which source the [imagePath] uses
+  final ImageSourceType sourceType;
 
   /// Callback triggered when drawing starts.
   final GestureDragStartCallback? onDrawStart;
@@ -98,6 +103,7 @@ class ImageAnnotation extends StatefulWidget {
     super.key,
     required this.imagePath,
     required this.annotationType,
+    required this.sourceType,
     this.onDrawStart,
     this.onDrawEnd,
     this.builder,
@@ -105,7 +111,8 @@ class ImageAnnotation extends StatefulWidget {
     this.strokeWidth,
     this.fontSize,
     this.finalizeOnRelease = false,
-  });
+  })  : assert(strokeWidth == null || strokeWidth > 0.0),
+        assert(fontSize == null || fontSize > 0.0);
 
   @override
   State<ImageAnnotation> createState() => _ImageAnnotationState();
@@ -120,6 +127,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
   /// Controller for handling events.
   late final ImageAnnotationController _controller;
+
+  /// Image widget based on [sourceType]
+  late final Image _imageWidget;
 
   @override
   void initState() {
@@ -137,6 +147,16 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
         ),
       );
     }
+
+    switch (widget.sourceType) {
+      case ImageSourceType.asset:
+        _imageWidget = Image.asset(widget.imagePath);
+      case ImageSourceType.file:
+        _imageWidget = Image.file(File(widget.imagePath));
+      case ImageSourceType.network:
+        _imageWidget = Image.network(widget.imagePath);
+    }
+
     loadImageSize();
   }
 
@@ -148,10 +168,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
   /// Loads the image dimensions asynchronously and sets [imageSize].
   void loadImageSize() async {
-    final image = Image.asset(widget.imagePath);
     final completer = Completer<ui.Image>();
 
-    image.image.resolve(const ImageConfiguration()).addListener(
+    _imageWidget.image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener((ImageInfo info, bool _) {
         completer.complete(info.image);
       }),
@@ -282,7 +301,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
         context,
         _controller,
         ImageAnnotationPaintBoundary(
-          imagePath: widget.imagePath,
+          imageWidget: _imageWidget,
           imageSize: imageSize!,
           imageOffset: imageOffset!,
           controller: _controller,
@@ -311,7 +330,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
         }
       },
       child: ImageAnnotationPaintBoundary(
-        imagePath: widget.imagePath,
+        imageWidget: _imageWidget,
         imageSize: imageSize!,
         imageOffset: imageOffset!,
         controller: _controller,
