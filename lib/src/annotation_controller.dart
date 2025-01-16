@@ -8,7 +8,7 @@ class ImageAnnotationController extends ChangeNotifier {
   final List<Annotation> _annotations = [];
 
   /// Current stack of undone annotations ready to be redone
-  final List<Annotation> _redoStack = [];
+  final List<List<Annotation>> _redoStack = [];
 
   /// Current annotation color
   Color _currentColor;
@@ -83,8 +83,8 @@ class ImageAnnotationController extends ChangeNotifier {
   void undoAnnotation() {
     if (!canUndo) return;
 
-    final lastAnnotation = _annotations.removeLast();
-    _redoStack.add(lastAnnotation);
+    final Annotation lastAnnotation = _annotations.removeLast();
+    _redoStack.add([lastAnnotation]);
 
     notifyListeners();
   }
@@ -94,7 +94,7 @@ class ImageAnnotationController extends ChangeNotifier {
     if (!canRedo) return;
 
     final lastUndone = _redoStack.removeLast();
-    _annotations.add(lastUndone);
+    _annotations.addAll(lastUndone);
 
     notifyListeners();
   }
@@ -105,7 +105,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
     final clearedAnnotations = List.of(_annotations);
     _annotations.clear();
-    _redoStack.addAll(clearedAnnotations.reversed);
+    _redoStack.add(clearedAnnotations);
 
     notifyListeners();
   }
