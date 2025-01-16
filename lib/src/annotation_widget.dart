@@ -75,11 +75,16 @@ class ImageAnnotation extends StatefulWidget {
   /// Font size of the current [TextAnnotation]
   final double? fontSize;
 
+  /// Whether the [ShapeAnnotation] is considered complete onPanEnd (immedietly after drawing).
+  ///
+  /// Default behaviour sets this to false.
+  final bool finalizeOnRelease;
+
   /// Optional custom UI builder.
   ///
   /// Allows users to create their own UI using the
-  /// [ImageAnnotationController] and image annotating widget. 
-  /// 
+  /// [ImageAnnotationController] and image annotating widget.
+  ///
   /// Note: Disables default gesture controls.
   final Widget Function(
     BuildContext context,
@@ -97,6 +102,7 @@ class ImageAnnotation extends StatefulWidget {
     this.color,
     this.strokeWidth,
     this.fontSize,
+    this.finalizeOnRelease = false,
   });
 
   @override
@@ -238,6 +244,19 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     );
   }
 
+  void _handleDrawEndWithFinalize(DragEndDetails details) {
+    if (_controller.annotationType != AnnotationOption.text) {
+      _controller.add(
+        ShapeAnnotation(
+          _controller.annotationType,
+          color: _controller.color,
+          strokeWidth: _controller.strokeWidth,
+        ),
+      );
+    }
+    widget.onDrawEnd?.call(details);
+  }
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -258,7 +277,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
           imageSize: imageSize!,
           imageOffset: imageOffset!,
           controller: _controller,
-          onDrawEnd: widget.onDrawEnd,
+          onDrawEnd: widget.finalizeOnRelease
+              ? _handleDrawEndWithFinalize
+              : widget.onDrawEnd,
           onDrawStart: widget.onDrawStart,
         ),
       );
@@ -270,7 +291,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       onTapDown: (details) {
         if (_controller.annotationType == AnnotationOption.text) {
           _showTextAnnotationDialog(context, details.localPosition);
-        } else {
+        } else if (!widget.finalizeOnRelease) {
           _controller.add(
             ShapeAnnotation(
               _controller.annotationType,
@@ -285,7 +306,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
         imageSize: imageSize!,
         imageOffset: imageOffset!,
         controller: _controller,
-        onDrawEnd: widget.onDrawEnd,
+        onDrawEnd: widget.finalizeOnRelease
+            ? _handleDrawEndWithFinalize
+            : widget.onDrawEnd,
         onDrawStart: widget.onDrawStart,
       ),
     );

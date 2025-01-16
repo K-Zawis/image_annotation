@@ -10,9 +10,6 @@ class ImageAnnotationController extends ChangeNotifier {
   /// Current stack of undone annotations ready to be redone
   final List<Annotation> _redoStack = [];
 
-  /// Current annotation
-  Annotation? _currentAnnotation;
-
   /// Current annotation color
   Color _currentColor;
 
@@ -37,7 +34,8 @@ class ImageAnnotationController extends ChangeNotifier {
         _currentFontSize = fontSize ?? 16.0;
 
   List<Annotation> get annotations => List.unmodifiable(_annotations);
-  Annotation? get currentAnnotation => _currentAnnotation;
+  Annotation? get currentAnnotation =>
+      _annotations.isNotEmpty ? _annotations.last : null;
   Color get color => _currentColor;
   double get strokeWidth => _currentStrokeWidth;
   double get fontSize => _currentFontSize;
@@ -75,8 +73,6 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Notifies listiners that a new annotation has been added
   void add(Annotation annotation) {
-    _currentAnnotation = annotation;
-
     _annotations.add(annotation);
     _redoStack.clear();
 
