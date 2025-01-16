@@ -128,6 +128,13 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       strokeWidth: widget.strokeWidth,
       fontSize: widget.fontSize,
     );
+    if (widget.finalizeOnRelease) {
+      _controller.add(
+        ShapeAnnotation(
+          widget.annotationType,
+        ),
+      );
+    }
     loadImageSize();
   }
 
@@ -244,7 +251,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     );
   }
 
-  void _handleDrawEndWithFinalize(DragEndDetails details) {
+  void _handleDrawStartWithFinalize(DragStartDetails details) {
     if (_controller.annotationType != AnnotationOption.text) {
       _controller.add(
         ShapeAnnotation(
@@ -254,7 +261,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
         ),
       );
     }
-    widget.onDrawEnd?.call(details);
+    widget.onDrawStart?.call(details);
   }
 
   @override
@@ -277,10 +284,10 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
           imageSize: imageSize!,
           imageOffset: imageOffset!,
           controller: _controller,
-          onDrawEnd: widget.finalizeOnRelease
-              ? _handleDrawEndWithFinalize
-              : widget.onDrawEnd,
-          onDrawStart: widget.onDrawStart,
+          onDrawEnd: widget.onDrawEnd,
+          onDrawStart: widget.finalizeOnRelease
+              ? _handleDrawStartWithFinalize
+              : widget.onDrawStart,
         ),
       );
     }
@@ -306,10 +313,10 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
         imageSize: imageSize!,
         imageOffset: imageOffset!,
         controller: _controller,
-        onDrawEnd: widget.finalizeOnRelease
-            ? _handleDrawEndWithFinalize
-            : widget.onDrawEnd,
-        onDrawStart: widget.onDrawStart,
+        onDrawEnd: widget.onDrawEnd,
+        onDrawStart: widget.finalizeOnRelease
+            ? _handleDrawStartWithFinalize
+            : widget.onDrawStart,
       ),
     );
   }
