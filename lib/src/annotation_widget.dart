@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'paint_boundary_widget.dart';
@@ -112,7 +113,11 @@ class ImageAnnotation extends StatefulWidget {
     this.fontSize,
     this.finalizeOnRelease = false,
   })  : assert(strokeWidth == null || strokeWidth > 0.0),
-        assert(fontSize == null || fontSize > 0.0);
+        assert(fontSize == null || fontSize > 0.0),
+        assert(
+          sourceType != ImageSourceType.file || !kIsWeb,
+          'ImageSourceType.file is not supported on the web.',
+        );
 
   @override
   State<ImageAnnotation> createState() => _ImageAnnotationState();
@@ -151,10 +156,13 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     switch (widget.sourceType) {
       case ImageSourceType.asset:
         _imageWidget = Image.asset(widget.imagePath);
+        break;
       case ImageSourceType.file:
         _imageWidget = Image.file(File(widget.imagePath));
+        break;
       case ImageSourceType.network:
         _imageWidget = Image.network(widget.imagePath);
+        break;
     }
 
     loadImageSize();
