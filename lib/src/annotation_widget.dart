@@ -68,7 +68,7 @@ class ImageAnnotation extends StatefulWidget {
 
   // TODO: finish implementation
   /// Padding around the image paint boundary
-  final EdgeInsets? padding;
+  final EdgeInsets padding;
 
   /// Callback triggered when drawing starts.
   final GestureDragStartCallback? onDrawStart;
@@ -216,24 +216,59 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
   /// Calculates the size of the image while maintaining its aspect ratio.
   Size calculateImageSize(ui.Image image) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    // final screenWidth = MediaQuery.of(context).size.width;
+    // final screenHeight = MediaQuery.of(context).size.height;
 
-    final imageRatio = image.width / image.height;
-    final screenRatio = screenWidth / screenHeight;
+    // final imageRatio = image.width / image.height;
+    // final screenRatio = screenWidth / screenHeight;
 
-    double width;
-    double height;
+    // double width;
+    // double height;
 
-    if (imageRatio > screenRatio) {
-      width = screenWidth;
-      height = screenWidth / imageRatio;
-    } else {
-      height = screenHeight;
-      width = screenHeight * imageRatio;
-    }
+    // if (imageRatio > screenRatio) {
+    //   width = screenWidth;
+    //   height = screenWidth / imageRatio;
+    // } else {
+    //   height = screenHeight;
+    //   width = screenHeight * imageRatio;
+    // }
+
+    final scale = calculateScaleFactor(
+      imageSize: Size(
+        image.width.toDouble(),
+        image.height.toDouble(),
+      ),
+      screenSize: MediaQuery.of(context).size,
+      padding: widget.padding,
+    );
+
+    double width = image.width * scale;
+    double height = image.height * scale;
 
     return Size(width, height);
+  }
+
+  /// Calculates the scale factor to fit an image within the screen
+  /// while preserving its aspect ratio.
+  ///
+  /// [imageSize] is the original size of the image (width, height).
+  /// [screenSize] is the size of the available screen area (width, height).
+  /// [padding] is the padding around the widget (EdgeInsets).
+  ///
+  /// Returns the scale factor.
+  double calculateScaleFactor({
+    required Size imageSize,
+    required Size screenSize,
+    required EdgeInsets padding,
+  }) {
+    final adjustedWidth = screenSize.width - padding.horizontal;
+    final adjustedHeight = screenSize.height - padding.vertical;
+
+    double heightScale = adjustedHeight / imageSize.height;
+
+    double widthScale = adjustedWidth / imageSize.width;
+
+    return heightScale < widthScale ? heightScale : widthScale;
   }
 
   /// Calculates the position of the image relative to the widget.
