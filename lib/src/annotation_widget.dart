@@ -272,46 +272,46 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     );
             }
 
-            return child!;
+            return widget.builder != null
+                ? widget.builder!(
+                    context,
+                    _controller,
+                    ImageAnnotationPaintBoundary(
+                      imageWidget: _imageWidget,
+                      controller: _controller,
+                      onDrawEnd: widget.onDrawEnd,
+                      onDrawStart: widget.finalizeOnRelease
+                          ? _handleDrawStartWithFinalize
+                          : widget.onDrawStart,
+                    ),
+                  )
+                : GestureDetector(
+                    onLongPress: _controller.clearAnnotations,
+                    onDoubleTap: _controller.undoAnnotation,
+                    onTapDown: (details) {
+                      if (_controller.annotationType == AnnotationOption.text) {
+                        _showTextAnnotationDialog(
+                            context, details.localPosition);
+                      } else if (!widget.finalizeOnRelease) {
+                        _controller.add(
+                          ShapeAnnotation(
+                            _controller.annotationType,
+                            color: _controller.color,
+                            strokeWidth: _controller.strokeWidth,
+                          ),
+                        );
+                      }
+                    },
+                    child: ImageAnnotationPaintBoundary(
+                      imageWidget: _imageWidget,
+                      controller: _controller,
+                      onDrawEnd: widget.onDrawEnd,
+                      onDrawStart: widget.finalizeOnRelease
+                          ? _handleDrawStartWithFinalize
+                          : widget.onDrawStart,
+                    ),
+                  );
           },
-          child: widget.builder != null
-              ? widget.builder!(
-                  context,
-                  _controller,
-                  ImageAnnotationPaintBoundary(
-                    imageWidget: _imageWidget,
-                    controller: _controller,
-                    onDrawEnd: widget.onDrawEnd,
-                    onDrawStart: widget.finalizeOnRelease
-                        ? _handleDrawStartWithFinalize
-                        : widget.onDrawStart,
-                  ),
-                )
-              : GestureDetector(
-                  onLongPress: _controller.clearAnnotations,
-                  onDoubleTap: _controller.undoAnnotation,
-                  onTapDown: (details) {
-                    if (_controller.annotationType == AnnotationOption.text) {
-                      _showTextAnnotationDialog(context, details.localPosition);
-                    } else if (!widget.finalizeOnRelease) {
-                      _controller.add(
-                        ShapeAnnotation(
-                          _controller.annotationType,
-                          color: _controller.color,
-                          strokeWidth: _controller.strokeWidth,
-                        ),
-                      );
-                    }
-                  },
-                  child: ImageAnnotationPaintBoundary(
-                    imageWidget: _imageWidget,
-                    controller: _controller,
-                    onDrawEnd: widget.onDrawEnd,
-                    onDrawStart: widget.finalizeOnRelease
-                        ? _handleDrawStartWithFinalize
-                        : widget.onDrawStart,
-                  ),
-                ),
         );
       },
     );
