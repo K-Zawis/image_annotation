@@ -249,11 +249,14 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        _controller.loadImageSize(
-          _imageWidget.image,
-          context,
-          widget.padding,
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _controller.loadImageSize(
+            _imageWidget.image,
+            context,
+            widget.padding,
+          );
+        });
+        // TODO: probably add animated transition instead? but this will be for way later
 
         return ListenableBuilder(
           listenable: _controller,
