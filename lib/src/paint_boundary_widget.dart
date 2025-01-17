@@ -51,7 +51,7 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
               onPanStart: onDrawStart,
               onPanEnd: onDrawEnd,
               child: CustomPaint(
-                painter: AnnotationPainter(
+                foregroundPainter: AnnotationPainter(
                   controller.annotations,
                 ),
                 // size: imageSize,
