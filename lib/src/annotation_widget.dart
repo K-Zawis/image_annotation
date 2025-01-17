@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:io';
-import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +64,6 @@ class ImageAnnotation extends StatefulWidget {
   /// Specifies which source the [imagePath] uses
   final ImageSourceType sourceType;
 
-  // TODO: finish implementation
   /// Padding around the image paint boundary
   final EdgeInsets padding;
 
@@ -135,12 +132,6 @@ class ImageAnnotation extends StatefulWidget {
 }
 
 class _ImageAnnotationState extends State<ImageAnnotation> {
-  /// Dimensions of the image to be annotated.
-  Size? imageSize;
-
-  /// Offset of the image's top-left corner relative to the widget.
-  // Offset? imageOffset;
-
   /// Controller for handling events.
   late final ImageAnnotationController _controller;
 
@@ -179,7 +170,13 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
         break;
     }
 
-    loadImageSize();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.loadImageSize(
+        _imageWidget.image,
+        context,
+        widget.padding,
+      );
+    });
   }
 
   @override
@@ -187,100 +184,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     _controller.dispose();
     super.dispose();
   }
-
-  /// Loads the image dimensions asynchronously and sets [imageSize].
-  void loadImageSize() async {
-    final completer = Completer<ui.Image>();
-
-    _imageWidget.image.resolve(const ImageConfiguration()).addListener(
-      ImageStreamListener((ImageInfo info, bool _) {
-        completer.complete(info.image);
-      }),
-    );
-
-    final loadedImage = await completer.future;
-
-    if (!mounted) return;
-
-    setState(() {
-      imageSize = calculateImageSize(loadedImage);
-    });
-  }
-
-  /// Calculates the size of the image while maintaining its aspect ratio.
-  Size calculateImageSize(ui.Image image) {
-    // final screenWidth = MediaQuery.of(context).size.width;
-    // final screenHeight = MediaQuery.of(context).size.height;
-
-    // final imageRatio = image.width / image.height;
-    // final screenRatio = screenWidth / screenHeight;
-
-    // double width;
-    // double height;
-
-    // if (imageRatio > screenRatio) {
-    //   width = screenWidth;
-    //   height = screenWidth / imageRatio;
-    // } else {
-    //   height = screenHeight;
-    //   width = screenHeight * imageRatio;
-    // }
-
-    final scale = calculateScaleFactor(
-      imageSize: Size(
-        image.width.toDouble(),
-        image.height.toDouble(),
-      ),
-      screenSize: MediaQuery.of(context).size,
-      padding: widget.padding,
-    );
-
-    double width = image.width * scale;
-    double height = image.height * scale;
-
-    return Size(width, height);
-  }
-
-  /// Calculates the scale factor to fit an image within the screen
-  /// while preserving its aspect ratio.
-  ///
-  /// [imageSize] is the original size of the image (width, height).
-  /// [screenSize] is the size of the available screen area (width, height).
-  /// [padding] is the padding around the widget (EdgeInsets).
-  ///
-  /// Returns the scale factor.
-  double calculateScaleFactor({
-    required Size imageSize,
-    required Size screenSize,
-    required EdgeInsets padding,
-  }) {
-    final adjustedWidth = screenSize.width - padding.horizontal;
-    final adjustedHeight = screenSize.height - padding.vertical;
-
-    double heightScale = adjustedHeight / imageSize.height;
-
-    double widthScale = adjustedWidth / imageSize.width;
-
-    return heightScale < widthScale ? heightScale : widthScale;
-  }
-
-  /// Calculates the position of the image relative to the widget.
-  // void calculateImageOffset() {
-  //   if (imageSize == null) return;
-
-  //   final imageWidget = context.findRenderObject() as RenderBox?;
-
-  //   final imagePosition = imageWidget?.localToGlobal(Offset.zero);
-  //   final widgetPosition =
-  //       (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
-
-  //   final offsetX = imagePosition!.dx - widgetPosition.dx;
-  //   final offsetY = imagePosition.dy - widgetPosition.dy;
-
-  //   setState(() {
-  //     imageOffset = Offset(offsetX, offsetY);
-  //   });
-  // }
 
   /// Displays a dialog for adding a text annotation.
   void _showTextAnnotationDialog(
@@ -344,63 +247,72 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
   @override
   Widget build(BuildContext context) {
-
-    if (imageSize == null) {
-      return widget.loadingBuilder != null
-          ? widget.loadingBuilder!(context)
-          : const Center(
-              child: SizedBox(
-                height: 45,
-                width: 45,
-                child: CircularProgressIndicator(),
-              ),
-            );
-    }
-
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        loadImageSize(); 
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _controller.loadImageSize(
+            _imageWidget.image,
+            context,
+            widget.padding,
+          );
+        });
 
-        return widget.builder != null
-            ? widget.builder!(
-                context,
-                _controller,
-                ImageAnnotationPaintBoundary(
-                  imageWidget: _imageWidget,
-                  imageSize: imageSize!,
-                  controller: _controller,
-                  onDrawEnd: widget.onDrawEnd,
-                  onDrawStart: widget.finalizeOnRelease
-                      ? _handleDrawStartWithFinalize
-                      : widget.onDrawStart,
-                ),
-              )
-            : GestureDetector(
-                onLongPress: _controller.clearAnnotations,
-                onDoubleTap: _controller.undoAnnotation,
-                onTapDown: (details) {
-                  if (_controller.annotationType == AnnotationOption.text) {
-                    _showTextAnnotationDialog(context, details.localPosition);
-                  } else if (!widget.finalizeOnRelease) {
-                    _controller.add(
-                      ShapeAnnotation(
-                        _controller.annotationType,
-                        color: _controller.color,
-                        strokeWidth: _controller.strokeWidth,
+        return ListenableBuilder(
+          listenable: _controller,
+          builder: (context, child) {
+            if (!_controller.hasLoadedSize) {
+              return widget.loadingBuilder != null
+                  ? widget.loadingBuilder!(context)
+                  : const Center(
+                      child: SizedBox(
+                        height: 45,
+                        width: 45,
+                        child: CircularProgressIndicator(),
                       ),
                     );
-                  }
-                },
-                child: ImageAnnotationPaintBoundary(
-                  imageWidget: _imageWidget,
-                  imageSize: imageSize!,
-                  controller: _controller,
-                  onDrawEnd: widget.onDrawEnd,
-                  onDrawStart: widget.finalizeOnRelease
-                      ? _handleDrawStartWithFinalize
-                      : widget.onDrawStart,
+            }
+
+            return child!;
+          },
+          child: widget.builder != null
+              ? widget.builder!(
+                  context,
+                  _controller,
+                  ImageAnnotationPaintBoundary(
+                    imageWidget: _imageWidget,
+                    controller: _controller,
+                    onDrawEnd: widget.onDrawEnd,
+                    onDrawStart: widget.finalizeOnRelease
+                        ? _handleDrawStartWithFinalize
+                        : widget.onDrawStart,
+                  ),
+                )
+              : GestureDetector(
+                  onLongPress: _controller.clearAnnotations,
+                  onDoubleTap: _controller.undoAnnotation,
+                  onTapDown: (details) {
+                    if (_controller.annotationType == AnnotationOption.text) {
+                      _showTextAnnotationDialog(context, details.localPosition);
+                    } else if (!widget.finalizeOnRelease) {
+                      _controller.add(
+                        ShapeAnnotation(
+                          _controller.annotationType,
+                          color: _controller.color,
+                          strokeWidth: _controller.strokeWidth,
+                        ),
+                      );
+                    }
+                  },
+                  child: ImageAnnotationPaintBoundary(
+                    imageWidget: _imageWidget,
+                    controller: _controller,
+                    onDrawEnd: widget.onDrawEnd,
+                    onDrawStart: widget.finalizeOnRelease
+                        ? _handleDrawStartWithFinalize
+                        : widget.onDrawStart,
+                  ),
                 ),
-              );
+        );
       },
     );
   }

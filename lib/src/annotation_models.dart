@@ -18,10 +18,12 @@ class TextAnnotation extends Annotation {
     this.fontSize = 16.0,
     Color textColor = Colors.black,
   }) : super(textColor);
+
+  // TODO: add relative position to text as well!
 }
 
 class ShapeAnnotation extends Annotation {
-  final List<Offset> _points;
+  final List<Offset> _relativePoints;
   final double strokeWidth;
   final AnnotationOption annotationType;
 
@@ -29,15 +31,15 @@ class ShapeAnnotation extends Annotation {
     this.annotationType, {
     this.strokeWidth = 2.0,
     Color color = Colors.red,
-  })  : _points = [],
+  })  : _relativePoints = [],
         super(color);
 
-  List<Offset> get points => List.unmodifiable(_points);
-  Offset? get firstPoint => _points.firstOrNull;
-  Offset? get lastPoint => _points.lastOrNull;
+  List<Offset> get relativePoints => List.unmodifiable(_relativePoints);
+  Offset? get firstRelativePoint => _relativePoints.firstOrNull;
+  Offset? get lastRelativePoint => _relativePoints.lastOrNull;
 
   void add(Offset point) {
-    _points.add(point);
+    _relativePoints.add(point);
   }
 
   @override
@@ -49,10 +51,10 @@ class ShapeAnnotation extends Annotation {
       ..writeln('  color: $color,');
 
     if (annotationType == AnnotationOption.line) {
-      buffer.writeln('  points: $_points,');
+      buffer.writeln('  relativePoints: $relativePoints,');
     } else {
-      buffer.writeln('  firstPoint: ${_points.firstOrNull},');
-      buffer.writeln('  lastPoint: ${_points.lastOrNull},');
+      buffer.writeln('  firstRelativePoint: $firstRelativePoint,');
+      buffer.writeln('  lastRelativePoint: $lastRelativePoint,');
     }
 
     buffer.write(')');

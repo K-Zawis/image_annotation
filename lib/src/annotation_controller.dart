@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import 'annotation_models.dart';
@@ -9,6 +12,15 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Current stack of undone annotations ready to be redone
   final List<List<Annotation>> _redoStack = [];
+
+  /// Flag to indicate initialization
+  bool _hasLoadedSize = false;
+
+  /// Original image size for relative points
+  late Size _originalImageSize;
+
+  /// Visual image size on the screen for rendering points
+  late Size visualImageSize;
 
   /// Current annotation color
   Color _currentColor;
@@ -36,6 +48,8 @@ class ImageAnnotationController extends ChangeNotifier {
   List<Annotation> get annotations => List.unmodifiable(_annotations);
   Annotation? get currentAnnotation =>
       _annotations.isNotEmpty ? _annotations.last : null;
+  Size get originalImageSize => _originalImageSize;
+  bool get hasLoadedSize => _hasLoadedSize;
   Color get color => _currentColor;
   double get strokeWidth => _currentStrokeWidth;
   double get fontSize => _currentFontSize;
@@ -69,6 +83,59 @@ class ImageAnnotationController extends ChangeNotifier {
 
     _currentAnnotationType = newAnnotationOption;
     notifyListeners();
+  }
+
+  Future<void> loadImageSize(
+    ImageProvider imageProvider,
+    BuildContext context,
+    EdgeInsets padding,
+  ) async {
+    final completer = Completer<ui.Image>();
+
+    imageProvider.resolve(const ImageConfiguration()).addListener(
+      ImageStreamListener((ImageInfo info, bool _) {
+        completer.complete(info.image);
+      }),
+    );
+
+    final ui.Image loadedImage = await completer.future;
+
+    _originalImageSize = Size(
+      loadedImage.width.toDouble(),
+      loadedImage.height.toDouble(),
+    );
+
+    if (!context.mounted) return;
+
+    final double scale = _calculateScaleFactor(
+      imageSize: _originalImageSize,
+      screenSize: MediaQuery.of(context).size,
+      padding: padding,
+    );
+
+    visualImageSize = Size(
+      loadedImage.width * scale,
+      loadedImage.height * scale,
+    );
+
+    _hasLoadedSize = true;
+    notifyListeners();
+  }
+
+  /// Calculates the scale factor to fit an image within the screen
+  /// while preserving its aspect ratio.
+  double _calculateScaleFactor({
+    required Size imageSize,
+    required Size screenSize,
+    required EdgeInsets padding,
+  }) {
+    final double adjustedWidth = screenSize.width - padding.horizontal;
+    final double adjustedHeight = screenSize.height - padding.vertical;
+
+    double heightScale = adjustedHeight / imageSize.height;
+    double widthScale = adjustedWidth / imageSize.width;
+
+    return heightScale < widthScale ? heightScale : widthScale;
   }
 
   /// Notifies listiners that a new annotation has been added
