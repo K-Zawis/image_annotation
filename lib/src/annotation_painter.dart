@@ -51,16 +51,16 @@ class AnnotationPainter extends CustomPainter {
 
       case AnnotationOption.rectangle:
         final rect = Rect.fromPoints(
-          annotation.points.first,
-          annotation.points.last,
+          annotation.firstPoint!,
+          annotation.lastPoint!,
         );
         canvas.drawRect(rect, paint);
         break;
 
       case AnnotationOption.oval:
         final oval = Rect.fromPoints(
-          annotation.points.first,
-          annotation.points.last,
+          annotation.firstPoint!,
+          annotation.lastPoint!,
         );
         canvas.drawOval(oval, paint);
         break;

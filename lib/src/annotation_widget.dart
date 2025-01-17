@@ -139,7 +139,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   Size? imageSize;
 
   /// Offset of the image's top-left corner relative to the widget.
-  Offset? imageOffset;
+  // Offset? imageOffset;
 
   /// Controller for handling events.
   late final ImageAnnotationController _controller;
@@ -265,22 +265,22 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   }
 
   /// Calculates the position of the image relative to the widget.
-  void calculateImageOffset() {
-    if (imageSize == null) return;
+  // void calculateImageOffset() {
+  //   if (imageSize == null) return;
 
-    final imageWidget = context.findRenderObject() as RenderBox?;
+  //   final imageWidget = context.findRenderObject() as RenderBox?;
 
-    final imagePosition = imageWidget?.localToGlobal(Offset.zero);
-    final widgetPosition =
-        (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
+  //   final imagePosition = imageWidget?.localToGlobal(Offset.zero);
+  //   final widgetPosition =
+  //       (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
 
-    final offsetX = imagePosition!.dx - widgetPosition.dx;
-    final offsetY = imagePosition.dy - widgetPosition.dy;
+  //   final offsetX = imagePosition!.dx - widgetPosition.dx;
+  //   final offsetY = imagePosition.dy - widgetPosition.dy;
 
-    setState(() {
-      imageOffset = Offset(offsetX, offsetY);
-    });
-  }
+  //   setState(() {
+  //     imageOffset = Offset(offsetX, offsetY);
+  //   });
+  // }
 
   /// Displays a dialog for adding a text annotation.
   void _showTextAnnotationDialog(
@@ -344,11 +344,8 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      calculateImageOffset();
-    });
 
-    if (imageSize == null || imageOffset == null) {
+    if (imageSize == null) {
       return widget.loadingBuilder != null
           ? widget.loadingBuilder!(context)
           : const Center(
@@ -360,47 +357,51 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
             );
     }
 
-    return widget.builder != null
-        ? widget.builder!(
-            context,
-            _controller,
-            ImageAnnotationPaintBoundary(
-              imageWidget: _imageWidget,
-              imageSize: imageSize!,
-              imageOffset: imageOffset!,
-              controller: _controller,
-              onDrawEnd: widget.onDrawEnd,
-              onDrawStart: widget.finalizeOnRelease
-                  ? _handleDrawStartWithFinalize
-                  : widget.onDrawStart,
-            ),
-          )
-        : GestureDetector(
-            onLongPress: _controller.clearAnnotations,
-            onDoubleTap: _controller.undoAnnotation,
-            onTapDown: (details) {
-              if (_controller.annotationType == AnnotationOption.text) {
-                _showTextAnnotationDialog(context, details.localPosition);
-              } else if (!widget.finalizeOnRelease) {
-                _controller.add(
-                  ShapeAnnotation(
-                    _controller.annotationType,
-                    color: _controller.color,
-                    strokeWidth: _controller.strokeWidth,
-                  ),
-                );
-              }
-            },
-            child: ImageAnnotationPaintBoundary(
-              imageWidget: _imageWidget,
-              imageSize: imageSize!,
-              imageOffset: imageOffset!,
-              controller: _controller,
-              onDrawEnd: widget.onDrawEnd,
-              onDrawStart: widget.finalizeOnRelease
-                  ? _handleDrawStartWithFinalize
-                  : widget.onDrawStart,
-            ),
-          );
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        loadImageSize(); 
+
+        return widget.builder != null
+            ? widget.builder!(
+                context,
+                _controller,
+                ImageAnnotationPaintBoundary(
+                  imageWidget: _imageWidget,
+                  imageSize: imageSize!,
+                  controller: _controller,
+                  onDrawEnd: widget.onDrawEnd,
+                  onDrawStart: widget.finalizeOnRelease
+                      ? _handleDrawStartWithFinalize
+                      : widget.onDrawStart,
+                ),
+              )
+            : GestureDetector(
+                onLongPress: _controller.clearAnnotations,
+                onDoubleTap: _controller.undoAnnotation,
+                onTapDown: (details) {
+                  if (_controller.annotationType == AnnotationOption.text) {
+                    _showTextAnnotationDialog(context, details.localPosition);
+                  } else if (!widget.finalizeOnRelease) {
+                    _controller.add(
+                      ShapeAnnotation(
+                        _controller.annotationType,
+                        color: _controller.color,
+                        strokeWidth: _controller.strokeWidth,
+                      ),
+                    );
+                  }
+                },
+                child: ImageAnnotationPaintBoundary(
+                  imageWidget: _imageWidget,
+                  imageSize: imageSize!,
+                  controller: _controller,
+                  onDrawEnd: widget.onDrawEnd,
+                  onDrawStart: widget.finalizeOnRelease
+                      ? _handleDrawStartWithFinalize
+                      : widget.onDrawStart,
+                ),
+              );
+      },
+    );
   }
 }
