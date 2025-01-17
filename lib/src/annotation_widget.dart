@@ -226,10 +226,10 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     double height;
 
     if (imageRatio > screenRatio) {
-      width = screenWidth / imageRatio;
+      width = screenWidth;
       height = screenWidth / imageRatio;
     } else {
-      height = screenHeight * imageRatio;
+      height = screenHeight;
       width = screenHeight * imageRatio;
     }
 
