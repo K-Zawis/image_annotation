@@ -38,11 +38,11 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
     return RepaintBoundary(
       child: Stack(
         children: [
-          SizedBox(
-            height: imageSize.height,
-            width: imageSize.width,
-            child: imageWidget,
-          ),
+          // SizedBox(
+          //   height: imageSize.height,
+          //   width: imageSize.width,
+          //   child: imageWidget,
+          // ),
           Positioned(
             left: imageOffset.dx,
             top: imageOffset.dy,
@@ -54,7 +54,12 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
                 painter: AnnotationPainter(
                   controller.annotations,
                 ),
-                size: imageSize,
+                // size: imageSize,
+                child: SizedBox(
+                  height: imageSize.height,
+                  width: imageSize.width,
+                  child: imageWidget,
+                ),
               ),
             ),
           ),
