@@ -51,29 +51,6 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
           ),
         ),
       ),
-      // child: Stack(
-      //   children: [
-      //     Positioned(
-      //       left: imageOffset.dx,
-      //       top: imageOffset.dy,
-      //       child: GestureDetector(
-      //         onPanUpdate: (details) => drawShape(details.localPosition),
-      //         onPanStart: onDrawStart,
-      //         onPanEnd: onDrawEnd,
-      //         child: CustomPaint(
-      //           foregroundPainter: AnnotationPainter(
-      //             controller.annotations,
-      //           ),
-      //           child: SizedBox(
-      //             height: imageSize.height,
-      //             width: imageSize.width,
-      //             child: imageWidget,
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
     );
   }
 }

@@ -33,6 +33,8 @@ class ShapeAnnotation extends Annotation {
         super(color);
 
   List<Offset> get points => List.unmodifiable(_points);
+  Offset? get firstPoint => _points.firstOrNull;
+  Offset? get lastPoint => _points.lastOrNull;
 
   void add(Offset point) {
     _points.add(point);
