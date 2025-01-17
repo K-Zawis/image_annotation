@@ -36,35 +36,44 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
-      child: Stack(
-        children: [
-          // SizedBox(
-          //   height: imageSize.height,
-          //   width: imageSize.width,
-          //   child: imageWidget,
-          // ),
-          Positioned(
-            left: imageOffset.dx,
-            top: imageOffset.dy,
-            child: GestureDetector(
-              onPanUpdate: (details) => drawShape(details.localPosition),
-              onPanStart: onDrawStart,
-              onPanEnd: onDrawEnd,
-              child: CustomPaint(
-                foregroundPainter: AnnotationPainter(
-                  controller.annotations,
-                ),
-                // size: imageSize,
-                child: SizedBox(
-                  height: imageSize.height,
-                  width: imageSize.width,
-                  child: imageWidget,
-                ),
-              ),
-            ),
+      child: GestureDetector(
+        onPanUpdate: (details) => drawShape(details.localPosition),
+        onPanStart: onDrawStart,
+        onPanEnd: onDrawEnd,
+        child: CustomPaint(
+          foregroundPainter: AnnotationPainter(
+            controller.annotations,
           ),
-        ],
+          child: SizedBox(
+            height: imageSize.height,
+            width: imageSize.width,
+            child: imageWidget,
+          ),
+        ),
       ),
+      // child: Stack(
+      //   children: [
+      //     Positioned(
+      //       left: imageOffset.dx,
+      //       top: imageOffset.dy,
+      //       child: GestureDetector(
+      //         onPanUpdate: (details) => drawShape(details.localPosition),
+      //         onPanStart: onDrawStart,
+      //         onPanEnd: onDrawEnd,
+      //         child: CustomPaint(
+      //           foregroundPainter: AnnotationPainter(
+      //             controller.annotations,
+      //           ),
+      //           child: SizedBox(
+      //             height: imageSize.height,
+      //             width: imageSize.width,
+      //             child: imageWidget,
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 }
