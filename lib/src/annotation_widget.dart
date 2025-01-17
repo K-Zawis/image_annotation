@@ -66,6 +66,10 @@ class ImageAnnotation extends StatefulWidget {
   /// Specifies which source the [imagePath] uses
   final ImageSourceType sourceType;
 
+  // TODO: finish implementation
+  /// Padding around the image paint boundary
+  final EdgeInsets? padding;
+
   /// Callback triggered when drawing starts.
   final GestureDragStartCallback? onDrawStart;
 
@@ -110,6 +114,7 @@ class ImageAnnotation extends StatefulWidget {
     required this.imagePath,
     required this.annotationType,
     required this.sourceType,
+    this.padding = const EdgeInsets.all(8),
     this.onDrawStart,
     this.onDrawEnd,
     this.builder,
@@ -162,13 +167,22 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
     switch (widget.sourceType) {
       case ImageSourceType.asset:
-        _imageWidget = Image.asset(widget.imagePath);
+        _imageWidget = Image.asset(
+          widget.imagePath,
+          fit: BoxFit.fill,
+        );
         break;
       case ImageSourceType.file:
-        _imageWidget = Image.file(File(widget.imagePath));
+        _imageWidget = Image.file(
+          File(widget.imagePath),
+          fit: BoxFit.fill,
+        );
         break;
       case ImageSourceType.network:
-        _imageWidget = Image.network(widget.imagePath);
+        _imageWidget = Image.network(
+          widget.imagePath,
+          fit: BoxFit.fill,
+        );
         break;
     }
 
