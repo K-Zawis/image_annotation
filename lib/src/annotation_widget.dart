@@ -157,13 +157,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       strokeWidth: widget.strokeWidth,
       fontSize: widget.fontSize,
     );
-    if (widget.finalizeOnRelease) {
-      _controller.add(
-        ShapeAnnotation(
-          widget.annotationType,
-        ),
-      );
-    }
 
     switch (widget.sourceType) {
       case ImageSourceType.asset:
