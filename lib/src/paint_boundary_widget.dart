@@ -35,6 +35,7 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
           position, controller.originalImageSize, controller.visualImageSize);
 
       (controller.currentAnnotation! as ShapeAnnotation).add(imagePosition);
+      controller.updateView();
     }
   }
 

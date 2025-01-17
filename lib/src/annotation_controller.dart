@@ -138,6 +138,10 @@ class ImageAnnotationController extends ChangeNotifier {
     return heightScale < widthScale ? heightScale : widthScale;
   }
 
+  void updateView() {
+    notifyListeners();
+  }
+
   /// Notifies listiners that a new annotation has been added
   void add(Annotation annotation) {
     _annotations.add(annotation);
