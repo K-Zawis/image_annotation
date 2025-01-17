@@ -37,4 +37,23 @@ class ShapeAnnotation extends Annotation {
   void add(Offset point) {
     _points.add(point);
   }
+
+  @override
+  String toString() {
+    final buffer = StringBuffer()
+      ..writeln('ShapeAnnotation(')
+      ..writeln('  annotationType: ${annotationType.toString()},')
+      ..writeln('  strokeWidth: $strokeWidth,')
+      ..writeln('  color: $color,');
+
+    if (annotationType == AnnotationOption.line) {
+      buffer.writeln('  points: $_points,');
+    } else {
+      buffer.writeln('  firstPoint: ${_points.firstOrNull},');
+      buffer.writeln('  lastPoint: ${_points.lastOrNull},');
+    }
+
+    buffer.write(')');
+    return buffer.toString();
+  }
 }
