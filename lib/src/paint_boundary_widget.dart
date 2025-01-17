@@ -38,14 +38,16 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
     return RepaintBoundary(
       child: Stack(
         children: [
-          imageWidget,
+          SizedBox(
+            height: imageSize.height,
+            width: imageSize.width,
+            child: imageWidget,
+          ),
           Positioned(
             left: imageOffset.dx,
             top: imageOffset.dy,
             child: GestureDetector(
-              onPanUpdate: (details) {
-                drawShape(details.localPosition);
-              },
+              onPanUpdate: (details) => drawShape(details.localPosition),
               onPanStart: onDrawStart,
               onPanEnd: onDrawEnd,
               child: CustomPaint(
