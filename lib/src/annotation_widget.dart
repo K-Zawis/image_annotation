@@ -10,6 +10,16 @@ import 'annotation_models.dart';
 
 /// A widget that enables users to annotate images with shapes and text.
 ///
+/// Sever constructors are provided for the various ways that an image can be
+/// specified:
+///
+///   * [ImageAnnotation.asset], for using images obtained from an [AssetBundle].
+///   * [ImageAnnotation.network], for using images obtained from a URL.
+///   * [ImageAnnotation.file], for using an image obtained from a [File].
+///   * [ImageAnnotation.memory], for using an image obtained from a [Uint8List].
+/// 
+/// You may also pass in your own [Image] widget if you wish.
+///
 /// This widget supports line, rectangle, oval shape annotations,
 /// and text annotations. It provides gesture callbacks for drawing interactions
 /// and allows customization based on annotation type.
@@ -32,10 +42,9 @@ import 'annotation_models.dart';
 ///
 ///   @override
 ///   Widget build(BuildContext context) {
-///     return ImageAnnotation(
-///       imagePath: imagePath,
+///     return ImageAnnotation.asset(
+///       imagePath,
 ///       annotationType: AnnotationOption.rectangle,
-///       sourceType: ImageSourceType.asset,
 ///       onDrawStart:(details) => log(
 ///         "onDrawStart: ${details.localPosition.toString()}",
 ///         level: 800,
@@ -54,32 +63,41 @@ import 'annotation_models.dart';
 /// Use the [annotationType] parameter to specify the type of annotation to apply.
 /// Gesture callbacks [onDrawStart] and [onDrawEnd] can be used to handle annotation events.
 class ImageAnnotation extends StatefulWidget {
-  /// Path to the image used for annotations.
-  final String imagePath;
+  /// Image widget used for annotations.
+  final Image imageWidget;
 
   /// Type of annotation to apply (for example: [AnnotationOption.rectangle] or
   /// [AnnotationOption.text]).
   final AnnotationOption annotationType;
 
-  /// Specifies which source the [imagePath] uses
-  final ImageSourceType sourceType;
-
   /// Padding around the image paint boundary
   final EdgeInsets padding;
 
-  /// Callback triggered when drawing starts.
+  /// Callback triggered when [onPanStart] fires.
+  /// 
+  /// When [finalizeOnRelease] is enabled, you will recieve the exact start position of the 
+  /// shape annotation.
   final GestureDragStartCallback? onDrawStart;
 
-  /// Callback triggered when drawing ends.
+  /// Callback triggered when [onPadEnd] fires.
+  ///
+  /// When [finalizeOnRelease] is enabled, you will recieve the exact end position of the 
+  /// shape annotation.
   final GestureDragEndCallback? onDrawEnd;
 
-  /// Color of the annotations
+  /// Color of the current [Annotation]
+  /// 
+  /// Modifiable only using the [ImageAnnotationController]
   final Color? color;
 
   /// Stroke width of the current [ShapeAnnotation]
+  /// 
+  /// Modifiable only using the [ImageAnnotationController]
   final double? strokeWidth;
 
   /// Font size of the current [TextAnnotation]
+  /// 
+  /// Modifiable only using the [ImageAnnotationController]
   final double? fontSize;
 
   /// Whether the [ShapeAnnotation] is considered complete immedietly after drawing.
@@ -101,16 +119,15 @@ class ImageAnnotation extends StatefulWidget {
     Widget paintBoundary,
   )? builder;
 
-  /// Optional custom loading builder when [imageSize] or [imageOffset] are null
+  /// Optional custom loading builder when [ImageAnnotationController.hasLoadedSize] is false
   ///
   /// Defaults to a 45x45 [CircularProgressIndicator].
   final Widget Function(BuildContext context)? loadingBuilder;
 
   const ImageAnnotation({
     super.key,
-    required this.imagePath,
+    required this.imageWidget,
     required this.annotationType,
-    required this.sourceType,
     this.padding = const EdgeInsets.all(8),
     this.onDrawStart,
     this.onDrawEnd,
@@ -121,11 +138,92 @@ class ImageAnnotation extends StatefulWidget {
     this.fontSize,
     this.finalizeOnRelease = false,
   })  : assert(strokeWidth == null || strokeWidth > 0.0),
-        assert(fontSize == null || fontSize > 0.0),
-        assert(
-          sourceType != ImageSourceType.file || !kIsWeb,
-          'ImageSourceType.file is not supported on the web.',
-        );
+        assert(fontSize == null || fontSize > 0.0);
+
+  ImageAnnotation.network(
+    String src, {
+    super.key,
+    required this.annotationType,
+    this.padding = const EdgeInsets.all(8),
+    this.onDrawStart,
+    this.onDrawEnd,
+    this.builder,
+    this.loadingBuilder,
+    this.color,
+    this.strokeWidth,
+    this.fontSize,
+    this.finalizeOnRelease = false,
+  })  : imageWidget = Image.network(
+          src,
+          fit: BoxFit.fill,
+        ),
+        assert(strokeWidth == null || strokeWidth > 0.0),
+        assert(fontSize == null || fontSize > 0.0);
+
+  ImageAnnotation.asset(
+    String name, {
+    super.key,
+    required this.annotationType,
+    this.padding = const EdgeInsets.all(8),
+    this.onDrawStart,
+    this.onDrawEnd,
+    this.builder,
+    this.loadingBuilder,
+    this.color,
+    this.strokeWidth,
+    this.fontSize,
+    this.finalizeOnRelease = false,
+  })  : imageWidget = Image.asset(
+          name,
+          fit: BoxFit.fill,
+        ),
+        assert(strokeWidth == null || strokeWidth > 0.0),
+        assert(fontSize == null || fontSize > 0.0);
+
+  ImageAnnotation.file(
+    File file, {
+    super.key,
+    required this.annotationType,
+    this.padding = const EdgeInsets.all(8),
+    this.onDrawStart,
+    this.onDrawEnd,
+    this.builder,
+    this.loadingBuilder,
+    this.color,
+    this.strokeWidth,
+    this.fontSize,
+    this.finalizeOnRelease = false,
+  })  : assert(
+          !kIsWeb,
+          'ImageAnnotation.file is not supported on Flutter Web. '
+          'Consider using either Image.asset or Image.network instead.',
+        ),
+        imageWidget = Image.file(
+          file,
+          fit: BoxFit.fill,
+        ),
+        assert(strokeWidth == null || strokeWidth > 0.0),
+        assert(fontSize == null || fontSize > 0.0);
+
+  ImageAnnotation.memory(
+    Uint8List bytes, {
+    super.key,
+    required this.annotationType,
+    this.padding = const EdgeInsets.all(8),
+    this.onDrawStart,
+    this.onDrawEnd,
+    this.builder,
+    this.loadingBuilder,
+    this.color,
+    this.strokeWidth,
+    this.fontSize,
+    this.finalizeOnRelease = false,
+  })  : imageWidget = Image.memory(
+          bytes,
+          fit: BoxFit.fill,
+        ),
+        assert(strokeWidth == null || strokeWidth > 0.0),
+        assert(fontSize == null || fontSize > 0.0);
 
   @override
   State<ImageAnnotation> createState() => _ImageAnnotationState();
@@ -134,9 +232,6 @@ class ImageAnnotation extends StatefulWidget {
 class _ImageAnnotationState extends State<ImageAnnotation> {
   /// Controller for handling events.
   late final ImageAnnotationController _controller;
-
-  /// Image widget based on [sourceType]
-  late final Image _imageWidget;
 
   @override
   void initState() {
@@ -149,30 +244,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       fontSize: widget.fontSize,
     );
 
-    switch (widget.sourceType) {
-      case ImageSourceType.asset:
-        _imageWidget = Image.asset(
-          widget.imagePath,
-          fit: BoxFit.fill,
-        );
-        break;
-      case ImageSourceType.file:
-        _imageWidget = Image.file(
-          File(widget.imagePath),
-          fit: BoxFit.fill,
-        );
-        break;
-      case ImageSourceType.network:
-        _imageWidget = Image.network(
-          widget.imagePath,
-          fit: BoxFit.fill,
-        );
-        break;
-    }
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.loadImageSize(
-        _imageWidget.image,
+        widget.imageWidget.image,
         context,
         widget.padding,
       );
@@ -251,7 +325,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       builder: (BuildContext context, BoxConstraints constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _controller.loadImageSize(
-            _imageWidget.image,
+            widget.imageWidget.image,
             context,
             widget.padding,
           );
@@ -278,7 +352,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     context,
                     _controller,
                     ImageAnnotationPaintBoundary(
-                      imageWidget: _imageWidget,
+                      imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
                       onDrawStart: widget.finalizeOnRelease
@@ -304,7 +378,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                       }
                     },
                     child: ImageAnnotationPaintBoundary(
-                      imageWidget: _imageWidget,
+                      imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
                       onDrawStart: widget.finalizeOnRelease

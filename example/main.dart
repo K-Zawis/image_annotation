@@ -73,10 +73,9 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         body: Center(
-          child: ImageAnnotation(
-            imagePath: 'assets/images/your_image.jpg',
+          child: ImageAnnotation.asset(
+            'assets/images/your_image.jpg',
             annotationType: selectedOption,
-            sourceType: ImageSourceType.asset,
           ),
         ),
       ),
