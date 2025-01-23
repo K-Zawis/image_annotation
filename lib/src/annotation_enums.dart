@@ -1,15 +1,3 @@
-/// Represents the source type of an image used in the [ImageAnnotation] widget.
-/// 
-/// Available options are:
-/// - [asset] : Uses the [Image.asset] widget for displaying the asset image.
-/// - [file] : Uses the [Image.file] widget for displaying the file outside of assets.
-/// - [network] : Uses the [Image.network] widget for displaying a network image.
-enum ImageSourceType {
-  asset,
-  file,
-  network,
-}
-
 /// Represents the different types of annotations that can be drawn on the image.
 ///
 /// This enum is used by the [ImageAnnotation] widget to determine the type of annotation 

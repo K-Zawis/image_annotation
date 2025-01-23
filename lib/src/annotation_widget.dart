@@ -75,13 +75,13 @@ class ImageAnnotation extends StatefulWidget {
 
   /// Callback triggered when [onPanStart] fires.
   /// 
-  /// When [finalizeOnRelease] is enabled, you will recieve the exact start position of the 
+  /// When [finalizeOnRelease] is enabled, you will recieve the screen start position of the 
   /// shape annotation.
   final GestureDragStartCallback? onDrawStart;
 
   /// Callback triggered when [onPadEnd] fires.
   ///
-  /// When [finalizeOnRelease] is enabled, you will recieve the exact end position of the 
+  /// When [finalizeOnRelease] is enabled, you will recieve the screen end position of the 
   /// shape annotation.
   final GestureDragEndCallback? onDrawEnd;
 
@@ -330,7 +330,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
             widget.padding,
           );
         });
-        // TODO: probably add animated transition instead? but this will be for way later
+        // TODO: probably add animated transition instead for smooth resizing? but this will be for way later
 
         return ListenableBuilder(
           listenable: _controller,
