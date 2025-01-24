@@ -55,6 +55,7 @@ class ImageAnnotationController extends ChangeNotifier {
   List<Annotation> get annotations => List.unmodifiable(_annotations);
   Annotation? get currentAnnotation =>
       _annotations.isNotEmpty ? _annotations.last : null;
+  int? get annotationLimit => _annotationLimit;
   Size get originalImageSize => _originalImageSize;
   bool get hasLoadedSize => _hasLoadedSize;
   Color get color => _currentColor;

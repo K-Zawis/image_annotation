@@ -26,6 +26,7 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
   /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
     if (controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
+    if (controller.annotationLimit != null && controller.annotations.length >= controller.annotationLimit!) return;
 
     if (position.dx >= 0 &&
         position.dy >= 0 &&
