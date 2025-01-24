@@ -45,7 +45,8 @@ class _ImageAnnotationPaintBoundaryState
   /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
     if (!_editing) return;
-    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
+    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation)
+      return;
 
     if (position.dx >= 0 &&
         position.dy >= 0 &&
@@ -82,6 +83,16 @@ class _ImageAnnotationPaintBoundaryState
         onPanUpdate: (details) => drawShape(details.localPosition),
         onPanStart: widget.onDrawStart,
         onPanEnd: _onDrawEnd,
+        onPanCancel: () {
+          if (widget.controller.finalizeOnRelease &&
+              widget.controller.annotationLimit != null &&
+              widget.controller.annotations.length >=
+                  widget.controller.annotationLimit!) {
+            setState(() {
+              _editing = false;
+            });
+          }
+        },
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),
           child: SizedBox(
