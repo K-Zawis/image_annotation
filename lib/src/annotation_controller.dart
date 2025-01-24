@@ -21,7 +21,7 @@ class ImageAnnotationController extends ChangeNotifier {
   final bool _finalizeOnRelease;
 
   /// Max annotation limit
-  /// 
+  ///
   /// Defaults to null which means no limit
   final int? _annotationLimit;
 
@@ -58,7 +58,7 @@ class ImageAnnotationController extends ChangeNotifier {
         _currentColor = color ?? Colors.red,
         _currentStrokeWidth = strokeWidth ?? 2.0,
         _currentFontSize = fontSize ?? 16.0,
-        _annotationLimit = annotationLimit, 
+        _annotationLimit = annotationLimit,
         _finalizeOnRelease = finalizeOnRelease;
 
   List<Annotation> get annotations => List.unmodifiable(_annotations);
@@ -74,6 +74,10 @@ class ImageAnnotationController extends ChangeNotifier {
   AnnotationOption get annotationType => _currentAnnotationType;
   bool get canUndo => _annotations.isNotEmpty;
   bool get canRedo => _redoStack.isNotEmpty;
+  bool get canEdit =>
+      !finalizeOnRelease ||
+      annotationLimit == null ||
+      annotations.length < annotationLimit!;
 
   set color(Color newColor) {
     if (_currentColor == newColor) return;
@@ -162,7 +166,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Notifies listiners that a new annotation has been added
   void add(Annotation annotation) {
-    if (_annotationLimit != null && annotations.length >= _annotationLimit!) return;
+    if (_annotationLimit != null && annotations.length >= _annotationLimit) return;
 
     _annotations.add(annotation);
     _redoStack.clear();

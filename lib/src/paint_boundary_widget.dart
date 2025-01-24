@@ -58,24 +58,16 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
     }
   }
 
-  void _onDrawEnd(details) {
-    if (widget.controller.finalizeOnRelease &&
-        widget.controller.annotationLimit != null &&
-        widget.controller.annotations.length >=
-            widget.controller.annotationLimit!) {
+  void _onDrawEnd() {
+    if (!widget.controller.canEdit) {
       setState(() {
         _editing = false;
       });
     }
-
-    widget.onDrawEnd?.call(details);
   }
 
   void _onDrawStart(details) {
-    if (!widget.controller.finalizeOnRelease ||
-        widget.controller.annotationLimit == null ||
-        widget.controller.annotations.length <
-            widget.controller.annotationLimit!) {
+    if (widget.controller.canEdit) {
       setState(() {
         _editing = true;
       });
@@ -90,17 +82,11 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
       child: GestureDetector(
         onPanUpdate: (details) => drawShape(details.localPosition),
         onPanStart: _onDrawStart,
-        onPanEnd: _onDrawEnd,
-        onPanCancel: () {
-          if (widget.controller.finalizeOnRelease &&
-              widget.controller.annotationLimit != null &&
-              widget.controller.annotations.length >=
-                  widget.controller.annotationLimit!) {
-            setState(() {
-              _editing = false;
-            });
-          }
+        onPanEnd: (details) {
+          _onDrawEnd.call();
+          widget.onDrawEnd?.call(details);
         },
+        onPanCancel: _onDrawEnd,
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),
           child: SizedBox(
