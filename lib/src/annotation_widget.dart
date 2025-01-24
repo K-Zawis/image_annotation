@@ -17,7 +17,7 @@ import 'annotation_models.dart';
 ///   * [ImageAnnotation.network], for using images obtained from a URL.
 ///   * [ImageAnnotation.file], for using an image obtained from a [File].
 ///   * [ImageAnnotation.memory], for using an image obtained from a [Uint8List].
-/// 
+///
 /// You may also pass in your own [Image] widget if you wish.
 ///
 /// This widget supports line, rectangle, oval shape annotations,
@@ -74,29 +74,29 @@ class ImageAnnotation extends StatefulWidget {
   final EdgeInsets padding;
 
   /// Callback triggered when [onPanStart] fires.
-  /// 
-  /// When [finalizeOnRelease] is enabled, you will recieve the screen start position of the 
+  ///
+  /// When [finalizeOnRelease] is enabled, you will recieve the screen start position of the
   /// shape annotation.
   final GestureDragStartCallback? onDrawStart;
 
   /// Callback triggered when [onPadEnd] fires.
   ///
-  /// When [finalizeOnRelease] is enabled, you will recieve the screen end position of the 
+  /// When [finalizeOnRelease] is enabled, you will recieve the screen end position of the
   /// shape annotation.
   final GestureDragEndCallback? onDrawEnd;
 
   /// Color of the current [Annotation]
-  /// 
+  ///
   /// Modifiable only using the [ImageAnnotationController]
   final Color? color;
 
   /// Stroke width of the current [ShapeAnnotation]
-  /// 
+  ///
   /// Modifiable only using the [ImageAnnotationController]
   final double? strokeWidth;
 
   /// Font size of the current [TextAnnotation]
-  /// 
+  ///
   /// Modifiable only using the [ImageAnnotationController]
   final double? fontSize;
 
@@ -106,6 +106,11 @@ class ImageAnnotation extends StatefulWidget {
   ///
   /// Default behaviour sets this to false.
   final bool finalizeOnRelease;
+
+  /// Whether annotations are limited to a certain max number.
+  ///
+  /// null means no limit
+  final int? annotationLimit;
 
   /// Optional custom UI builder.
   ///
@@ -137,6 +142,7 @@ class ImageAnnotation extends StatefulWidget {
     this.strokeWidth,
     this.fontSize,
     this.finalizeOnRelease = false,
+    this.annotationLimit,
   })  : assert(strokeWidth == null || strokeWidth > 0.0),
         assert(fontSize == null || fontSize > 0.0);
 
@@ -153,6 +159,7 @@ class ImageAnnotation extends StatefulWidget {
     this.strokeWidth,
     this.fontSize,
     this.finalizeOnRelease = false,
+    this.annotationLimit,
   })  : imageWidget = Image.network(
           src,
           fit: BoxFit.fill,
@@ -173,6 +180,7 @@ class ImageAnnotation extends StatefulWidget {
     this.strokeWidth,
     this.fontSize,
     this.finalizeOnRelease = false,
+    this.annotationLimit,
   })  : imageWidget = Image.asset(
           name,
           fit: BoxFit.fill,
@@ -193,6 +201,7 @@ class ImageAnnotation extends StatefulWidget {
     this.strokeWidth,
     this.fontSize,
     this.finalizeOnRelease = false,
+    this.annotationLimit,
   })  : assert(
           !kIsWeb,
           'ImageAnnotation.file is not supported on Flutter Web. '
@@ -218,6 +227,7 @@ class ImageAnnotation extends StatefulWidget {
     this.strokeWidth,
     this.fontSize,
     this.finalizeOnRelease = false,
+    this.annotationLimit,
   })  : imageWidget = Image.memory(
           bytes,
           fit: BoxFit.fill,
@@ -242,6 +252,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       color: widget.color,
       strokeWidth: widget.strokeWidth,
       fontSize: widget.fontSize,
+      annotationLimit: widget.annotationLimit,
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
