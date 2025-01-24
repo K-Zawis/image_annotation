@@ -18,12 +18,10 @@ class ImageAnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ImageAnnotationPaintBoundary> createState() =>
-      _ImageAnnotationPaintBoundaryState();
+  State<ImageAnnotationPaintBoundary> createState() => _ImageAnnotationPaintBoundaryState();
 }
 
-class _ImageAnnotationPaintBoundaryState
-    extends State<ImageAnnotationPaintBoundary> {
+class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBoundary> {
   bool _editing = true;
 
   Offset convertToImagePosition(
@@ -60,6 +58,19 @@ class _ImageAnnotationPaintBoundaryState
     }
   }
 
+  void _onDrawEnd(details) {
+    if (widget.controller.finalizeOnRelease &&
+        widget.controller.annotationLimit != null &&
+        widget.controller.annotations.length >=
+            widget.controller.annotationLimit!) {
+      setState(() {
+        _editing = false;
+      });
+    }
+
+    widget.onDrawEnd?.call(details);
+  }
+
   void _onDrawStart(details) {
     if (!widget.controller.finalizeOnRelease ||
         widget.controller.annotationLimit == null ||
@@ -79,7 +90,7 @@ class _ImageAnnotationPaintBoundaryState
       child: GestureDetector(
         onPanUpdate: (details) => drawShape(details.localPosition),
         onPanStart: _onDrawStart,
-        onPanEnd: widget.onDrawEnd,
+        onPanEnd: _onDrawEnd,
         onPanCancel: () {
           if (widget.controller.finalizeOnRelease &&
               widget.controller.annotationLimit != null &&
