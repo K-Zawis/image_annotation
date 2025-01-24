@@ -43,8 +43,7 @@ class _ImageAnnotationPaintBoundaryState
   /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
     if (!_editing) return;
-    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation)
-      return;
+    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
 
     if (position.dx >= 0 &&
         position.dy >= 0 &&
@@ -61,17 +60,17 @@ class _ImageAnnotationPaintBoundaryState
     }
   }
 
-  void _onDrawEnd(details) {
-    if (widget.controller.finalizeOnRelease &&
-        widget.controller.annotationLimit != null &&
-        widget.controller.annotations.length >=
+  void _onDrawStart(details) {
+    if (!widget.controller.finalizeOnRelease ||
+        widget.controller.annotationLimit == null ||
+        widget.controller.annotations.length <
             widget.controller.annotationLimit!) {
       setState(() {
-        _editing = false;
+        _editing = true;
       });
     }
 
-    widget.onDrawEnd?.call(details);
+    widget.onDrawStart?.call(details);
   }
 
   @override
@@ -79,8 +78,8 @@ class _ImageAnnotationPaintBoundaryState
     return RepaintBoundary(
       child: GestureDetector(
         onPanUpdate: (details) => drawShape(details.localPosition),
-        onPanStart: widget.onDrawStart,
-        onPanEnd: _onDrawEnd,
+        onPanStart: _onDrawStart,
+        onPanEnd: widget.onDrawEnd,
         onPanCancel: () {
           if (widget.controller.finalizeOnRelease &&
               widget.controller.annotationLimit != null &&
