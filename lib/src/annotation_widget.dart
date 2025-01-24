@@ -253,6 +253,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       strokeWidth: widget.strokeWidth,
       fontSize: widget.fontSize,
       annotationLimit: widget.annotationLimit,
+      finalizeOnRelease: widget.finalizeOnRelease,
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -366,7 +367,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                       imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
-                      onDrawStart: widget.finalizeOnRelease
+                      onDrawStart: _controller.finalizeOnRelease
                           ? _handleDrawStartWithFinalize
                           : widget.onDrawStart,
                     ),
@@ -378,7 +379,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                       if (_controller.annotationType == AnnotationOption.text) {
                         _showTextAnnotationDialog(
                             context, details.localPosition);
-                      } else if (!widget.finalizeOnRelease) {
+                      } else if (!_controller.finalizeOnRelease) {
                         _controller.add(
                           ShapeAnnotation(
                             _controller.annotationType,
@@ -392,7 +393,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                       imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
-                      onDrawStart: widget.finalizeOnRelease
+                      onDrawStart: _controller.finalizeOnRelease
                           ? _handleDrawStartWithFinalize
                           : widget.onDrawStart,
                     ),

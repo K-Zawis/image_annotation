@@ -1,13 +1,32 @@
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
+
 import 'package:flutter/material.dart';
 import 'annotation_controller.dart';
 import 'annotation_painter.dart';
 import 'annotation_models.dart';
 
-class ImageAnnotationPaintBoundary extends StatelessWidget {
+class ImageAnnotationPaintBoundary extends StatefulWidget {
   final Image imageWidget;
   final GestureDragStartCallback? onDrawStart;
   final GestureDragEndCallback? onDrawEnd;
   final ImageAnnotationController controller;
+
+  const ImageAnnotationPaintBoundary({
+    Key? key,
+    required this.imageWidget,
+    required this.controller,
+    this.onDrawStart,
+    this.onDrawEnd,
+  }) : super(key: key);
+
+  @override
+  State<ImageAnnotationPaintBoundary> createState() =>
+      _ImageAnnotationPaintBoundaryState();
+}
+
+class _ImageAnnotationPaintBoundaryState
+    extends State<ImageAnnotationPaintBoundary> {
+  bool _editing = true;
 
   Offset convertToImagePosition(
     Offset viewPosition,
@@ -25,42 +44,50 @@ class ImageAnnotationPaintBoundary extends StatelessWidget {
 
   /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
-    if (controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
-    if (controller.annotationLimit != null && controller.annotations.length >= controller.annotationLimit!) return;
+    if (!_editing) return;
+    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
 
     if (position.dx >= 0 &&
         position.dy >= 0 &&
-        position.dx <= controller.visualImageSize.width &&
-        position.dy <= controller.visualImageSize.height) {
+        position.dx <= widget.controller.visualImageSize.width &&
+        position.dy <= widget.controller.visualImageSize.height) {
       final imagePosition = convertToImagePosition(
-          position, controller.originalImageSize, controller.visualImageSize);
+          position,
+          widget.controller.originalImageSize,
+          widget.controller.visualImageSize);
 
-      (controller.currentAnnotation! as ShapeAnnotation).add(imagePosition);
-      controller.updateView();
+      (widget.controller.currentAnnotation! as ShapeAnnotation)
+          .add(imagePosition);
+      widget.controller.updateView();
     }
   }
 
-  const ImageAnnotationPaintBoundary({
-    Key? key,
-    required this.imageWidget,
-    required this.controller,
-    this.onDrawStart,
-    this.onDrawEnd,
-  }) : super(key: key);
+  void _onDrawEnd(details) {
+    if (widget.controller.finalizeOnRelease &&
+        widget.controller.annotationLimit != null &&
+        widget.controller.annotations.length >=
+            widget.controller.annotationLimit!) {
+      setState(() {
+        _editing = false;
+      });
+    }
+
+    widget.onDrawEnd?.call(details);
+  }
 
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
       child: GestureDetector(
         onPanUpdate: (details) => drawShape(details.localPosition),
-        onPanStart: onDrawStart,
-        onPanEnd: onDrawEnd,
+        onPanStart: widget.onDrawStart,
+        onPanEnd: _onDrawEnd,
         child: CustomPaint(
-          foregroundPainter: AnnotationPainter(controller),
+          foregroundPainter: AnnotationPainter(widget.controller),
           child: SizedBox(
-            height: controller.visualImageSize.height,
-            width: controller.visualImageSize.width,
-            child: imageWidget,
+            height: widget.controller.visualImageSize.height,
+            width: widget.controller.visualImageSize.width,
+            child: widget.imageWidget,
           ),
         ),
       ),

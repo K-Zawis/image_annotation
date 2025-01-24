@@ -13,6 +13,18 @@ class ImageAnnotationController extends ChangeNotifier {
   /// Current stack of undone annotations ready to be redone
   final List<List<Annotation>> _redoStack = [];
 
+  /// Whether the [ShapeAnnotation] is considered complete immedietly after drawing.
+  ///
+  /// Will cause [ShapeAnnotation] to be added to [_controller.annotations] when onPanStart is fired.
+  ///
+  /// Default behaviour sets this to false.
+  final bool _finalizeOnRelease;
+
+  /// Max annotation limit
+  /// 
+  /// Defaults to null which means no limit
+  final int? _annotationLimit;
+
   /// Flag to indicate initialization
   bool _hasLoadedSize = false;
 
@@ -34,28 +46,26 @@ class ImageAnnotationController extends ChangeNotifier {
   /// Current annotation type
   AnnotationOption _currentAnnotationType;
 
-  /// Max annotation limit
-  /// 
-  /// Defaults to null which means no limit
-  int? _annotationLimit;
-
   ImageAnnotationController(
     this._currentAnnotationType, {
     Color? color,
     double? strokeWidth,
     double? fontSize,
     int? annotationLimit,
+    bool finalizeOnRelease = false,
   })  : assert(strokeWidth == null || strokeWidth > 0.0),
         assert(fontSize == null || fontSize > 0.0),
         _currentColor = color ?? Colors.red,
         _currentStrokeWidth = strokeWidth ?? 2.0,
         _currentFontSize = fontSize ?? 16.0,
-        _annotationLimit = annotationLimit;
+        _annotationLimit = annotationLimit, 
+        _finalizeOnRelease = finalizeOnRelease;
 
   List<Annotation> get annotations => List.unmodifiable(_annotations);
   Annotation? get currentAnnotation =>
       _annotations.isNotEmpty ? _annotations.last : null;
   int? get annotationLimit => _annotationLimit;
+  bool get finalizeOnRelease => _finalizeOnRelease;
   Size get originalImageSize => _originalImageSize;
   bool get hasLoadedSize => _hasLoadedSize;
   Color get color => _currentColor;
