@@ -151,7 +151,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Notifies listiners that a new annotation has been added
   void add(Annotation annotation) {
-    if (_annotationLimit != null && _annotationLimit! >= annotations.length) return;
+    if (_annotationLimit != null && annotations.length >= _annotationLimit!) return;
 
     _annotations.add(annotation);
     _redoStack.clear();
