@@ -241,6 +241,8 @@ class ImageAnnotation extends StatefulWidget {
 }
 
 class _ImageAnnotationState extends State<ImageAnnotation> {
+  final GlobalKey _imageWidgetKey = GlobalKey();
+
   /// Controller for handling events.
   late final ImageAnnotationController _controller;
 
@@ -333,15 +335,21 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   }
 
   // Calculate the offset of the image on the screen
-  Offset calculateImageOffset() {
-    final imageWidget = context.findRenderObject() as RenderBox?;
-    log("${imageWidget?.size.height}", name: "ImageAnnotationWidget");
-    final imagePosition = imageWidget?.localToGlobal(Offset.zero);
-    final widgetPosition =
-        (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
-    final offsetX = imagePosition!.dx - widgetPosition.dx;
-    final offsetY = imagePosition.dy - widgetPosition.dy;
-    return Offset(offsetX, offsetY);
+  Offset? calculateImageOffset() {
+    final RenderBox? imageWidgetRenderBox =
+        _imageWidgetKey.currentContext?.findRenderObject() as RenderBox?;
+
+    // Check if imageWidgetRenderBox is not null
+    if (imageWidgetRenderBox != null) {
+      final imagePosition = imageWidgetRenderBox.localToGlobal(Offset.zero);
+      final widgetRenderBox = context.findRenderObject() as RenderBox;
+      final widgetPosition = widgetRenderBox.localToGlobal(Offset.zero);
+
+      final offsetX = imagePosition.dx - widgetPosition.dx;
+      final offsetY = imagePosition.dy - widgetPosition.dy;
+      return Offset(offsetX, offsetY);
+    }
+    return null;
   }
 
   @override
@@ -349,7 +357,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          log("Offest(${calculateImageOffset().dx}, ${calculateImageOffset().dy})",
+          log("Offest(${calculateImageOffset()?.dx}, ${calculateImageOffset()?.dy})",
               name: "ImageAnnotationWidget");
           _controller.loadImageSize(
             widget.imageWidget.image,
@@ -380,6 +388,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     context,
                     _controller,
                     ImageAnnotationPaintBoundary(
+                      key: _imageWidgetKey,
                       imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
@@ -406,6 +415,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                       }
                     },
                     child: ImageAnnotationPaintBoundary(
+                      key: _imageWidgetKey,
                       imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
