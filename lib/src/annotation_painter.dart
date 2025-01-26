@@ -18,13 +18,14 @@ class AnnotationPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     log("CustomPaint Size: Size(${size.width}, ${size.height})", name: "ImageAnnotationWidget");
+
     for (Annotation annotation in controller.annotations) {
       switch (annotation.runtimeType) {
         case TextAnnotation:
           drawTextAnnotations(canvas, annotation as TextAnnotation);
           break;
         case ShapeAnnotation:
-          drawShapeAnnotations(canvas, annotation as ShapeAnnotation);
+          drawShapeAnnotations(canvas, annotation as ShapeAnnotation, size);
           break;
         default:
           throw UnsupportedError(
@@ -41,7 +42,7 @@ class AnnotationPainter extends CustomPainter {
     return Offset(dx, dy);
   }
 
-  void drawShapeAnnotations(Canvas canvas, ShapeAnnotation annotation) {
+  void drawShapeAnnotations(Canvas canvas, ShapeAnnotation annotation, Size visualImageSize) {
     if (annotation.relativePoints.isEmpty) return;
 
     final Paint paint = Paint()
@@ -53,7 +54,7 @@ class AnnotationPainter extends CustomPainter {
         .map((point) => convertToVisualPosition(
               point,
               controller.originalImageSize,
-              controller.visualImageSize,
+              visualImageSize,
             ))
         .toList();
 
