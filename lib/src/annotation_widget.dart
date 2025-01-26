@@ -258,14 +258,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       annotationLimit: widget.annotationLimit,
       finalizeOnRelease: widget.finalizeOnRelease,
     );
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _controller.loadImageSize(
-    //     widget.imageWidget.image,
-    //     context,
-    //     widget.padding,
-    //   );
-    // });
   }
 
   @override
@@ -334,12 +326,13 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     widget.onDrawStart?.call(details);
   }
 
-  // Calculate the offset of the image on the screen
-  BoxConstraints? _getBoxConstraints() {
+  void _getBoxConstraints() {
     final RenderBox? imageWidgetRenderBox =
         _imageWidgetKey.currentContext?.findRenderObject() as RenderBox?;
 
-    return imageWidgetRenderBox?.constraints;
+    if (imageWidgetRenderBox == null) return;
+
+    _controller.loadImageConstraints(imageWidgetRenderBox.constraints);
   }
 
   @override
@@ -347,14 +340,13 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_getBoxConstraints() != null) {
-            _controller.loadImageSize(
-              widget.imageWidget.image,
-              context,
-              widget.padding,
-              _getBoxConstraints()!,
-            );
-          }
+          _getBoxConstraints();
+          _controller.loadImageSize(
+            widget.imageWidget.image,
+            context,
+            widget.padding,
+            constraints,
+          );
         });
         // TODO: probably add animated transition instead for smooth resizing? but this will be for way later
 

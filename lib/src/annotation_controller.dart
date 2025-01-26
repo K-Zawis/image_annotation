@@ -108,6 +108,10 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void loadImageConstraints(BoxConstraints constraints) {
+
+  }
+
   Future<void> loadImageSize(
     ImageProvider imageProvider,
     BuildContext context,
