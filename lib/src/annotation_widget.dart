@@ -334,10 +334,12 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     if (imageWidgetRenderBox == null) return;
 
     final imagePosition = imageWidgetRenderBox.localToGlobal(Offset.zero);
+    log("imagePosition: Offset(${imagePosition.dx}, ${imagePosition.dy})", name: "ImageAnnotationWidget");
 
     // Get the position of the parent widget relative to the screen
     final parentWidget = (context.findRenderObject() as RenderBox);
     final widgetPosition = parentWidget.localToGlobal(Offset.zero);
+    log("widgetPosition: Offset(${widgetPosition.dx}, ${widgetPosition.dy})", name: "ImageAnnotationWidget");
 
     final offsetX = imagePosition.dx - widgetPosition.dx;
     final offsetY = imagePosition.dy - widgetPosition.dy;
