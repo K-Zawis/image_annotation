@@ -109,7 +109,6 @@ class ImageAnnotationController extends ChangeNotifier {
 
   Future<void> loadImageSize(
     ImageProvider imageProvider,
-    EdgeInsets padding,
   ) async {
     final completer = Completer<ui.Image>();
 

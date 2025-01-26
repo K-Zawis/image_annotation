@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -259,7 +258,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
     _controller.loadImageSize(
       widget.imageWidget.image,
-      widget.padding,
     );
   }
 
@@ -350,47 +348,51 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     );
             }
 
-            return widget.builder != null
-                ? widget.builder!(
-                    context,
-                    _controller,
-                    ImageAnnotationPaintBoundary(
-                      imageWidget: widget.imageWidget,
-                      controller: _controller,
-                      onDrawEnd: widget.onDrawEnd,
-                      onDrawStart: _controller.finalizeOnRelease
-                          ? _handleDrawStartWithFinalize
-                          : widget.onDrawStart,
+            return Padding(
+              padding: widget.padding,
+              child: widget.builder != null
+                  ? widget.builder!(
+                      context,
+                      _controller,
+                      ImageAnnotationPaintBoundary(
+                        imageWidget: widget.imageWidget,
+                        controller: _controller,
+                        onDrawEnd: widget.onDrawEnd,
+                        onDrawStart: _controller.finalizeOnRelease
+                            ? _handleDrawStartWithFinalize
+                            : widget.onDrawStart,
+                      ),
+                    )
+                  : GestureDetector(
+                      onLongPress: _controller.clearAnnotations,
+                      onDoubleTap: _controller.undoAnnotation,
+                      onTapDown: (details) {
+                        if (_controller.annotationType ==
+                            AnnotationOption.text) {
+                          _showTextAnnotationDialog(
+                            context,
+                            details.localPosition,
+                          );
+                        } else if (!_controller.finalizeOnRelease) {
+                          _controller.add(
+                            ShapeAnnotation(
+                              _controller.annotationType,
+                              color: _controller.color,
+                              strokeWidth: _controller.strokeWidth,
+                            ),
+                          );
+                        }
+                      },
+                      child: ImageAnnotationPaintBoundary(
+                        imageWidget: widget.imageWidget,
+                        controller: _controller,
+                        onDrawEnd: widget.onDrawEnd,
+                        onDrawStart: _controller.finalizeOnRelease
+                            ? _handleDrawStartWithFinalize
+                            : widget.onDrawStart,
+                      ),
                     ),
-                  )
-                : GestureDetector(
-                    onLongPress: _controller.clearAnnotations,
-                    onDoubleTap: _controller.undoAnnotation,
-                    onTapDown: (details) {
-                      if (_controller.annotationType == AnnotationOption.text) {
-                        _showTextAnnotationDialog(
-                          context,
-                          details.localPosition,
-                        );
-                      } else if (!_controller.finalizeOnRelease) {
-                        _controller.add(
-                          ShapeAnnotation(
-                            _controller.annotationType,
-                            color: _controller.color,
-                            strokeWidth: _controller.strokeWidth,
-                          ),
-                        );
-                      }
-                    },
-                    child: ImageAnnotationPaintBoundary(
-                      imageWidget: widget.imageWidget,
-                      controller: _controller,
-                      onDrawEnd: widget.onDrawEnd,
-                      onDrawStart: _controller.finalizeOnRelease
-                          ? _handleDrawStartWithFinalize
-                          : widget.onDrawStart,
-                    ),
-                  );
+            );
           },
         );
       },
