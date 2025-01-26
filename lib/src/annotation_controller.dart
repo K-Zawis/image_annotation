@@ -142,13 +142,7 @@ class ImageAnnotationController extends ChangeNotifier {
       loadedImage.height * scale,
     );
 
-    final availableWidth = constraints.maxWidth;
     final availableHeight = constraints.maxHeight;
-
-    // final imageOffset = Offset(
-    //   (availableWidth - visualImageSize.width) / 2,
-    //   (availableHeight - visualImageSize.height) / 2,
-    // );
 
     log("availableHieght: $availableHeight, visualImageHeight: ${visualImageSize.height}", name: "ImageAnnotationWidget");
     log("constrainedHeight: ${constraints.constrainHeight(visualImageSize.height)}", name: "ImageAnnotationWidget");

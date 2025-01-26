@@ -242,6 +242,7 @@ class ImageAnnotation extends StatefulWidget {
 
 class _ImageAnnotationState extends State<ImageAnnotation> {
   final GlobalKey _imageWidgetKey = GlobalKey();
+  bool keyInitialised = false;
 
   /// Controller for handling events.
   late final ImageAnnotationController _controller;
@@ -338,6 +339,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       widget.padding,
       imageWidgetRenderBox.constraints,
     );
+    setState(() {
+      keyInitialised = true;
+    });
   }
 
   @override
@@ -346,12 +350,12 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       builder: (BuildContext context, BoxConstraints constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _getBoxConstraints();
-          _controller.loadImageSize(
+          if (!keyInitialised) {_controller.loadImageSize(
             widget.imageWidget.image,
             context,
             widget.padding,
             constraints,
-          );
+          );}
         });
         // TODO: probably add animated transition instead for smooth resizing? but this will be for way later
 
