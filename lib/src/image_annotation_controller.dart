@@ -91,6 +91,7 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // functions
   Future<void> loadImageSize(
     ImageProvider imageProvider,
   ) async {
@@ -120,11 +121,13 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Notifies listiners that a new annotation has been added
   void add(Annotation annotation) {
-    if (_annotationLimit != null && annotations.length >= _annotationLimit) return;
+    if (_annotationLimit != null && annotations.length >= _annotationLimit)
+      return;
 
-    _model.annotations.add(annotation);
-    _model.redoStack.clear();
-
+    _model = _model.copyWith(
+      annotations: [..._model.annotations, annotation],
+      redoStack: [],
+    );
     notifyListeners();
   }
 
@@ -132,8 +135,14 @@ class ImageAnnotationController extends ChangeNotifier {
   void undoAnnotation() {
     if (!canUndo) return;
 
-    final Annotation lastAnnotation = _model.annotations.removeLast();
-    _model.redoStack.add([lastAnnotation]);
+    final lastAnnotation = _model.annotations.last;
+    _model = _model.copyWith(
+      annotations: _model.annotations.sublist(0, _model.annotations.length - 1),
+      redoStack: [
+        ..._model.redoStack,
+        [lastAnnotation]
+      ],
+    );
 
     notifyListeners();
   }
@@ -142,8 +151,11 @@ class ImageAnnotationController extends ChangeNotifier {
   void redoAnnotation() {
     if (!canRedo) return;
 
-    final lastUndone = _model.redoStack.removeLast();
-    _model.annotations.addAll(lastUndone);
+    final lastUndone = _model.redoStack.last;
+    _model = _model.copyWith(
+      annotations: [..._model.annotations, ...lastUndone],
+      redoStack: _model.redoStack.sublist(0, _model.redoStack.length - 1),
+    );
 
     notifyListeners();
   }
@@ -153,8 +165,10 @@ class ImageAnnotationController extends ChangeNotifier {
     if (!canUndo) return;
 
     final clearedAnnotations = List.of(_model.annotations);
-    _model.annotations.clear();
-    _model.redoStack.add(clearedAnnotations);
+    _model = _model.copyWith(
+      annotations: [],
+      redoStack: [..._model.redoStack, clearedAnnotations],
+    );
 
     notifyListeners();
   }
