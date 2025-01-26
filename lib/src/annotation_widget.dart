@@ -369,7 +369,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     onTapDown: (details) {
                       if (_controller.annotationType == AnnotationOption.text) {
                         _showTextAnnotationDialog(
-                            context, details.localPosition);
+                          context,
+                          details.localPosition,
+                        );
                       } else if (!_controller.finalizeOnRelease) {
                         _controller.add(
                           ShapeAnnotation(

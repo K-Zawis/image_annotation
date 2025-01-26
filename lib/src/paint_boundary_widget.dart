@@ -99,8 +99,7 @@ class _ImageAnnotationPaintBoundaryState
         onPanCancel: _onDrawEnd,
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),
-          child: FittedBox(
-            fit: BoxFit.contain,
+          child: SizedBox.expand(
             child: widget.imageWidget,
           ),
         ),
