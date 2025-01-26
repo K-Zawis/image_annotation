@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'annotation_controller.dart';
 import 'annotation_painter.dart';
 import 'annotation_models.dart';
@@ -22,6 +23,7 @@ class ImageAnnotationPaintBoundary extends StatefulWidget {
 }
 
 class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBoundary> {
+  final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
 
   Offset convertToImagePosition(
@@ -38,17 +40,24 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
     );
   }
 
+  Offset _calculateLocalPosition(Offset globalPosition) {
+    final RenderBox renderBox = _boundaryKey.currentContext!.findRenderObject() as RenderBox;
+    return renderBox.globalToLocal(globalPosition);
+  }
+
   /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
     if (!_editing) return;
     if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
 
-    if (position.dx >= 0 &&
-        position.dy >= 0 &&
-        position.dx <= widget.controller.visualImageSize.width &&
-        position.dy <= widget.controller.visualImageSize.height) {
+    final localPosition = _calculateLocalPosition(position);
+
+    if (localPosition.dx >= 0 &&
+        localPosition.dy >= 0 &&
+        localPosition.dx <= widget.controller.visualImageSize.width &&
+        localPosition.dy <= widget.controller.visualImageSize.height) {
       final imagePosition = convertToImagePosition(
-          position,
+          localPosition,
           widget.controller.originalImageSize,
           widget.controller.visualImageSize);
 
@@ -79,19 +88,20 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
-      child: GestureDetector(
-        onPanUpdate: (details) => drawShape(details.localPosition),
-        onPanStart: _onDrawStart,
-        onPanEnd: (details) {
-          _onDrawEnd.call();
-          widget.onDrawEnd?.call(details);
-        },
-        onPanCancel: _onDrawEnd,
-        child: CustomPaint(
-          foregroundPainter: AnnotationPainter(widget.controller),
-          child: SizedBox(
-            height: widget.controller.visualImageSize.height,
-            width: widget.controller.visualImageSize.width,
+      key: _boundaryKey,
+      child: SizedBox(
+        height: widget.controller.visualImageSize.height,
+        width: widget.controller.visualImageSize.width,
+        child: GestureDetector(
+          onPanUpdate: (details) => drawShape(details.globalPosition),
+          onPanStart: _onDrawStart,
+          onPanEnd: (details) {
+            _onDrawEnd.call();
+            widget.onDrawEnd?.call(details);
+          },
+          onPanCancel: _onDrawEnd,
+          child: CustomPaint(
+            foregroundPainter: AnnotationPainter(widget.controller),
             child: widget.imageWidget,
           ),
         ),
