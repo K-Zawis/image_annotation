@@ -256,13 +256,13 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       finalizeOnRelease: widget.finalizeOnRelease,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controller.loadImageSize(
-        widget.imageWidget.image,
-        context,
-        widget.padding,
-      );
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _controller.loadImageSize(
+    //     widget.imageWidget.image,
+    //     context,
+    //     widget.padding,
+    //   );
+    // });
   }
 
   @override
@@ -340,6 +340,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
             widget.imageWidget.image,
             context,
             widget.padding,
+            constraints,
           );
         });
         // TODO: probably add animated transition instead for smooth resizing? but this will be for way later

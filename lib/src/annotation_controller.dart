@@ -111,6 +111,7 @@ class ImageAnnotationController extends ChangeNotifier {
     ImageProvider imageProvider,
     BuildContext context,
     EdgeInsets padding,
+    BoxConstraints constraints
   ) async {
     final completer = Completer<ui.Image>();
 
@@ -131,7 +132,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
     final double scale = _calculateScaleFactor(
       imageSize: _originalImageSize,
-      screenSize: MediaQuery.of(context).size,
+      screenSize: constraints.biggest,
       padding: padding,
     );
 
