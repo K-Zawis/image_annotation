@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'annotation_enums.dart';
 import 'annotation_models.dart';
-import 'annotation_controller.dart';
+import 'image_annotation_controller.dart';
 
 // AnnotationPainter class
 class AnnotationPainter extends CustomPainter {
@@ -49,7 +49,7 @@ class AnnotationPainter extends CustomPainter {
     List<Offset> visualPoints = annotation.relativePoints
         .map((point) => convertToVisualPosition(
               point,
-              controller.originalImageSize,
+              controller.originalImageSize!,
               visualImageSize,
             ))
         .toList();

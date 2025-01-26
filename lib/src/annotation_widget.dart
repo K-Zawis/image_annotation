@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'paint_boundary_widget.dart';
-import 'annotation_controller.dart';
+import 'image_annotation_controller.dart';
 import 'annotation_enums.dart';
 import 'annotation_models.dart';
 

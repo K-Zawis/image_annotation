@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'annotation_controller.dart';
+import 'image_annotation_controller.dart';
 import 'annotation_painter.dart';
 import 'annotation_models.dart';
 
@@ -19,12 +19,10 @@ class ImageAnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ImageAnnotationPaintBoundary> createState() =>
-      _ImageAnnotationPaintBoundaryState();
+  State<ImageAnnotationPaintBoundary> createState() => _ImageAnnotationPaintBoundaryState();
 }
 
-class _ImageAnnotationPaintBoundaryState
-    extends State<ImageAnnotationPaintBoundary> {
+class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
 
@@ -45,8 +43,7 @@ class _ImageAnnotationPaintBoundaryState
   /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
     if (!_editing) return;
-    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation)
-      return;
+    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
 
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null) return;
@@ -57,7 +54,7 @@ class _ImageAnnotationPaintBoundaryState
         position.dy <= boundarySize.height) {
       final imagePosition = convertToImagePosition(
         position,
-        widget.controller.originalImageSize,
+        widget.controller.originalImageSize!,
         boundarySize,
       );
 
@@ -100,8 +97,8 @@ class _ImageAnnotationPaintBoundaryState
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),
           child: AspectRatio(
-            aspectRatio: widget.controller.originalImageSize.width /
-                widget.controller.originalImageSize.height,
+            aspectRatio: widget.controller.originalImageSize!.width /
+                widget.controller.originalImageSize!.height,
             child: SizedBox.expand(
               child: widget.imageWidget,
             ),
