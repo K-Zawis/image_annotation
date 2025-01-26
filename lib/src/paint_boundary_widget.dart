@@ -81,8 +81,8 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   Widget build(BuildContext context) {
     return RepaintBoundary(
       child: SizedBox(
-        height: widget.controller.visualImageSize.height,
-        width: widget.controller.visualImageSize.width,
+        // height: widget.controller.visualImageSize.height,
+        // width: widget.controller.visualImageSize.width,
         child: GestureDetector(
           onPanUpdate: (details) => drawShape(details.localPosition),
           onPanStart: _onDrawStart,
