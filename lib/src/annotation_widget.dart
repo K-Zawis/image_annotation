@@ -333,14 +333,27 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
     if (imageWidgetRenderBox == null) return;
 
-    _controller.loadImageSize(
-      widget.imageWidget.image,
-      context,
-      widget.padding,
-      imageWidgetRenderBox.constraints,
-    );
-    
-    keyInitialised = true;
+    final imagePosition = imageWidgetRenderBox.localToGlobal(Offset.zero);
+
+    // Get the position of the parent widget relative to the screen
+    final parentWidget = (context.findRenderObject() as RenderBox);
+    final widgetPosition = parentWidget.localToGlobal(Offset.zero);
+
+    final offsetX = imagePosition.dx - widgetPosition.dx;
+    final offsetY = imagePosition.dy - widgetPosition.dy;
+
+    Offset(offsetX, offsetY);
+
+    log("PaintBoundaryOffset: Offset($offsetX, $offsetY)", name: "ImageAnnotationWidget");
+
+    // _controller.loadImageSize(
+    //   widget.imageWidget.image,
+    //   context,
+    //   widget.padding,
+    //   imageWidgetRenderBox.constraints,
+    // );
+
+    // keyInitialised = true;
   }
 
   @override
@@ -349,12 +362,14 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       builder: (BuildContext context, BoxConstraints constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _getBoxConstraints();
-          if (!keyInitialised) {_controller.loadImageSize(
-            widget.imageWidget.image,
-            context,
-            widget.padding,
-            constraints,
-          );}
+          if (!keyInitialised) {
+            _controller.loadImageSize(
+              widget.imageWidget.image,
+              context,
+              widget.padding,
+              constraints,
+            );
+          }
         });
         // TODO: probably add animated transition instead for smooth resizing? but this will be for way later
 

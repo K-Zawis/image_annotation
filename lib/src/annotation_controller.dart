@@ -142,11 +142,11 @@ class ImageAnnotationController extends ChangeNotifier {
       loadedImage.height * scale,
     );
 
-    final availableHeight = constraints.maxHeight;
+    // final availableHeight = constraints.maxHeight;
 
-    log("availableHieght: $availableHeight, visualImageHeight: ${visualImageSize.height}", name: "ImageAnnotationWidget");
-    log("constrainedHeight: ${constraints.constrainHeight(visualImageSize.height)}", name: "ImageAnnotationWidget");
-    log("hasBoundedHeight: ${constraints.hasBoundedHeight}", name: "ImageAnnotationWidget");
+    // log("availableHieght: $availableHeight, visualImageHeight: ${visualImageSize.height}", name: "ImageAnnotationWidget");
+    // log("constrainedHeight: ${constraints.constrainHeight(visualImageSize.height)}", name: "ImageAnnotationWidget");
+    // log("hasBoundedHeight: ${constraints.hasBoundedHeight}", name: "ImageAnnotationWidget");
 
     _hasLoadedSize = true;
     notifyListeners();
