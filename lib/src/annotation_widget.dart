@@ -332,7 +332,12 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
     if (imageWidgetRenderBox == null) return;
 
-    _controller.loadImageConstraints(imageWidgetRenderBox.constraints);
+    _controller.loadImageSize(
+      widget.imageWidget.image,
+      context,
+      widget.padding,
+      imageWidgetRenderBox.constraints,
+    );
   }
 
   @override
