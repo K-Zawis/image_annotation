@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import 'annotation_enums.dart';
@@ -17,8 +15,6 @@ class AnnotationPainter extends CustomPainter {
   // Paint annotations and text on the canvas
   @override
   void paint(Canvas canvas, Size size) {
-    log("CustomPaint Size: Size(${size.width}, ${size.height})", name: "ImageAnnotationWidget");
-
     for (Annotation annotation in controller.annotations) {
       switch (annotation.runtimeType) {
         case TextAnnotation:

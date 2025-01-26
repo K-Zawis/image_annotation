@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -110,9 +109,7 @@ class ImageAnnotationController extends ChangeNotifier {
 
   Future<void> loadImageSize(
     ImageProvider imageProvider,
-    BuildContext context,
     EdgeInsets padding,
-    BoxConstraints constraints
   ) async {
     final completer = Completer<ui.Image>();
 
@@ -129,43 +126,8 @@ class ImageAnnotationController extends ChangeNotifier {
       loadedImage.height.toDouble(),
     );
 
-    if (!context.mounted) return;
-
-    final double scale = _calculateScaleFactor(
-      imageSize: _originalImageSize,
-      screenSize: constraints.biggest,
-      padding: padding,
-    );
-
-    // visualImageSize = Size(
-    //   loadedImage.width * scale,
-    //   loadedImage.height * scale,
-    // );
-
-    // final availableHeight = constraints.maxHeight;
-
-    // log("availableHieght: $availableHeight, visualImageHeight: ${visualImageSize.height}", name: "ImageAnnotationWidget");
-    // log("constrainedHeight: ${constraints.constrainHeight(visualImageSize.height)}", name: "ImageAnnotationWidget");
-    // log("hasBoundedHeight: ${constraints.hasBoundedHeight}", name: "ImageAnnotationWidget");
-
     _hasLoadedSize = true;
     notifyListeners();
-  }
-
-  /// Calculates the scale factor to fit an image within the screen
-  /// while preserving its aspect ratio.
-  double _calculateScaleFactor({
-    required Size imageSize,
-    required Size screenSize,
-    required EdgeInsets padding,
-  }) {
-    final double adjustedWidth = screenSize.width - padding.horizontal;
-    final double adjustedHeight = screenSize.height - padding.vertical;
-
-    double heightScale = adjustedHeight / imageSize.height;
-    double widthScale = adjustedWidth / imageSize.width;
-
-    return heightScale < widthScale ? heightScale : widthScale;
   }
 
   void updateView() {

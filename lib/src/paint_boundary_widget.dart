@@ -53,9 +53,10 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
         position.dx <= boundarySize.width &&
         position.dy <= boundarySize.height) {
       final imagePosition = convertToImagePosition(
-          position,
-          widget.controller.originalImageSize,
-          boundarySize);
+        position,
+        widget.controller.originalImageSize,
+        boundarySize,
+      );
 
       (widget.controller.currentAnnotation! as ShapeAnnotation)
           .add(imagePosition);
@@ -85,21 +86,17 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   Widget build(BuildContext context) {
     return RepaintBoundary(
       key: _boundaryKey,
-      child: SizedBox(
-        // height: widget.controller.visualImageSize.height,
-        // width: widget.controller.visualImageSize.width,
-        child: GestureDetector(
-          onPanUpdate: (details) => drawShape(details.localPosition),
-          onPanStart: _onDrawStart,
-          onPanEnd: (details) {
-            _onDrawEnd.call();
-            widget.onDrawEnd?.call(details);
-          },
-          onPanCancel: _onDrawEnd,
-          child: CustomPaint(
-            foregroundPainter: AnnotationPainter(widget.controller),
-            child: widget.imageWidget,
-          ),
+      child: GestureDetector(
+        onPanUpdate: (details) => drawShape(details.localPosition),
+        onPanStart: _onDrawStart,
+        onPanEnd: (details) {
+          _onDrawEnd.call();
+          widget.onDrawEnd?.call(details);
+        },
+        onPanCancel: _onDrawEnd,
+        child: CustomPaint(
+          foregroundPainter: AnnotationPainter(widget.controller),
+          child: widget.imageWidget,
         ),
       ),
     );

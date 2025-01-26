@@ -241,9 +241,6 @@ class ImageAnnotation extends StatefulWidget {
 }
 
 class _ImageAnnotationState extends State<ImageAnnotation> {
-  final GlobalKey _imageWidgetKey = GlobalKey();
-  bool keyInitialised = false;
-
   /// Controller for handling events.
   late final ImageAnnotationController _controller;
 
@@ -258,6 +255,11 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       fontSize: widget.fontSize,
       annotationLimit: widget.annotationLimit,
       finalizeOnRelease: widget.finalizeOnRelease,
+    );
+
+    _controller.loadImageSize(
+      widget.imageWidget.image,
+      widget.padding,
     );
   }
 
@@ -327,52 +329,10 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     widget.onDrawStart?.call(details);
   }
 
-  void _getBoxConstraints() {
-    final RenderBox? imageWidgetRenderBox =
-        _imageWidgetKey.currentContext?.findRenderObject() as RenderBox?;
-
-    if (imageWidgetRenderBox == null) return;
-
-    final imagePosition = imageWidgetRenderBox.localToGlobal(Offset.zero);
-    log("imagePosition: Offset(${imagePosition.dx}, ${imagePosition.dy})", name: "ImageAnnotationWidget");
-
-    // Get the position of the parent widget relative to the screen
-    final parentWidget = (context.findRenderObject() as RenderBox);
-    final widgetPosition = parentWidget.localToGlobal(Offset.zero);
-    log("widgetPosition: Offset(${widgetPosition.dx}, ${widgetPosition.dy})", name: "ImageAnnotationWidget");
-
-    final offsetX = imagePosition.dx - widgetPosition.dx;
-    final offsetY = imagePosition.dy - widgetPosition.dy;
-
-    Offset(offsetX, offsetY);
-
-    log("PaintBoundaryOffset: Offset($offsetX, $offsetY)", name: "ImageAnnotationWidget");
-
-    // _controller.loadImageSize(
-    //   widget.imageWidget.image,
-    //   context,
-    //   widget.padding,
-    //   imageWidgetRenderBox.constraints,
-    // );
-
-    // keyInitialised = true;
-  }
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _getBoxConstraints();
-          if (!keyInitialised) {
-            _controller.loadImageSize(
-              widget.imageWidget.image,
-              context,
-              widget.padding,
-              constraints,
-            );
-          }
-        });
         // TODO: probably add animated transition instead for smooth resizing? but this will be for way later
 
         return ListenableBuilder(
@@ -395,7 +355,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     context,
                     _controller,
                     ImageAnnotationPaintBoundary(
-                      key: _imageWidgetKey,
                       imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
@@ -422,7 +381,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                       }
                     },
                     child: ImageAnnotationPaintBoundary(
-                      key: _imageWidgetKey,
                       imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
