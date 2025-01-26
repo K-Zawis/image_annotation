@@ -339,9 +339,8 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       widget.padding,
       imageWidgetRenderBox.constraints,
     );
-    setState(() {
-      keyInitialised = true;
-    });
+    
+    keyInitialised = true;
   }
 
   @override
