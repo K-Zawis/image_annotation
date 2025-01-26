@@ -19,10 +19,12 @@ class ImageAnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ImageAnnotationPaintBoundary> createState() => _ImageAnnotationPaintBoundaryState();
+  State<ImageAnnotationPaintBoundary> createState() =>
+      _ImageAnnotationPaintBoundaryState();
 }
 
-class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBoundary> {
+class _ImageAnnotationPaintBoundaryState
+    extends State<ImageAnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
 
@@ -43,7 +45,8 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
     if (!_editing) return;
-    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
+    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation)
+      return;
 
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null) return;
@@ -96,7 +99,10 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
         onPanCancel: _onDrawEnd,
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),
-          child: widget.imageWidget,
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: widget.imageWidget,
+          ),
         ),
       ),
     );
