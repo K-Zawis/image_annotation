@@ -347,12 +347,14 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _controller.loadImageSize(
-            widget.imageWidget.image,
-            context,
-            widget.padding,
-            _getBoxConstraints()!,
-          );
+          if (_getBoxConstraints() != null) {
+            _controller.loadImageSize(
+              widget.imageWidget.image,
+              context,
+              widget.padding,
+              _getBoxConstraints()!,
+            );
+          }
         });
         // TODO: probably add animated transition instead for smooth resizing? but this will be for way later
 
