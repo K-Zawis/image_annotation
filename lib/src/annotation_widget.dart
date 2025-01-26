@@ -335,22 +335,11 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   }
 
   // Calculate the offset of the image on the screen
-  Offset? calculateImageOffset() {
+  BoxConstraints? _getBoxConstraints() {
     final RenderBox? imageWidgetRenderBox =
         _imageWidgetKey.currentContext?.findRenderObject() as RenderBox?;
 
-    // Check if imageWidgetRenderBox is not null
-    if (imageWidgetRenderBox != null) {
-      log("${imageWidgetRenderBox.size.height}", name: "ImageAnnotationWidget");
-      final imagePosition = imageWidgetRenderBox.localToGlobal(Offset.zero);
-      final widgetRenderBox = context.findRenderObject() as RenderBox;
-      final widgetPosition = widgetRenderBox.localToGlobal(Offset.zero);
-
-      final offsetX = imagePosition.dx - widgetPosition.dx;
-      final offsetY = imagePosition.dy - widgetPosition.dy;
-      return Offset(offsetX, offsetY);
-    }
-    return null;
+    return imageWidgetRenderBox?.constraints;
   }
 
   @override
@@ -358,13 +347,11 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          log("Offest(${calculateImageOffset()?.dx}, ${calculateImageOffset()?.dy})",
-              name: "ImageAnnotationWidget");
           _controller.loadImageSize(
             widget.imageWidget.image,
             context,
             widget.padding,
-            constraints,
+            _getBoxConstraints()!,
           );
         });
         // TODO: probably add animated transition instead for smooth resizing? but this will be for way later
