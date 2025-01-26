@@ -70,9 +70,6 @@ class ImageAnnotation extends StatefulWidget {
   /// [AnnotationOption.text]).
   final AnnotationOption annotationType;
 
-  /// Padding around the image paint boundary
-  final EdgeInsets padding;
-
   /// Callback triggered when [onPanStart] fires.
   ///
   /// When [finalizeOnRelease] is enabled, you will recieve the screen start position of the
@@ -133,7 +130,6 @@ class ImageAnnotation extends StatefulWidget {
     super.key,
     required this.imageWidget,
     required this.annotationType,
-    this.padding = const EdgeInsets.all(8),
     this.onDrawStart,
     this.onDrawEnd,
     this.builder,
@@ -150,7 +146,6 @@ class ImageAnnotation extends StatefulWidget {
     String src, {
     super.key,
     required this.annotationType,
-    this.padding = const EdgeInsets.all(8),
     this.onDrawStart,
     this.onDrawEnd,
     this.builder,
@@ -171,7 +166,6 @@ class ImageAnnotation extends StatefulWidget {
     String name, {
     super.key,
     required this.annotationType,
-    this.padding = const EdgeInsets.all(8),
     this.onDrawStart,
     this.onDrawEnd,
     this.builder,
@@ -192,7 +186,6 @@ class ImageAnnotation extends StatefulWidget {
     File file, {
     super.key,
     required this.annotationType,
-    this.padding = const EdgeInsets.all(8),
     this.onDrawStart,
     this.onDrawEnd,
     this.builder,
@@ -218,7 +211,6 @@ class ImageAnnotation extends StatefulWidget {
     Uint8List bytes, {
     super.key,
     required this.annotationType,
-    this.padding = const EdgeInsets.all(8),
     this.onDrawStart,
     this.onDrawEnd,
     this.builder,
@@ -348,51 +340,47 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     );
             }
 
-            return Padding(
-              padding: widget.padding,
-              child: widget.builder != null
-                  ? widget.builder!(
-                      context,
-                      _controller,
-                      ImageAnnotationPaintBoundary(
-                        imageWidget: widget.imageWidget,
-                        controller: _controller,
-                        onDrawEnd: widget.onDrawEnd,
-                        onDrawStart: _controller.finalizeOnRelease
-                            ? _handleDrawStartWithFinalize
-                            : widget.onDrawStart,
-                      ),
-                    )
-                  : GestureDetector(
-                      onLongPress: _controller.clearAnnotations,
-                      onDoubleTap: _controller.undoAnnotation,
-                      onTapDown: (details) {
-                        if (_controller.annotationType ==
-                            AnnotationOption.text) {
-                          _showTextAnnotationDialog(
-                            context,
-                            details.localPosition,
-                          );
-                        } else if (!_controller.finalizeOnRelease) {
-                          _controller.add(
-                            ShapeAnnotation(
-                              _controller.annotationType,
-                              color: _controller.color,
-                              strokeWidth: _controller.strokeWidth,
-                            ),
-                          );
-                        }
-                      },
-                      child: ImageAnnotationPaintBoundary(
-                        imageWidget: widget.imageWidget,
-                        controller: _controller,
-                        onDrawEnd: widget.onDrawEnd,
-                        onDrawStart: _controller.finalizeOnRelease
-                            ? _handleDrawStartWithFinalize
-                            : widget.onDrawStart,
-                      ),
+            return widget.builder != null
+                ? widget.builder!(
+                    context,
+                    _controller,
+                    ImageAnnotationPaintBoundary(
+                      imageWidget: widget.imageWidget,
+                      controller: _controller,
+                      onDrawEnd: widget.onDrawEnd,
+                      onDrawStart: _controller.finalizeOnRelease
+                          ? _handleDrawStartWithFinalize
+                          : widget.onDrawStart,
                     ),
-            );
+                  )
+                : GestureDetector(
+                    onLongPress: _controller.clearAnnotations,
+                    onDoubleTap: _controller.undoAnnotation,
+                    onTapDown: (details) {
+                      if (_controller.annotationType == AnnotationOption.text) {
+                        _showTextAnnotationDialog(
+                          context,
+                          details.localPosition,
+                        );
+                      } else if (!_controller.finalizeOnRelease) {
+                        _controller.add(
+                          ShapeAnnotation(
+                            _controller.annotationType,
+                            color: _controller.color,
+                            strokeWidth: _controller.strokeWidth,
+                          ),
+                        );
+                      }
+                    },
+                    child: ImageAnnotationPaintBoundary(
+                      imageWidget: widget.imageWidget,
+                      controller: _controller,
+                      onDrawEnd: widget.onDrawEnd,
+                      onDrawStart: _controller.finalizeOnRelease
+                          ? _handleDrawStartWithFinalize
+                          : widget.onDrawStart,
+                    ),
+                  );
           },
         );
       },
