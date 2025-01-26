@@ -341,6 +341,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
     // Check if imageWidgetRenderBox is not null
     if (imageWidgetRenderBox != null) {
+      log("${imageWidgetRenderBox.size.height}", name: "ImageAnnotationWidget");
       final imagePosition = imageWidgetRenderBox.localToGlobal(Offset.zero);
       final widgetRenderBox = context.findRenderObject() as RenderBox;
       final widgetPosition = widgetRenderBox.localToGlobal(Offset.zero);
