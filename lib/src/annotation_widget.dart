@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -331,11 +332,23 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     widget.onDrawStart?.call(details);
   }
 
+  // Calculate the offset of the image on the screen
+  Offset calculateImageOffset() {
+    final imageWidget = context.findRenderObject() as RenderBox?;
+      final imagePosition = imageWidget?.localToGlobal(Offset.zero);
+      final widgetPosition =
+          (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero);
+      final offsetX = imagePosition!.dx - widgetPosition.dx;
+      final offsetY = imagePosition.dy - widgetPosition.dy;
+    return Offset(offsetX, offsetY);
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
+          log("Offest(${calculateImageOffset().dx}, ${calculateImageOffset().dy})", name: "ImageAnnotationWidget");
           _controller.loadImageSize(
             widget.imageWidget.image,
             context,
