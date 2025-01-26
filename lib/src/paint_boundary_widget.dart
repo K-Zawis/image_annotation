@@ -23,6 +23,7 @@ class ImageAnnotationPaintBoundary extends StatefulWidget {
 }
 
 class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBoundary> {
+  final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
 
   Offset convertToImagePosition(
@@ -44,14 +45,17 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
     if (!_editing) return;
     if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
 
+    Size? boundarySize = _boundaryKey.currentContext?.size;
+    if (boundarySize == null) return;
+
     if (position.dx >= 0 &&
         position.dy >= 0 &&
-        position.dx <= widget.controller.visualImageSize.width &&
-        position.dy <= widget.controller.visualImageSize.height) {
+        position.dx <= boundarySize.width &&
+        position.dy <= boundarySize.height) {
       final imagePosition = convertToImagePosition(
           position,
           widget.controller.originalImageSize,
-          widget.controller.visualImageSize);
+          boundarySize);
 
       (widget.controller.currentAnnotation! as ShapeAnnotation)
           .add(imagePosition);
@@ -80,6 +84,7 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
+      key: _boundaryKey,
       child: SizedBox(
         // height: widget.controller.visualImageSize.height,
         // width: widget.controller.visualImageSize.width,

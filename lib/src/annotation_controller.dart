@@ -33,7 +33,7 @@ class ImageAnnotationController extends ChangeNotifier {
   late Size _originalImageSize;
 
   /// Visual image size on the screen for rendering points
-  late Size visualImageSize;
+  // late Size visualImageSize;
 
   /// Current annotation color
   Color _currentColor;
@@ -137,10 +137,10 @@ class ImageAnnotationController extends ChangeNotifier {
       padding: padding,
     );
 
-    visualImageSize = Size(
-      loadedImage.width * scale,
-      loadedImage.height * scale,
-    );
+    // visualImageSize = Size(
+    //   loadedImage.width * scale,
+    //   loadedImage.height * scale,
+    // );
 
     // final availableHeight = constraints.maxHeight;
 
