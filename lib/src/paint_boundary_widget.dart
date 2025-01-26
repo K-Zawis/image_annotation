@@ -23,7 +23,6 @@ class ImageAnnotationPaintBoundary extends StatefulWidget {
 }
 
 class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBoundary> {
-  final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
 
   Offset convertToImagePosition(
@@ -40,24 +39,17 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
     );
   }
 
-  Offset _calculateLocalPosition(Offset globalPosition) {
-    final RenderBox renderBox = _boundaryKey.currentContext!.findRenderObject() as RenderBox;
-    return renderBox.globalToLocal(globalPosition);
-  }
-
   /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
     if (!_editing) return;
     if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
 
-    final localPosition = _calculateLocalPosition(position);
-
-    if (localPosition.dx >= 0 &&
-        localPosition.dy >= 0 &&
-        localPosition.dx <= widget.controller.visualImageSize.width &&
-        localPosition.dy <= widget.controller.visualImageSize.height) {
+    if (position.dx >= 0 &&
+        position.dy >= 0 &&
+        position.dx <= widget.controller.visualImageSize.width &&
+        position.dy <= widget.controller.visualImageSize.height) {
       final imagePosition = convertToImagePosition(
-          localPosition,
+          position,
           widget.controller.originalImageSize,
           widget.controller.visualImageSize);
 
@@ -88,12 +80,11 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
-      key: _boundaryKey,
       child: SizedBox(
         height: widget.controller.visualImageSize.height,
         width: widget.controller.visualImageSize.width,
         child: GestureDetector(
-          onPanUpdate: (details) => drawShape(details.globalPosition),
+          onPanUpdate: (details) => drawShape(details.localPosition),
           onPanStart: _onDrawStart,
           onPanEnd: (details) {
             _onDrawEnd.call();
