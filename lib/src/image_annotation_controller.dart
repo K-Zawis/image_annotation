@@ -66,7 +66,6 @@ class ImageAnnotationController extends ChangeNotifier {
   set color(Color newColor) {
     if (color == newColor) return;
 
-    // _model = _model.copyWith(currentColor: newColor);
     _model.currentColor = newColor;
     notifyListeners();
   }
@@ -74,7 +73,6 @@ class ImageAnnotationController extends ChangeNotifier {
   set strokeWidth(double newWidth) {
     if (strokeWidth == newWidth || newWidth <= 0.0) return;
 
-    // _model = _model.copyWith(currentStrokeWidth: newWidth);
     _model.currentStrokeWidth = newWidth;
     notifyListeners();
   }
@@ -82,7 +80,6 @@ class ImageAnnotationController extends ChangeNotifier {
   set fontSize(double newFontSize) {
     if (fontSize == newFontSize || newFontSize <= 0.0) return;
 
-    // _model = _model.copyWith(currentFontSize: newFontSize);
     _model.currentFontSize = newFontSize;
     notifyListeners();
   }
@@ -90,7 +87,6 @@ class ImageAnnotationController extends ChangeNotifier {
   set annotationType(AnnotationOption newAnnotationOption) {
     if (annotationType == newAnnotationOption) return;
 
-    // _model = _model.copyWith(currentAnnotationType: newAnnotationOption);
     _model.currentAnnotationType = newAnnotationOption;
     notifyListeners();
   }
@@ -127,11 +123,6 @@ class ImageAnnotationController extends ChangeNotifier {
   void add(Annotation annotation) {
     if (_annotationLimit != null && annotations.length >= _annotationLimit) return;
 
-    // _model = _model.copyWith(
-    //   annotations: [..._model.annotations, annotation],
-    //   redoStack: [],
-    // );
-
     _model.annotations.add(annotation);
     _model.redoStack.clear();
 
@@ -142,14 +133,8 @@ class ImageAnnotationController extends ChangeNotifier {
   void undoAnnotation() {
     if (!canUndo) return;
 
-    final lastAnnotation = _model.annotations.last;
-    _model = _model.copyWith(
-      annotations: _model.annotations.sublist(0, _model.annotations.length - 1),
-      redoStack: [
-        ..._model.redoStack,
-        [lastAnnotation]
-      ],
-    );
+    final lastAnnotation = _model.annotations.removeLast();
+    _model.redoStack.add([lastAnnotation]);
 
     notifyListeners();
   }
@@ -158,11 +143,8 @@ class ImageAnnotationController extends ChangeNotifier {
   void redoAnnotation() {
     if (!canRedo) return;
 
-    final lastUndone = _model.redoStack.last;
-    _model = _model.copyWith(
-      annotations: [..._model.annotations, ...lastUndone],
-      redoStack: _model.redoStack.sublist(0, _model.redoStack.length - 1),
-    );
+    final lastUndone = _model.redoStack.removeLast();
+    _model.annotations.addAll(lastUndone);
 
     notifyListeners();
   }
@@ -172,10 +154,8 @@ class ImageAnnotationController extends ChangeNotifier {
     if (!canUndo) return;
 
     final clearedAnnotations = List.of(_model.annotations);
-    _model = _model.copyWith(
-      annotations: [],
-      redoStack: [..._model.redoStack, clearedAnnotations],
-    );
+    _model.redoStack.add(clearedAnnotations);
+    _model.annotations.clear();
 
     notifyListeners();
   }

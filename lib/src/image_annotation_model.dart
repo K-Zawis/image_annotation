@@ -26,16 +26,18 @@ class ImageAnnotationModel {
 
   ImageAnnotationModel({
     required this.currentAnnotationType,
-    this.annotations = const [],
-    this.redoStack = const [],
     this.hasLoadedSize = false,
     this.originalImageSize,
     Color? color,
     double? strokeWidth,
     double? fontSize,
+    List<Annotation>? annotations,
+    List<List<Annotation>>? redoStack,
   })  : currentColor = color ?? Colors.red,
         currentStrokeWidth = strokeWidth ?? 2.0,
-        currentFontSize = fontSize ?? 16.0;
+        currentFontSize = fontSize ?? 16.0,
+        annotations = annotations ?? <Annotation>[],
+        redoStack = redoStack ?? <List<Annotation>>[];
 
   /// Creates a copy of the model with updated fields
   ImageAnnotationModel copyWith({
