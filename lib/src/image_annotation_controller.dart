@@ -66,28 +66,32 @@ class ImageAnnotationController extends ChangeNotifier {
   set color(Color newColor) {
     if (color == newColor) return;
 
-    _model = _model.copyWith(currentColor: newColor);
+    // _model = _model.copyWith(currentColor: newColor);
+    _model.currentColor = newColor;
     notifyListeners();
   }
 
   set strokeWidth(double newWidth) {
     if (strokeWidth == newWidth || newWidth <= 0.0) return;
 
-    _model = _model.copyWith(currentStrokeWidth: newWidth);
+    // _model = _model.copyWith(currentStrokeWidth: newWidth);
+    _model.currentStrokeWidth = newWidth;
     notifyListeners();
   }
 
   set fontSize(double newFontSize) {
     if (fontSize == newFontSize || newFontSize <= 0.0) return;
 
-    _model = _model.copyWith(currentFontSize: newFontSize);
+    // _model = _model.copyWith(currentFontSize: newFontSize);
+    _model.currentFontSize = newFontSize;
     notifyListeners();
   }
 
   set annotationType(AnnotationOption newAnnotationOption) {
     if (annotationType == newAnnotationOption) return;
 
-    _model = _model.copyWith(currentAnnotationType: newAnnotationOption);
+    // _model = _model.copyWith(currentAnnotationType: newAnnotationOption);
+    _model.currentAnnotationType = newAnnotationOption;
     notifyListeners();
   }
 
@@ -121,13 +125,16 @@ class ImageAnnotationController extends ChangeNotifier {
 
   /// Notifies listiners that a new annotation has been added
   void add(Annotation annotation) {
-    if (_annotationLimit != null && annotations.length >= _annotationLimit)
-      return;
+    if (_annotationLimit != null && annotations.length >= _annotationLimit) return;
 
-    _model = _model.copyWith(
-      annotations: [..._model.annotations, annotation],
-      redoStack: [],
-    );
+    // _model = _model.copyWith(
+    //   annotations: [..._model.annotations, annotation],
+    //   redoStack: [],
+    // );
+
+    _model.annotations.add(annotation);
+    _model.redoStack.clear();
+
     notifyListeners();
   }
 

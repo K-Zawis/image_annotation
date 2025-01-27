@@ -11,18 +11,18 @@ class ImageAnnotationModel {
   final List<List<Annotation>> redoStack;
 
   /// Original image size for relative points
-  final Size? originalImageSize;
+  Size? originalImageSize;
 
   /// Flag to indicate initialization
-  final bool hasLoadedSize;
+  bool hasLoadedSize;
 
   /// Current annotation type
-  final AnnotationOption currentAnnotationType;
+  AnnotationOption currentAnnotationType;
 
   // Current settings for new annotations
-  final Color currentColor;
-  final double currentStrokeWidth;
-  final double currentFontSize;
+  Color currentColor;
+  double currentStrokeWidth;
+  double currentFontSize;
 
   ImageAnnotationModel({
     required this.currentAnnotationType,
