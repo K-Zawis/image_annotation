@@ -16,10 +16,10 @@ class _MyAppState extends State<MyApp> {
   // Define the scaffold key as final to prevent unintentional changes.
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  AnnotationOption selectedOption = AnnotationOption.line; // Default option.
+  AnnotationType selectedOption = AnnotationType.line; // Default option.
 
 // Function to handle tapping on the drawer options and update the selected option.
-  void _handleDrawerOptionTap(AnnotationOption option) {
+  void _handleDrawerOptionTap(AnnotationType option) {
     setState(() {
       selectedOption = option;
     });
@@ -51,23 +51,23 @@ class _MyAppState extends State<MyApp> {
               ),
               ListTile(
                 title: const Text('Line'),
-                onTap: () => _handleDrawerOptionTap(AnnotationOption.line),
-                selected: selectedOption == AnnotationOption.line,
+                onTap: () => _handleDrawerOptionTap(AnnotationType.line),
+                selected: selectedOption == AnnotationType.line,
               ),
               ListTile(
                 title: const Text('Rectangular'),
-                onTap: () => _handleDrawerOptionTap(AnnotationOption.rectangle),
-                selected: selectedOption == AnnotationOption.rectangle,
+                onTap: () => _handleDrawerOptionTap(AnnotationType.rectangle),
+                selected: selectedOption == AnnotationType.rectangle,
               ),
               ListTile(
                 title: const Text('Oval'),
-                onTap: () => _handleDrawerOptionTap(AnnotationOption.oval),
-                selected: selectedOption == AnnotationOption.oval,
+                onTap: () => _handleDrawerOptionTap(AnnotationType.oval),
+                selected: selectedOption == AnnotationType.oval,
               ),
               ListTile(
                 title: const Text('Text'),
-                onTap: () => _handleDrawerOptionTap(AnnotationOption.text),
-                selected: selectedOption == AnnotationOption.text,
+                onTap: () => _handleDrawerOptionTap(AnnotationType.text),
+                selected: selectedOption == AnnotationType.text,
               ),
             ],
           ),

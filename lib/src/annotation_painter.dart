@@ -55,7 +55,7 @@ class AnnotationPainter extends CustomPainter {
         .toList();
 
     switch (annotation.annotationType) {
-      case AnnotationOption.line:
+      case AnnotationType.line:
         for (var index = 0; index < visualPoints.length - 1; index++) {
           canvas.drawLine(
             visualPoints[index],
@@ -65,7 +65,7 @@ class AnnotationPainter extends CustomPainter {
         }
         break;
 
-      case AnnotationOption.rectangle:
+      case AnnotationType.rectangle:
         final rect = Rect.fromPoints(
           visualPoints.first,
           visualPoints.last,
@@ -73,7 +73,7 @@ class AnnotationPainter extends CustomPainter {
         canvas.drawRect(rect, paint);
         break;
 
-      case AnnotationOption.oval:
+      case AnnotationType.oval:
         final oval = Rect.fromPoints(
           visualPoints.first,
           visualPoints.last,

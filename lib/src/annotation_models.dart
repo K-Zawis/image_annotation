@@ -25,7 +25,7 @@ class TextAnnotation extends Annotation {
 class ShapeAnnotation extends Annotation {
   final List<Offset> _relativePoints;
   final double strokeWidth;
-  final AnnotationOption annotationType;
+  final AnnotationType annotationType;
 
   ShapeAnnotation(
     this.annotationType, {
@@ -50,7 +50,7 @@ class ShapeAnnotation extends Annotation {
       ..writeln('  strokeWidth: $strokeWidth,')
       ..writeln('  color: $color,');
 
-    if (annotationType == AnnotationOption.line) {
+    if (annotationType == AnnotationType.line) {
       buffer.writeln('  relativePoints: $relativePoints,');
     } else {
       buffer.writeln('  firstRelativePoint: $firstRelativePoint,');

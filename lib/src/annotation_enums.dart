@@ -8,7 +8,7 @@
 /// - [text] : Allows the user to add a text annotation to the image.
 /// 
 /// This enum ensures that only the valid annotation types are used with the [ImageAnnotation] widget.
-enum AnnotationOption {
+enum AnnotationType {
   line,
   rectangle,
   oval,

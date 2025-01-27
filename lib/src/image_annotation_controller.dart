@@ -24,7 +24,7 @@ class ImageAnnotationController extends ChangeNotifier {
   final bool _finalizeOnRelease;
 
   ImageAnnotationController(
-    AnnotationOption currentAnnotationType, {
+    AnnotationType currentAnnotationType, {
     Color? color,
     double? strokeWidth,
     double? fontSize,
@@ -44,11 +44,11 @@ class ImageAnnotationController extends ChangeNotifier {
   // model getters
   List<Annotation> get annotations => List.unmodifiable(_model.annotations);
   Size? get originalImageSize => _model.originalImageSize;
-  bool get hasLoadedSize => _model.hasLoadedSize;
   Color get color => _model.currentColor;
   double get strokeWidth => _model.currentStrokeWidth;
   double get fontSize => _model.currentFontSize;
-  AnnotationOption get annotationType => _model.currentAnnotationType;
+  AnnotationType get annotationType => _model.currentAnnotationType;
+  bool get hasLoadedSize => _model.originalImageSize != null;
   bool get canUndo => _model.annotations.isNotEmpty;
   bool get canRedo => _model.redoStack.isNotEmpty;
 
@@ -84,7 +84,7 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  set annotationType(AnnotationOption newAnnotationOption) {
+  set annotationType(AnnotationType newAnnotationOption) {
     if (annotationType == newAnnotationOption) return;
 
     _model.currentAnnotationType = newAnnotationOption;

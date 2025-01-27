@@ -66,9 +66,9 @@ class ImageAnnotation extends StatefulWidget {
   /// Image widget used for annotations.
   final Image imageWidget;
 
-  /// Type of annotation to apply (for example: [AnnotationOption.rectangle] or
-  /// [AnnotationOption.text]).
-  final AnnotationOption annotationType;
+  /// Type of annotation to apply (for example: [AnnotationType.rectangle] or
+  /// [AnnotationType.text]).
+  final AnnotationType annotationType;
 
   /// Callback triggered when [onPanStart] fires.
   ///
@@ -307,7 +307,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   }
 
   void _handleDrawStartWithFinalize(DragStartDetails details) {
-    if (_controller.annotationType != AnnotationOption.text) {
+    if (_controller.annotationType != AnnotationType.text) {
       _controller.add(
         ShapeAnnotation(
           _controller.annotationType,
@@ -357,7 +357,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     onLongPress: _controller.clearAnnotations,
                     onDoubleTap: _controller.undoAnnotation,
                     onTapDown: (details) {
-                      if (_controller.annotationType == AnnotationOption.text) {
+                      if (_controller.annotationType == AnnotationType.text) {
                         _showTextAnnotationDialog(
                           context,
                           details.localPosition,
