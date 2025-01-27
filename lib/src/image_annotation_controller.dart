@@ -7,22 +7,36 @@ import 'annotation_models.dart';
 import 'annotation_enums.dart';
 import 'image_annotation_model.dart';
 
+/// A controller to manage the state and behaviour of the image annotation tool.
+///
+/// This class serves as the bridge between the UI and the model, providing
+/// state management and utility methods for annotations.
 class ImageAnnotationController extends ChangeNotifier {
-  /// Current annotation model
-  ImageAnnotationModel _model;
+  /// The current annotation model holding all state data.
+  final ImageAnnotationModel _model;
 
-  /// Max annotation limit
+  /// The maximum number of annotations allowed.
   ///
-  /// Defaults to null which means no limit
+  /// If `null`, there is no limit to the number of annotations.
+  ///
+  /// Set when `ImageAnnotationController` is initialised.
   final int? _annotationLimit;
 
-  /// Whether the [ShapeAnnotation] is considered complete immedietly after drawing.
+  /// Determines if [ShapeAnnotation] is finalised immediately after drawing.
   ///
-  /// Will cause [ShapeAnnotation] to be added to [_controller.annotations] when onPanStart is fired.
-  ///
-  /// Default behaviour sets this to false.
+  /// When `true`, shape annotations are considered complete as soon as
+  /// [onPanStart] is fired. Defaults to `false`.
   final bool _finalizeOnRelease;
 
+  /// Creates an instance of [ImageAnnotationController].
+  ///
+  /// - [currentAnnotationType] is required and determines the initial annotation type.
+  /// - Optional parameters:
+  ///   - [color]: The initial colour for annotations.
+  ///   - [strokeWidth]: The initial stroke width. Must be greater than `0.0`.
+  ///   - [fontSize]: The initial font size for text annotations. Must be greater than `0.0`.
+  ///   - [annotationLimit]: The maximum number of annotations allowed. Defaults to `null` (no limit).
+  ///   - [finalizeOnRelease]: Determines if shapes are finalised immediately. Defaults to `false`.
   ImageAnnotationController(
     AnnotationType currentAnnotationType, {
     Color? color,
@@ -41,28 +55,63 @@ class ImageAnnotationController extends ChangeNotifier {
           fontSize: fontSize,
         );
 
-  // model getters
+  // ==== GETTERS ====
+
+  /// An unmodifiable list of the current annotations.
   List<Annotation> get annotations => List.unmodifiable(_model.annotations);
+
+  /// The size of the original image being annotated.
+  ///
+  /// Used for converting points and dimensions between relative and absolute
+  /// coordinates.
+  ///
+  /// Returns `null` if the size has not been loaded yet.
   Size? get originalImageSize => _model.originalImageSize;
+
+  /// The current colour for annotations.
   Color get color => _model.currentColor;
+
+  /// The current stroke width for annotations.
   double get strokeWidth => _model.currentStrokeWidth;
+
+  /// The current font size for text annotations.
   double get fontSize => _model.currentFontSize;
+
+  /// The currently selected annotation type.
   AnnotationType get annotationType => _model.currentAnnotationType;
+
+  /// Whether the size of the original image has been loaded.
   bool get hasLoadedSize => _model.originalImageSize != null;
+
+  /// Whether undo operation is possible.
   bool get canUndo => _model.annotations.isNotEmpty;
+
+  /// Whether redo operation is possible.
   bool get canRedo => _model.redoStack.isNotEmpty;
 
-  // getters
+  /// The maximum number of annotations allowed.
+  ///
+  /// Returns `null` if no limit is set.
   int? get annotationLimit => _annotationLimit;
+
+  /// Whether shape annotations are finalised immediately after drawing.
   bool get finalizeOnRelease => _finalizeOnRelease;
-  bool get canEdit =>
+
+  /// Whether the current annotation can be edited after being drawn
+  bool get canEditCurrentAnnotation =>
       !finalizeOnRelease ||
       annotationLimit == null ||
       annotations.length < annotationLimit!;
+
+  /// The most recently added annotation, if any.
   Annotation? get currentAnnotation =>
       annotations.isNotEmpty ? annotations.last : null;
 
-  //setters
+  // ==== SETTERS ====
+
+  /// Updates the colour for new annotations.
+  ///
+  /// Notifies listeners if the value changes.
   set color(Color newColor) {
     if (color == newColor) return;
 
@@ -70,6 +119,9 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Updates the stroke width for new annotations.
+  ///
+  /// Notifies listeners if the value changes. The new value must be greater than `0.0`.
   set strokeWidth(double newWidth) {
     if (strokeWidth == newWidth || newWidth <= 0.0) return;
 
@@ -77,6 +129,9 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Updates the font size for text annotations.
+  ///
+  /// Notifies listeners if the value changes. The new value must be greater than `0.0`.
   set fontSize(double newFontSize) {
     if (fontSize == newFontSize || newFontSize <= 0.0) return;
 
@@ -84,6 +139,9 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Updates the current annotation type.
+  ///
+  /// Notifies listeners if the value changes.
   set annotationType(AnnotationType newAnnotationOption) {
     if (annotationType == newAnnotationOption) return;
 
@@ -91,7 +149,16 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // functions
+  // ==== FUNCTIONS ====
+
+  /// Manually triggers a UI update.
+  void updateView() {
+    notifyListeners();
+  }
+
+  /// Loads the size of the image being annotated.
+  ///
+  /// Resolves the [imageProvider] to determine its dimensions and updates the model.
   Future<void> loadImageSize(
     ImageProvider imageProvider,
   ) async {
@@ -105,21 +172,17 @@ class ImageAnnotationController extends ChangeNotifier {
 
     final ui.Image loadedImage = await completer.future;
 
-    _model = _model.copyWith(
-        originalImageSize: Size(
-          loadedImage.width.toDouble(),
-          loadedImage.height.toDouble(),
-        ),
-        hasLoadedSize: true);
+    _model.originalImageSize = Size(
+      loadedImage.width.toDouble(),
+      loadedImage.height.toDouble(),
+    );
 
     notifyListeners();
   }
 
-  void updateView() {
-    notifyListeners();
-  }
-
-  /// Notifies listiners that a new annotation has been added
+  /// Adds a new annotation to the list and clears the redo stack.
+  ///
+  /// Notifies listeners if the value changes. Does nothing if the annotation limit is reached.
   void add(Annotation annotation) {
     if (_annotationLimit != null && annotations.length >= _annotationLimit) return;
 
@@ -129,7 +192,9 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Notifies listeners to undo the last annotation
+  /// Undoes the most recent annotation.
+  ///
+  /// Notifies listeners if the value changes. Moves the undone annotation to the redo stack.
   void undoAnnotation() {
     if (!canUndo) return;
 
@@ -139,7 +204,9 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Notifies listeners to redo the last annotation
+  /// Redoes the most recently undone annotation(s).
+  ///
+  /// Notifies listeners if the value changes. Moves the annotation(s) back to the list of annotations.
   void redoAnnotation() {
     if (!canRedo) return;
 
@@ -149,7 +216,9 @@ class ImageAnnotationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Notifies listeners to clear all annotations.
+  /// Clears all annotations and moves them to the redo stack.
+  /// 
+  /// Notifies listeners if the value changes.
   void clearAnnotations() {
     if (!canUndo) return;
 
@@ -164,7 +233,6 @@ class ImageAnnotationController extends ChangeNotifier {
   void dispose() {
     _model.annotations.clear();
     _model.redoStack.clear();
-
     super.dispose();
   }
 }

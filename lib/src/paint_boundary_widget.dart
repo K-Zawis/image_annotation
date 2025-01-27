@@ -65,7 +65,7 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   }
 
   void _onDrawEnd() {
-    if (!widget.controller.canEdit) {
+    if (!widget.controller.canEditCurrentAnnotation) {
       setState(() {
         _editing = false;
       });
@@ -73,7 +73,7 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   }
 
   void _onDrawStart(details) {
-    if (widget.controller.canEdit) {
+    if (widget.controller.canEditCurrentAnnotation) {
       setState(() {
         _editing = true;
       });
