@@ -264,6 +264,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     BuildContext context,
     Offset localPosition,
   ) {
+    final ThemeData theme = Theme.of(context);
     String text = '';
 
     showDialog(
@@ -275,6 +276,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
             onChanged: (value) {
               text = value;
             },
+            decoration: const InputDecoration().applyDefaults(
+              theme.inputDecorationTheme,
+            ),
           ),
           actions: [
             TextButton(
