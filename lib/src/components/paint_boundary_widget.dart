@@ -1,10 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
 import '../painters/painters.dart';
 import '../models/models.dart';
+import '../utils/utils.dart';
 
 class ImageAnnotationPaintBoundary extends StatefulWidget {
   final Image imageWidget;
@@ -28,20 +27,6 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
 
-  Offset convertToImagePosition(
-    Offset viewPosition,
-    Size imageSize,
-    Size visualImageSize,
-  ) {
-    final double scaleX = imageSize.width / visualImageSize.width;
-    final double scaleY = imageSize.height / visualImageSize.height;
-
-    return Offset(
-      viewPosition.dx * scaleX,
-      viewPosition.dy * scaleY,
-    );
-  }
-
   /// Updates the current annotation path with the given [position].
   void drawShape(Offset position) {
     if (!_editing) return;
@@ -55,9 +40,9 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
         position.dx <= boundarySize.width &&
         position.dy <= boundarySize.height) {
       final imagePosition = convertToImagePosition(
-        position,
-        widget.controller.originalImageSize!,
-        boundarySize,
+        viewPosition: position,
+        originalImageSize: widget.controller.originalImageSize!,
+        visualImageSize: boundarySize,
       );
 
       (widget.controller.currentAnnotation! as ShapeAnnotation)
@@ -96,10 +81,23 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
           widget.onDrawEnd?.call(details);
         },
         onPanCancel: _onDrawEnd,
-        onTap: () {
-          if (widget.controller.annotationType == AnnotationType.text) {
-            log('Add Text', name: 'AnnotationWidget');
-          }
+        onTapDown: (details) {
+          if (widget.controller.annotationType != AnnotationType.text) return;
+
+          Size? boundarySize = _boundaryKey.currentContext?.size;
+          if (boundarySize == null) return;
+
+          final imagePosition = convertToImagePosition(
+            viewPosition: details.localPosition,
+            originalImageSize: widget.controller.originalImageSize!,
+            visualImageSize: boundarySize,
+          );
+
+          showTextAnnotationDialog(
+            context,
+            imagePosition,
+            widget.controller,
+          );
         },
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/annotation_enums.dart';
 import '../models/annotation_models.dart';
 import '../controllers/controllers.dart';
+import '../utils/coordinate_utils.dart';
 
 // AnnotationPainter class
 class AnnotationPainter extends CustomPainter {
@@ -18,7 +19,7 @@ class AnnotationPainter extends CustomPainter {
     for (Annotation annotation in controller.annotations) {
       switch (annotation.runtimeType) {
         case TextAnnotation:
-          drawTextAnnotations(canvas, annotation as TextAnnotation);
+          drawTextAnnotations(canvas, annotation as TextAnnotation, size);
           break;
         case ShapeAnnotation:
           drawShapeAnnotations(canvas, annotation as ShapeAnnotation, size);
@@ -31,14 +32,11 @@ class AnnotationPainter extends CustomPainter {
     }
   }
 
-  // Convert relative points to visual coordinates based on the controller's size
-  Offset convertToVisualPosition(Offset point, Size originalSize, Size visualSize) {
-    double dx = point.dx * (visualSize.width / originalSize.width);
-    double dy = point.dy * (visualSize.height / originalSize.height);
-    return Offset(dx, dy);
-  }
-
-  void drawShapeAnnotations(Canvas canvas, ShapeAnnotation annotation, Size visualImageSize) {
+  void drawShapeAnnotations(
+    Canvas canvas,
+    ShapeAnnotation annotation,
+    Size visualImageSize,
+  ) {
     if (annotation.relativePoints.isEmpty) return;
 
     final Paint paint = Paint()
@@ -48,9 +46,9 @@ class AnnotationPainter extends CustomPainter {
 
     List<Offset> visualPoints = annotation.relativePoints
         .map((point) => convertToVisualPosition(
-              point,
-              controller.originalImageSize!,
-              visualImageSize,
+              point: point,
+              originalImageSize: controller.originalImageSize!,
+              visualSize: visualImageSize,
             ))
         .toList();
 
@@ -87,7 +85,11 @@ class AnnotationPainter extends CustomPainter {
   }
 
   // Draw text annotations on the canvas
-  void drawTextAnnotations(Canvas canvas, TextAnnotation annotation) {
+  void drawTextAnnotations(
+    Canvas canvas,
+    TextAnnotation annotation,
+    Size visualImageSize,
+  ) {
     final textSpan = TextSpan(
       text: annotation.text,
       style: TextStyle(
@@ -102,9 +104,15 @@ class AnnotationPainter extends CustomPainter {
 
     textPainter.layout();
 
-    final textPosition = Offset(
+    final point = Offset(
       annotation.relativePosition.dx - textPainter.width / 2,
       annotation.relativePosition.dy - textPainter.height / 2,
+    );
+
+    final textPosition = convertToVisualPosition(
+      point: point,
+      originalImageSize: controller.originalImageSize!,
+      visualSize: visualImageSize,
     );
 
     textPainter.paint(canvas, textPosition);
