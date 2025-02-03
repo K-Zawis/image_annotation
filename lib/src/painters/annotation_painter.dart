@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'annotation_enums.dart';
-import 'annotation_models.dart';
-import 'image_annotation_controller.dart';
+import '../models/annotation_enums.dart';
+import '../models/annotation_models.dart';
+import '../controllers/controllers.dart';
 
 // AnnotationPainter class
 class AnnotationPainter extends CustomPainter {
-  final ImageAnnotationController controller;
+  final AnnotationController controller;
 
   AnnotationPainter(
     this.controller,

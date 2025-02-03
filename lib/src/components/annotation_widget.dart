@@ -4,9 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'paint_boundary_widget.dart';
-import 'image_annotation_controller.dart';
-import 'annotation_enums.dart';
-import 'annotation_models.dart';
+import '../controllers/controllers.dart';
+import '../models/models.dart';
 
 /// A widget that enables users to annotate images with shapes and text.
 ///
@@ -84,17 +83,17 @@ class ImageAnnotation extends StatefulWidget {
 
   /// Color of the current [Annotation]
   ///
-  /// Modifiable only using the [ImageAnnotationController]
+  /// Modifiable only using the [AnnotationController]
   final Color? color;
 
   /// Stroke width of the current [ShapeAnnotation]
   ///
-  /// Modifiable only using the [ImageAnnotationController]
+  /// Modifiable only using the [AnnotationController]
   final double? strokeWidth;
 
   /// Font size of the current [TextAnnotation]
   ///
-  /// Modifiable only using the [ImageAnnotationController]
+  /// Modifiable only using the [AnnotationController]
   final double? fontSize;
 
   /// Whether the [ShapeAnnotation] is considered complete immedietly after drawing.
@@ -112,16 +111,16 @@ class ImageAnnotation extends StatefulWidget {
   /// Optional custom UI builder.
   ///
   /// Allows users to create their own UI using the
-  /// [ImageAnnotationController] and image annotating widget.
+  /// [AnnotationController] and image annotating widget.
   ///
   /// Note: Disables default gesture controls.
   final Widget Function(
     BuildContext context,
-    ImageAnnotationController controller,
+    AnnotationController controller,
     Widget paintBoundary,
   )? builder;
 
-  /// Optional custom loading builder when [ImageAnnotationController.hasLoadedSize] is false
+  /// Optional custom loading builder when [AnnotationController.hasLoadedSize] is false
   ///
   /// Defaults to a 45x45 [CircularProgressIndicator].
   final Widget Function(BuildContext context)? loadingBuilder;
@@ -233,13 +232,13 @@ class ImageAnnotation extends StatefulWidget {
 
 class _ImageAnnotationState extends State<ImageAnnotation> {
   /// Controller for handling events.
-  late final ImageAnnotationController _controller;
+  late final AnnotationController _controller;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = ImageAnnotationController(
+    _controller = AnnotationController(
       widget.annotationType,
       color: widget.color,
       strokeWidth: widget.strokeWidth,
@@ -257,57 +256,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  /// Displays a dialog for adding a text annotation.
-  void showTextAnnotationDialog(
-    BuildContext context,
-    Offset localPosition,
-  ) {
-    final ThemeData theme = Theme.of(context);
-    String text = '';
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add Text Annotation'),
-          content: TextField(
-            onChanged: (value) {
-              text = value;
-            },
-            decoration: const InputDecoration().applyDefaults(
-              theme.inputDecorationTheme,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (text.isNotEmpty) {
-                  // Add the text annotation
-                  _controller.add(
-                    TextAnnotation(
-                      relativePosition: localPosition,
-                      text: text,
-                      textColor: _controller.color,
-                      fontSize: _controller.fontSize,
-                    ),
-                  );
-                }
-              },
-              child: const Text('Add'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _handleDrawStartWithFinalize(DragStartDetails details) {
@@ -359,13 +307,8 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     onLongPress: _controller.clearAnnotations,
                     onDoubleTap: _controller.undoAnnotation,
                     onTapDown: (details) {
-                      // if (_controller.annotationType == AnnotationType.text) {
-                      //   showTextAnnotationDialog(
-                      //     context,
-                      //     details.localPosition,
-                      //   );
-                      // } else 
-                      if (!_controller.finalizeOnRelease) {
+                      if (_controller.annotationType != AnnotationType.text &&
+                          !_controller.finalizeOnRelease) {
                         _controller.add(
                           ShapeAnnotation(
                             _controller.annotationType,

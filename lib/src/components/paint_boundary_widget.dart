@@ -2,16 +2,15 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
-import 'image_annotation_controller.dart';
-import 'annotation_painter.dart';
-import 'annotation_models.dart';
-import 'annotation_enums.dart';
+import '../controllers/controllers.dart';
+import '../painters/painters.dart';
+import '../models/models.dart';
 
 class ImageAnnotationPaintBoundary extends StatefulWidget {
   final Image imageWidget;
   final GestureDragStartCallback? onDrawStart;
   final GestureDragEndCallback? onDrawEnd;
-  final ImageAnnotationController controller;
+  final AnnotationController controller;
 
   const ImageAnnotationPaintBoundary({
     Key? key,

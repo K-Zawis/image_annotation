@@ -3,15 +3,14 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-import 'annotation_models.dart';
-import 'annotation_enums.dart';
-import 'image_annotation_model.dart';
+import '../models/models.dart';
+import '../models/annotation_model.dart';
 
 /// A controller to manage the state and behaviour of the image annotation tool.
 ///
 /// This class serves as the bridge between the UI and the model, providing
 /// state management and utility methods for annotations.
-class ImageAnnotationController extends ChangeNotifier {
+class AnnotationController extends ChangeNotifier {
   /// The current annotation model holding all state data.
   final ImageAnnotationModel _model;
 
@@ -28,7 +27,7 @@ class ImageAnnotationController extends ChangeNotifier {
   /// [onPanStart] is fired. Defaults to `false`.
   final bool _finalizeOnRelease;
 
-  /// Creates an instance of [ImageAnnotationController].
+  /// Creates an instance of [AnnotationController].
   ///
   /// - [currentAnnotationType] is required and determines the initial annotation type.
   /// - Optional parameters:
@@ -37,7 +36,7 @@ class ImageAnnotationController extends ChangeNotifier {
   ///   - [fontSize]: The initial font size for text annotations. Must be greater than `0.0`.
   ///   - [annotationLimit]: The maximum number of annotations allowed. Defaults to `null` (no limit).
   ///   - [finalizeOnRelease]: Determines if shapes are finalised immediately. Defaults to `false`.
-  ImageAnnotationController(
+  AnnotationController(
     AnnotationType currentAnnotationType, {
     Color? color,
     double? strokeWidth,
