@@ -27,8 +27,32 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
 
+  /// Shows the text annotation dialogue with the given [position].
+  void _drawText(Offset position) {
+    if (widget.controller.annotationType != AnnotationType.text) return;
+
+    Size? boundarySize = _boundaryKey.currentContext?.size;
+    if (boundarySize == null) return;
+
+    if (position.dx >= 0 &&
+        position.dy >= 0 &&
+        position.dx <= boundarySize.width &&
+        position.dy <= boundarySize.height) {
+          
+      final textPosition = convertToRelativePosition(
+          point: position,
+          originalImageSize: widget.controller.originalImageSize!);
+
+      showTextAnnotationDialog(
+        context: context,
+        relativePosition: textPosition,
+        controller: widget.controller,
+      );
+    }
+  }
+
   /// Updates the current annotation path with the given [position].
-  void drawShape(Offset position) {
+  void _drawShape(Offset position) {
     if (!_editing) return;
     if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
 
@@ -39,10 +63,9 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
         position.dy >= 0 &&
         position.dx <= boundarySize.width &&
         position.dy <= boundarySize.height) {
-      final imagePosition = convertToImagePosition(
-        viewPosition: position,
+      final imagePosition = convertToRelativePosition(
+        point: position,
         originalImageSize: widget.controller.originalImageSize!,
-        visualImageSize: boundarySize,
       );
 
       (widget.controller.currentAnnotation! as ShapeAnnotation)
@@ -74,36 +97,18 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
     return RepaintBoundary(
       key: _boundaryKey,
       child: GestureDetector(
-        onPanUpdate: (details) => drawShape(details.localPosition),
+        onPanUpdate: (details) => _drawShape(details.localPosition),
         onPanStart: _onDrawStart,
         onPanEnd: (details) {
           _onDrawEnd.call();
           widget.onDrawEnd?.call(details);
         },
         onPanCancel: _onDrawEnd,
-        onTapDown: (details) {
-          if (widget.controller.annotationType != AnnotationType.text) return;
-
-          Size? boundarySize = _boundaryKey.currentContext?.size;
-          if (boundarySize == null) return;
-
-          final imagePosition = convertToImagePosition(
-            viewPosition: details.localPosition,
-            originalImageSize: widget.controller.originalImageSize!,
-            visualImageSize: boundarySize,
-          );
-
-          showTextAnnotationDialog(
-            context,
-            imagePosition,
-            widget.controller,
-          );
-        },
+        onTapDown: (details) => _drawText(details.localPosition),
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),
           child: AspectRatio(
-            aspectRatio: widget.controller.originalImageSize!.width /
-                widget.controller.originalImageSize!.height,
+            aspectRatio: widget.controller.aspectRatio!,
             child: SizedBox.expand(
               child: widget.imageWidget,
             ),

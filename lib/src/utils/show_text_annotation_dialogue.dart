@@ -1,16 +1,14 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:image_annotation/src/utils/font_utils.dart';
 
 import '../../image_annotation.dart';
 
-
 /// Displays a dialog for adding a text annotation.
-void showTextAnnotationDialog(
-  BuildContext context,
-  Offset localPosition,
-  AnnotationController controller,
-) {
+void showTextAnnotationDialog({
+  required BuildContext context,
+  required Offset relativePosition,
+  required AnnotationController controller,
+}) {
   final ThemeData theme = Theme.of(context);
   String text = '';
 
@@ -32,17 +30,16 @@ void showTextAnnotationDialog(
             onPressed: () {
               Navigator.of(context).pop();
               if (text.isNotEmpty) {
-                log(
-                  'relativeFontSize: ${controller.fontSize / controller.originalImageSize!.height}', 
-                  name: 'AnnotationWidget',
-                );
                 // Add the text annotation
                 controller.add(
                   TextAnnotation(
-                    relativePosition: localPosition,
+                    relativePosition: relativePosition,
                     text: text,
                     textColor: controller.color,
-                    relativeFontSize: controller.fontSize / controller.originalImageSize!.height,
+                    relativeFontSize: convertToRelativeFontSize(
+                      fontSize: controller.fontSize,
+                      originalImageSize: controller.originalImageSize!,
+                    ),
                   ),
                 );
               }

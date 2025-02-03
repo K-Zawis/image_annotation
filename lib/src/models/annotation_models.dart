@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'annotation_enums.dart';
 
 /// An abstract base class for all types of annotations.
@@ -22,11 +23,38 @@ abstract class Annotation {
   Annotation(this.color);
 }
 
+/// Represents a text annotation, which consists of a position relative to
+/// the image's dimensions, a text string, and a font size relative to the
+/// original image height.
+///
+/// This class is used to store and manage text annotations, ensuring they
+/// scale properly when the image is resized.
+///
+/// @see
+/// [Annotation]
 class TextAnnotation extends Annotation {
+  /// The position of the text relative to the original image's dimensions.
+  /// 
+  /// The coordinates are normalized values between `0.0` and `1.0`,
+  /// ensuring the position scales correctly with the image.
   final Offset relativePosition;
+
+  /// The text content of the annotation.
   final String text;
+
+  /// The font size relative to the original image height.
+  ///
+  /// Defaults to `16.0`, but when rendered, it should be scaled
+  /// according to the image's visual size.
   final double relativeFontSize;
 
+  /// Creates a [TextAnnotation] instance.
+  ///
+  /// - [relativePosition]: The position of the text relative to the image.
+  /// - [text]: The annotation text content.
+  /// - [relativeFontSize]: The font size relative to the original image height.
+  ///   Defaults to `16.0`.
+  /// - [textColor]: The color of the text. Defaults to [Colors.black].
   TextAnnotation({
     required this.relativePosition,
     required this.text,
@@ -34,7 +62,15 @@ class TextAnnotation extends Annotation {
     Color textColor = Colors.black,
   }) : super(textColor);
 
-  // TODO: add relative position to text as well!
+  @override
+  String toString() {
+    return '''TextAnnotation(
+  text: "$text",
+  relativePosition: $relativePosition,
+  relativeFontSize: $relativeFontSize,
+  color: $color,
+)''';
+  }
 }
 
 /// Represents a shape annotation, which consists of a series of points relative
@@ -49,6 +85,9 @@ class ShapeAnnotation extends Annotation {
   /// The list of points relative to the original image's dimensions.
   ///
   /// These points define the shape's outline or structure.
+  /// 
+  /// The coordinates are normalized values between `0.0` and `1.0`,
+  /// ensuring the position scales correctly with the image.
   final List<Offset> _relativePoints;
 
   /// The width of the stroke used to draw the shape.

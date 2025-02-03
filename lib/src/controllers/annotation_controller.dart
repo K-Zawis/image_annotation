@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../models/models.dart';
-import '../models/annotation_model.dart';
 
 /// A controller to manage the state and behaviour of the image annotation tool.
 ///
@@ -66,6 +65,16 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// Returns `null` if the size has not been loaded yet.
   Size? get originalImageSize => _model.originalImageSize;
+
+  /// The aspect ratio of the original image being annotated.
+  ///
+  /// Used for maintaining the aspect ratio of the image within 
+  /// the package
+  ///
+  /// Returns `null` if the size has not been loaded yet.
+  double? get aspectRatio => originalImageSize != null
+      ? originalImageSize!.width / originalImageSize!.height
+      : null;
 
   /// The current colour for annotations.
   Color get color => _model.currentColor;
@@ -216,7 +225,7 @@ class AnnotationController extends ChangeNotifier {
   }
 
   /// Clears all annotations and moves them to the redo stack.
-  /// 
+  ///
   /// Notifies listeners if the value changes.
   void clearAnnotations() {
     if (!canUndo) return;

@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
-import '../models/annotation_enums.dart';
-import '../models/annotation_models.dart';
 import '../controllers/controllers.dart';
-import '../utils/coordinate_utils.dart';
+import '../models/models.dart';
+import '../utils/utils.dart';
 
 // AnnotationPainter class
 class AnnotationPainter extends CustomPainter {
@@ -47,10 +44,9 @@ class AnnotationPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     List<Offset> visualPoints = annotation.relativePoints
-        .map((point) => convertToVisualPosition(
-              point: point,
-              originalImageSize: controller.originalImageSize!,
-              visualSize: visualImageSize,
+        .map((point) => convertToRenderPosition(
+              relativePoint: point,
+              visualImageSize: visualImageSize,
             ))
         .toList();
 
@@ -96,17 +92,15 @@ class AnnotationPainter extends CustomPainter {
       text: annotation.text,
       style: TextStyle(
         color: annotation.color,
-        fontSize: annotation.relativeFontSize * visualImageSize.height,
+        fontSize: convertToRenderFontSize(
+          relativePoint: annotation.relativeFontSize,
+          visualImageSize: visualImageSize,
+        ),
       ),
     );
     final textPainter = TextPainter(
       text: textSpan,
       textDirection: TextDirection.ltr,
-    );
-
-    log(
-      'renderFontSize: ${annotation.relativeFontSize * visualImageSize.height}', 
-      name: 'AnnotationWidget',
     );
 
     textPainter.layout();
@@ -116,10 +110,9 @@ class AnnotationPainter extends CustomPainter {
       annotation.relativePosition.dy - textPainter.height / 2,
     );
 
-    final textPosition = convertToVisualPosition(
-      point: point,
-      originalImageSize: controller.originalImageSize!,
-      visualSize: visualImageSize,
+    final textPosition = convertToRenderPosition(
+      relativePoint: point,
+      visualImageSize: visualImageSize,
     );
 
     textPainter.paint(canvas, textPosition);
