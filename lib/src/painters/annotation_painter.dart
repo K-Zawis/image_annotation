@@ -96,7 +96,7 @@ class AnnotationPainter extends CustomPainter {
       text: annotation.text,
       style: TextStyle(
         color: annotation.color,
-        fontSize: annotation.relativeFontSize * controller.originalImageSize!.height,
+        fontSize: annotation.relativeFontSize * visualImageSize.height,
       ),
     );
     final textPainter = TextPainter(
@@ -105,7 +105,7 @@ class AnnotationPainter extends CustomPainter {
     );
 
     log(
-      'renderFontSize: ${controller.fontSize * controller.originalImageSize!.height}', 
+      'renderFontSize: ${annotation.relativeFontSize * visualImageSize.height}', 
       name: 'AnnotationWidget',
     );
 
