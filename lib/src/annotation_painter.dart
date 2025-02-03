@@ -103,8 +103,8 @@ class AnnotationPainter extends CustomPainter {
     textPainter.layout();
 
     final textPosition = Offset(
-      annotation.position.dx - textPainter.width / 2,
-      annotation.position.dy - textPainter.height / 2,
+      annotation.relativePosition.dx - textPainter.width / 2,
+      annotation.relativePosition.dy - textPainter.height / 2,
     );
 
     textPainter.paint(canvas, textPosition);

@@ -260,7 +260,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   }
 
   /// Displays a dialog for adding a text annotation.
-  void _showTextAnnotationDialog(
+  void showTextAnnotationDialog(
     BuildContext context,
     Offset localPosition,
   ) {
@@ -288,7 +288,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                   // Add the text annotation
                   _controller.add(
                     TextAnnotation(
-                      position: localPosition,
+                      relativePosition: localPosition,
                       text: text,
                       textColor: _controller.color,
                       fontSize: _controller.fontSize,
@@ -327,8 +327,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        // TODO: probably add animated transition instead for smooth resizing? but this will be for way later
-
         return ListenableBuilder(
           listenable: _controller,
           builder: (context, child) {
@@ -361,12 +359,13 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     onLongPress: _controller.clearAnnotations,
                     onDoubleTap: _controller.undoAnnotation,
                     onTapDown: (details) {
-                      if (_controller.annotationType == AnnotationType.text) {
-                        _showTextAnnotationDialog(
-                          context,
-                          details.localPosition,
-                        );
-                      } else if (!_controller.finalizeOnRelease) {
+                      // if (_controller.annotationType == AnnotationType.text) {
+                      //   showTextAnnotationDialog(
+                      //     context,
+                      //     details.localPosition,
+                      //   );
+                      // } else 
+                      if (!_controller.finalizeOnRelease) {
                         _controller.add(
                           ShapeAnnotation(
                             _controller.annotationType,

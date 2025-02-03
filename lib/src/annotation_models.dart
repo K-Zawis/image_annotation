@@ -23,12 +23,12 @@ abstract class Annotation {
 }
 
 class TextAnnotation extends Annotation {
-  final Offset position;
+  final Offset relativePosition;
   final String text;
   final double fontSize;
 
   TextAnnotation({
-    required this.position,
+    required this.relativePosition,
     required this.text,
     this.fontSize = 16.0,
     Color textColor = Colors.black,

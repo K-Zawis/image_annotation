@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'image_annotation_controller.dart';
 import 'annotation_painter.dart';
 import 'annotation_models.dart';
+import 'annotation_enums.dart';
 
 class ImageAnnotationPaintBoundary extends StatefulWidget {
   final Image imageWidget;
@@ -94,6 +97,11 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
           widget.onDrawEnd?.call(details);
         },
         onPanCancel: _onDrawEnd,
+        onTap: () {
+          if (widget.controller.annotationType == AnnotationType.text) {
+            log('Add Text', name: 'AnnotationWidget');
+          }
+        },
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),
           child: AspectRatio(
