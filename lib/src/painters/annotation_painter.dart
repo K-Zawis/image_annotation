@@ -94,7 +94,7 @@ class AnnotationPainter extends CustomPainter {
       text: annotation.text,
       style: TextStyle(
         color: annotation.color,
-        fontSize: annotation.fontSize,
+        fontSize: annotation.relativeFontSize * controller.originalImageSize!.height,
       ),
     );
     final textPainter = TextPainter(

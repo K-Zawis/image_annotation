@@ -36,7 +36,7 @@ void showTextAnnotationDialog(
                     relativePosition: localPosition,
                     text: text,
                     textColor: controller.color,
-                    fontSize: controller.fontSize,
+                    relativeFontSize: controller.fontSize / controller.originalImageSize!.height,
                   ),
                 );
               }
