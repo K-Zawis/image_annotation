@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
@@ -48,12 +46,10 @@ class AnnotationPainter extends CustomPainter {
     List<Offset> visualPoints = annotation.relativePoints
         .map((point) => convertToRenderPosition(
               relativePoint: point,
+              originalImageSize: controller.originalImageSize!,
               visualImageSize: visualImageSize,
             ))
         .toList();
-
-    
-    log("renderPosition: ${visualPoints.first}, ${visualPoints.last}", name: 'AnnotationWidget');
 
     switch (annotation.annotationType) {
       case AnnotationType.line:
@@ -117,10 +113,9 @@ class AnnotationPainter extends CustomPainter {
 
     final textPosition = convertToRenderPosition(
       relativePoint: point,
+      originalImageSize: controller.originalImageSize!,
       visualImageSize: visualImageSize,
     );
-
-    log("renderPosition: $textPosition", name: 'AnnotationWidget');
 
     textPainter.paint(canvas, textPosition);
   }

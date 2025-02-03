@@ -34,9 +34,6 @@ abstract class Annotation {
 /// [Annotation]
 class TextAnnotation extends Annotation {
   /// The position of the text relative to the original image's dimensions.
-  /// 
-  /// The coordinates are normalized values between `0.0` and `1.0`,
-  /// ensuring the position scales correctly with the image.
   final Offset relativePosition;
 
   /// The text content of the annotation.
@@ -85,9 +82,6 @@ class ShapeAnnotation extends Annotation {
   /// The list of points relative to the original image's dimensions.
   ///
   /// These points define the shape's outline or structure.
-  /// 
-  /// The coordinates are normalized values between `0.0` and `1.0`,
-  /// ensuring the position scales correctly with the image.
   final List<Offset> _relativePoints;
 
   /// The width of the stroke used to draw the shape.

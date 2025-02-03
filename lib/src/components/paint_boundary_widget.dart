@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
@@ -40,12 +38,11 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
         position.dy >= 0 &&
         position.dx <= boundarySize.width &&
         position.dy <= boundarySize.height) {
-          
       final textPosition = convertToRelativePosition(
-          point: position,
-          originalImageSize: widget.controller.originalImageSize!);
-
-      log("relativePosition: $textPosition", name: 'AnnotationWidget');
+        point: position,
+        originalImageSize: widget.controller.originalImageSize!,
+        visualImageSize: boundarySize,
+      );
 
       showTextAnnotationDialog(
         context: context,
@@ -70,9 +67,8 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
       final shapePosition = convertToRelativePosition(
         point: position,
         originalImageSize: widget.controller.originalImageSize!,
+        visualImageSize: boundarySize,
       );
-
-      log("relativePosition: $shapePosition", name: 'AnnotationWidget');
 
       (widget.controller.currentAnnotation! as ShapeAnnotation)
           .add(shapePosition);
