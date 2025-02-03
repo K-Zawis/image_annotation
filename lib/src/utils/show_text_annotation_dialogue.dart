@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import '../../image_annotation.dart';
@@ -30,6 +32,10 @@ void showTextAnnotationDialog(
             onPressed: () {
               Navigator.of(context).pop();
               if (text.isNotEmpty) {
+                log(
+                  'relativeFontSize: ${controller.fontSize / controller.originalImageSize!.height}', 
+                  name: 'AnnotationWidget',
+                );
                 // Add the text annotation
                 controller.add(
                   TextAnnotation(

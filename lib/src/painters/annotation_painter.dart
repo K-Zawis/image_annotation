@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import '../models/annotation_enums.dart';
@@ -100,6 +102,11 @@ class AnnotationPainter extends CustomPainter {
     final textPainter = TextPainter(
       text: textSpan,
       textDirection: TextDirection.ltr,
+    );
+
+    log(
+      'renderFontSize: ${controller.fontSize * controller.originalImageSize!.height}', 
+      name: 'AnnotationWidget',
     );
 
     textPainter.layout();
