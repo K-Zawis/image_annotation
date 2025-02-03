@@ -111,19 +111,11 @@ class AnnotationPainter extends CustomPainter {
       originalImageSize: controller.originalImageSize!,
       visualImageSize: visualImageSize,
     );
-
-    // final point = 
     
     final textPosition = Offset(
       renderPosition.dx - textPainter.width / 2,
       renderPosition.dy - textPainter.height / 2,
     );
-
-    // final textPosition = convertToRenderPosition(
-    //   relativePoint: point,
-    //   originalImageSize: controller.originalImageSize!,
-    //   visualImageSize: visualImageSize,
-    // );
 
     textPainter.paint(canvas, textPosition);
   }
