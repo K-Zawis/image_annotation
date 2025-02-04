@@ -23,6 +23,9 @@ class AnnotationPainter extends CustomPainter {
         case ShapeAnnotation:
           drawShapeAnnotations(canvas, annotation as ShapeAnnotation, size);
           break;
+        case DetectedAnnotation:
+        drawDetectedAnnotations(canvas, annotation as DetectedAnnotation, size);
+          break;
         default:
           throw UnsupportedError(
             'Unknown annotation type: ${annotation.runtimeType}',
@@ -82,7 +85,6 @@ class AnnotationPainter extends CustomPainter {
     }
   }
 
-  // Draw text annotations on the canvas
   void drawTextAnnotations(
     Canvas canvas,
     TextAnnotation annotation,
@@ -109,13 +111,39 @@ class AnnotationPainter extends CustomPainter {
       relativePoint: annotation.normalizedPosition,
       visualImageSize: visualImageSize,
     );
-    
+
     final textPosition = Offset(
       renderPosition.dx - textPainter.width / 2,
       renderPosition.dy - textPainter.height / 2,
     );
 
     textPainter.paint(canvas, textPosition);
+  }
+
+  void drawDetectedAnnotations(
+    Canvas canvas,
+    DetectedAnnotation annotation,
+    Size visualImageSize,
+  ) {
+    if (annotation.normalizedPoints.isEmpty) return;
+
+    final Paint paint = Paint()
+      ..color = annotation.color
+      ..strokeWidth = annotation.strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    List<Offset> visualPoints = annotation.normalizedPoints
+        .map((point) => convertToRenderPosition(
+              relativePoint: point,
+              visualImageSize: visualImageSize,
+            ))
+        .toList();
+
+    final rect = Rect.fromPoints(
+      visualPoints.first,
+      visualPoints.last,
+    );
+    canvas.drawRect(rect, paint);
   }
 
   @override
