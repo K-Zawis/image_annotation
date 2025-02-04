@@ -24,7 +24,8 @@ class AnnotationPainter extends CustomPainter {
           drawShapeAnnotations(canvas, annotation as ShapeAnnotation, size);
           break;
         case DetectedAnnotation:
-        drawDetectedAnnotations(canvas, annotation as DetectedAnnotation, size);
+          drawDetectedAnnotations(
+              canvas, annotation as DetectedAnnotation, size);
           break;
         default:
           throw UnsupportedError(
@@ -144,6 +145,42 @@ class AnnotationPainter extends CustomPainter {
       visualPoints.last,
     );
     canvas.drawRect(rect, paint);
+
+    final Paint labelPaint = paint..style = PaintingStyle.fill;
+
+    final textSpan = TextSpan(
+      text: annotation.label,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: convertToRenderFontSize(
+          relativePoint: convertToNormalizedFontSize(
+            fontSize: controller.fontSize,
+            originalImageSize: controller.originalImageSize!,
+          ),
+          visualImageSize: visualImageSize,
+        ),
+      ),
+    );
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+
+    textPainter.layout();
+
+    final Offset topLeftCorner = annotation.topLeftPoint!;
+
+    final labelRect = Rect.fromPoints(
+      topLeftCorner,
+      Offset(
+        topLeftCorner.dx + textPainter.width,
+        topLeftCorner.dy + textPainter.height,
+      ),
+    );
+
+    canvas.drawRect(labelRect, labelPaint);
+
+    textPainter.paint(canvas, topLeftCorner);
   }
 
   @override
