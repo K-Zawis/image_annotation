@@ -166,3 +166,112 @@ class ShapeAnnotation extends Annotation {
     return buffer.toString();
   }
 }
+
+/// Represents a detected rectangle annotation with a label and confidence score.
+///
+/// @see
+/// [ShapeAnnotation]
+/// [Annotation]
+class DetectedAnnotation extends ShapeAnnotation {
+  /// The label of the detected annotation (for example: object type).
+  final String label;
+
+  /// The confidence score of the detection, between 0.0 and 1.0.
+  final double confidenceScore;
+
+  /// Creates a [DetectedAnnotation] instance.
+  ///
+  /// - [label]: The label of the detected object.
+  /// - [confidenceScore]: The confidence score of the detection.
+  /// - [points]: A list of [Offset] objects defining the rectangle.
+  ///   Relative to the original image size.
+  /// - [strokeWidth]: The width of the stroke used to draw the shape.
+  /// - [color]: The color of the annotation.
+  DetectedAnnotation({
+    required this.label,
+    required this.confidenceScore,
+    required List<Offset> relativePoints,
+    double strokeWidth = 2.0,
+    Color color = Colors.red,
+  }) : super(
+          AnnotationType.rectangle,
+          strokeWidth: strokeWidth,
+          color: color,
+        ) {
+    for (final point in relativePoints) {
+      add(point);
+      // TODO: assert normalized? we will see
+    }
+  }
+
+  /// Finds the top-left point from the list of points.
+  Offset? get topLeftPoint {
+    if (relativePoints.isEmpty) return null;
+
+    final minX = relativePoints.map((Offset p) => p.dx).reduce(
+          (x1, x2) => x1 < x2 ? x1 : x2,
+        );
+    final maxY = relativePoints.map((Offset p) => p.dy).reduce(
+          (y1, y2) => y1 > y2 ? y1 : y2,
+        );
+
+    return Offset(minX, maxY);
+  }
+
+  /// Finds the bottom-left point from the list of points.
+  Offset? get bottomLeftPoint {
+    if (relativePoints.isEmpty) return null;
+
+    final minX = relativePoints.map((Offset p) => p.dx).reduce(
+          (x1, x2) => x1 < x2 ? x1 : x2,
+        );
+    final minY = relativePoints.map((Offset p) => p.dy).reduce(
+          (y1, y2) => y1 < y2 ? y1 : y2,
+        );
+
+    return Offset(minX, minY);
+  }
+
+  /// Finds the top-right point from the list of points.
+  Offset? get topRightPoint {
+    if (relativePoints.isEmpty) return null;
+
+    final maxX = relativePoints.map((Offset p) => p.dx).reduce(
+          (x1, x2) => x1 > x2 ? x1 : x2,
+        );
+    final maxY = relativePoints.map((Offset p) => p.dy).reduce(
+          (y1, y2) => y1 > y2 ? y1 : y2,
+        );
+
+    return Offset(maxX, maxY);
+  }
+
+  /// Finds the bottom-right point from the list of points.
+  Offset? get bottomRightPoint {
+    if (relativePoints.isEmpty) return null;
+
+    final maxX = relativePoints.map((Offset p) => p.dx).reduce(
+          (x1, x2) => x1 > x2 ? x1 : x2,
+        );
+    final minY = relativePoints.map((Offset p) => p.dy).reduce(
+          (y1, y2) => y1 < y2 ? y1 : y2,
+        );
+
+    return Offset(maxX, minY);
+  }
+
+  @override
+  String toString() {
+    final buffer = StringBuffer()
+      ..writeln('DetectedAnnotation(')
+      ..writeln('  annotationType: $annotationType,')
+      ..writeln('  label: $label,')
+      ..writeln('  confidenceScore: $confidenceScore,')
+      ..writeln('  strokeWidth: $strokeWidth,')
+      ..writeln('  color: $color,')
+      ..writeln('  firstRelativePoint: $firstRelativePoint,')
+      ..writeln('  lastRelativePoint: $lastRelativePoint,')
+      ..write(')');
+    return buffer.toString();
+  }
+}
