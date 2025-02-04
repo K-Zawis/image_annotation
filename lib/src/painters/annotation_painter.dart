@@ -176,11 +176,11 @@ class AnnotationPainter extends CustomPainter {
     );
 
     final labelRect = Rect.fromPoints(
-      Offset(
-        topLeftCorner.dx,
-        topLeftCorner.dy - controller.strokeWidth,
-      ),
       topLeftCorner,
+      Offset(
+        topLeftCorner.dx + textPainter.width,
+        topLeftCorner.dy - textPainter.height,
+      ),
     );
 
     canvas.drawRect(labelRect, labelPaint);
