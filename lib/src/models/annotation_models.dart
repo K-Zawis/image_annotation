@@ -217,11 +217,11 @@ class DetectedAnnotation extends ShapeAnnotation {
     final minX = _normalizedPoints.map((Offset p) => p.dx).reduce(
           (x1, x2) => x1 < x2 ? x1 : x2,
         );
-    final maxY = _normalizedPoints.map((Offset p) => p.dy).reduce(
-          (y1, y2) => y1 > y2 ? y1 : y2,
+    final minY = _normalizedPoints.map((Offset p) => p.dy).reduce(
+          (y1, y2) => y1 < y2 ? y1 : y2,
         );
 
-    return Offset(minX, maxY);
+    return Offset(minX, minY);
   }
 
   /// Finds the bottom-left point from the list of points.
@@ -231,29 +231,15 @@ class DetectedAnnotation extends ShapeAnnotation {
     final minX = _normalizedPoints.map((Offset p) => p.dx).reduce(
           (x1, x2) => x1 < x2 ? x1 : x2,
         );
-    final minY = _normalizedPoints.map((Offset p) => p.dy).reduce(
-          (y1, y2) => y1 < y2 ? y1 : y2,
-        );
-
-    return Offset(minX, minY);
-  }
-
-  /// Finds the top-right point from the list of points.
-  Offset? get topRightPoint {
-    if (_normalizedPoints.isEmpty) return null;
-
-    final maxX = _normalizedPoints.map((Offset p) => p.dx).reduce(
-          (x1, x2) => x1 > x2 ? x1 : x2,
-        );
     final maxY = _normalizedPoints.map((Offset p) => p.dy).reduce(
           (y1, y2) => y1 > y2 ? y1 : y2,
         );
 
-    return Offset(maxX, maxY);
+    return Offset(minX, maxY);
   }
 
-  /// Finds the bottom-right point from the list of points.
-  Offset? get bottomRightPoint {
+  /// Finds the top-right point from the list of points.
+  Offset? get topRightPoint {
     if (_normalizedPoints.isEmpty) return null;
 
     final maxX = _normalizedPoints.map((Offset p) => p.dx).reduce(
@@ -264,6 +250,20 @@ class DetectedAnnotation extends ShapeAnnotation {
         );
 
     return Offset(maxX, minY);
+  }
+
+  /// Finds the bottom-right point from the list of points.
+  Offset? get bottomRightPoint {
+    if (_normalizedPoints.isEmpty) return null;
+
+    final maxX = _normalizedPoints.map((Offset p) => p.dx).reduce(
+          (x1, x2) => x1 > x2 ? x1 : x2,
+        );
+    final maxY = _normalizedPoints.map((Offset p) => p.dy).reduce(
+          (y1, y2) => y1 > y2 ? y1 : y2,
+        );
+
+    return Offset(maxX, maxY);
   }
 
   @override
