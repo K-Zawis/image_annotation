@@ -33,10 +33,10 @@ void showTextAnnotationDialog({
                 // Add the text annotation
                 controller.add(
                   TextAnnotation(
-                    relativePosition: relativePosition,
+                    normalizedPosition: relativePosition,
                     text: text,
                     textColor: controller.color,
-                    relativeFontSize: convertToRelativeFontSize(
+                    normalizedFontSize: convertToNormalizedFontSize(
                       fontSize: controller.fontSize,
                       originalImageSize: controller.originalImageSize!,
                     ),

@@ -5,7 +5,7 @@ import 'annotation_enums.dart';
 /// An abstract base class for all types of annotations.
 ///
 /// This class serves as the foundation for specific annotation types,
-/// such as [ShapeAnnotation] and [TextAnnotation]. It defines the common 
+/// such as [ShapeAnnotation] and [TextAnnotation]. It defines the common
 /// properties and behaviours that all annotations must have.
 ///
 /// Subclasses are expected to extend this class and provide additional
@@ -23,9 +23,8 @@ abstract class Annotation {
   Annotation(this.color);
 }
 
-/// Represents a text annotation, which consists of a position relative to
-/// the image's dimensions, a text string, and a font size relative to the
-/// original image height.
+/// Represents a text annotation, which consists of a normalized position, a text
+/// string, and a normalized font size.
 ///
 /// This class is used to store and manage text annotations, ensuring they
 /// scale properly when the image is resized.
@@ -33,56 +32,63 @@ abstract class Annotation {
 /// @see
 /// [Annotation]
 class TextAnnotation extends Annotation {
-  /// The position of the text relative to the original image's dimensions.
-  final Offset relativePosition;
+  /// The normalized position of the text.
+  ///
+  /// The [Offset] points are values between `0` and `1`.
+  final Offset normalizedPosition;
 
   /// The text content of the annotation.
   final String text;
 
-  /// The font size relative to the original image height.
+  /// The normalized font size.
   ///
-  /// Defaults to `16.0`, but when rendered, it should be scaled
+  /// Defaults to `0.0`, but when rendered, it should be scaled
   /// according to the image's visual size.
-  final double relativeFontSize;
+  final double normalizedFontSize;
 
   /// Creates a [TextAnnotation] instance.
-  ///
-  /// - [relativePosition]: The position of the text relative to the image.
-  /// - [text]: The annotation text content.
-  /// - [relativeFontSize]: The font size relative to the original image height.
-  ///   Defaults to `16.0`.
-  /// - [textColor]: The color of the text. Defaults to [Colors.black].
+  /// - [normalizedPosition] : The normalized [Offset] of the text.
+  ///   Values should be between `0` and `1`.
+  /// - [text] : The annotation text content.
+  /// - [normalizedFontSize] : The normalized font size.
+  ///   Defaults to `0.0`.
+  ///   Values should be between `0` and `1`.
+  /// - [textColor] : The color of the text. Defaults to [Colors.black].
   TextAnnotation({
-    required this.relativePosition,
+    required this.normalizedPosition,
     required this.text,
-    this.relativeFontSize = 16.0,
+    this.normalizedFontSize = 0.0,
     Color textColor = Colors.black,
   }) : super(textColor);
 
   @override
   String toString() {
-    return '''TextAnnotation(
-  text: "$text",
-  relativePosition: $relativePosition,
-  relativeFontSize: $relativeFontSize,
-  color: $color,
-)''';
+    final buffer = StringBuffer()
+      ..writeln("TextAnnotation(")
+      ..writeln("  text: \"$text\",")
+      ..writeln("  normalizedPosition: $normalizedPosition,")
+      ..writeln("  normalizedFontSize: $normalizedFontSize,")
+      ..writeln("  color: $color,")
+      ..writeln(")");
+    return buffer.toString();
   }
 }
 
-/// Represents a shape annotation, which consists of a series of points relative
-/// to the image's dimensions, a stroke width, and a type that defines the shape.
+/// Represents a shape annotation, which consists of a series of normalized points,
+/// a stroke width, and a type that defines the shape.
 ///
 /// This class is used to store and manage points for shapes like lines, rectangles,
 /// and ovals.
-/// 
+///
 /// @see
 /// [Annotation]
 class ShapeAnnotation extends Annotation {
-  /// The list of points relative to the original image's dimensions.
+  /// The list of normalized points.
   ///
   /// These points define the shape's outline or structure.
-  final List<Offset> _relativePoints;
+  ///
+  /// Values should be between `0` and `1`.
+  final List<Offset> _normalizedPoints;
 
   /// The width of the stroke used to draw the shape.
   ///
@@ -97,53 +103,53 @@ class ShapeAnnotation extends Annotation {
 
   /// Creates a [ShapeAnnotation] instance.
   ///
-  /// - [annotationType]: The [AnnotationType] of this shape.
-  /// - [strokeWidth]: The width of the stroke used to draw the shape.
+  /// - [annotationType] : The [AnnotationType] of this shape.
+  /// - [strokeWidth] : The width of the stroke used to draw the shape.
   ///   Defaults to `2.0`.
-  /// - [color]: The colour of the annotation. Defaults to [Colors.red].
+  /// - [color] : The colour of the annotation. Defaults to [Colors.red].
   ShapeAnnotation(
     this.annotationType, {
-    this.strokeWidth = 2.0,
+    this.strokeWidth = 2.0, // TODO: normalize this value
     Color color = Colors.red,
-  })  : _relativePoints = [],
+  })  : _normalizedPoints = [],
         super(color);
 
-  /// Provides an unmodifiable view of the relative points of the shape.
-  List<Offset> get relativePoints => List.unmodifiable(_relativePoints);
+  /// Provides an unmodifiable view of the normalized points of the shape.
+  List<Offset> get normalizedPoints => List.unmodifiable(_normalizedPoints);
 
-  /// Retrieves the first point in the list of relative points, if it exists.
+  /// Retrieves the first point in the list of normalized points, if it exists.
   ///
   /// Returns `null` if the list is empty.
-  Offset? get firstRelativePoint => _relativePoints.firstOrNull;
+  Offset? get firstNormalizedPoint => _normalizedPoints.firstOrNull;
 
-  /// Retrieves the last point in the list of relative points, if it exists.
+  /// Retrieves the last point in the list of normalized points, if it exists.
   ///
   /// Returns `null` if the list is empty.
-  Offset? get lastRelativePoint => _relativePoints.lastOrNull;
+  Offset? get lastNormalizedPoint => _normalizedPoints.lastOrNull;
 
-  /// Adds a new point to the list of relative points.
+  /// Adds a new point to the list of normalized points.
   ///
-  /// - [point]: The point to be added, which should be relative to the image's dimensions.
+  /// - [point]: The point to be added, which should be normalized.
   void add(Offset point) {
-    _relativePoints.add(point);
+    _normalizedPoints.add(point);
   }
 
   @override
   String toString() {
     final buffer = StringBuffer()
-      ..writeln('ShapeAnnotation(')
-      ..writeln('  annotationType: ${annotationType.toString()},')
-      ..writeln('  strokeWidth: $strokeWidth,')
-      ..writeln('  color: $color,');
+      ..writeln("ShapeAnnotation(")
+      ..writeln("  annotationType: ${annotationType.toString()},")
+      ..writeln("  strokeWidth: $strokeWidth,")
+      ..writeln("  color: $color,");
 
     if (annotationType == AnnotationType.line) {
-      buffer.writeln('  relativePoints: $relativePoints,');
+      buffer.writeln("  normalizedPoints: $normalizedPoints,");
     } else {
-      buffer.writeln('  firstRelativePoint: $firstRelativePoint,');
-      buffer.writeln('  lastRelativePoint: $lastRelativePoint,');
+      buffer.writeln("  firstNormalizedPoint: $firstNormalizedPoint,");
+      buffer.writeln("  lastNormalizedPoint: $lastNormalizedPoint,");
     }
 
-    buffer.write(')');
+    buffer.write(")");
     return buffer.toString();
   }
 }

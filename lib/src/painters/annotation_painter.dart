@@ -36,17 +36,16 @@ class AnnotationPainter extends CustomPainter {
     ShapeAnnotation annotation,
     Size visualImageSize,
   ) {
-    if (annotation.relativePoints.isEmpty) return;
+    if (annotation.normalizedPoints.isEmpty) return;
 
     final Paint paint = Paint()
       ..color = annotation.color
       ..strokeWidth = annotation.strokeWidth
       ..style = PaintingStyle.stroke;
 
-    List<Offset> visualPoints = annotation.relativePoints
+    List<Offset> visualPoints = annotation.normalizedPoints
         .map((point) => convertToRenderPosition(
               relativePoint: point,
-              originalImageSize: controller.originalImageSize!,
               visualImageSize: visualImageSize,
             ))
         .toList();
@@ -94,7 +93,7 @@ class AnnotationPainter extends CustomPainter {
       style: TextStyle(
         color: annotation.color,
         fontSize: convertToRenderFontSize(
-          relativePoint: annotation.relativeFontSize,
+          relativePoint: annotation.normalizedFontSize,
           visualImageSize: visualImageSize,
         ),
       ),
@@ -107,8 +106,7 @@ class AnnotationPainter extends CustomPainter {
     textPainter.layout();
 
     final Offset renderPosition = convertToRenderPosition(
-      relativePoint: annotation.relativePosition,
-      originalImageSize: controller.originalImageSize!,
+      relativePoint: annotation.normalizedPosition,
       visualImageSize: visualImageSize,
     );
     

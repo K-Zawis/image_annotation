@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-double convertToRelativeFontSize({
+double convertToNormalizedFontSize({
   required double fontSize,
   required Size originalImageSize,
 }) {

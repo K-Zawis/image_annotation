@@ -38,9 +38,8 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
         position.dy >= 0 &&
         position.dx <= boundarySize.width &&
         position.dy <= boundarySize.height) {
-      final textPosition = convertToRelativePosition(
+      final textPosition = convertToNormalizedPosition(
         point: position,
-        originalImageSize: widget.controller.originalImageSize!,
         visualImageSize: boundarySize,
       );
 
@@ -64,9 +63,8 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
         position.dy >= 0 &&
         position.dx <= boundarySize.width &&
         position.dy <= boundarySize.height) {
-      final shapePosition = convertToRelativePosition(
+      final shapePosition = convertToNormalizedPosition(
         point: position,
-        originalImageSize: widget.controller.originalImageSize!,
         visualImageSize: boundarySize,
       );
 
