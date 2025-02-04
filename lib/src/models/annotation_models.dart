@@ -35,7 +35,7 @@ class TextAnnotation extends Annotation {
   /// The normalized position of the text.
   ///
   /// The [Offset] points are values between `0` and `1`.
-  final Offset normalizedPosition;
+  final Offset _normalizedPosition;
 
   /// The text content of the annotation.
   final String text;
@@ -55,21 +55,32 @@ class TextAnnotation extends Annotation {
   ///   Values should be between `0` and `1`.
   /// - [textColor] : The color of the text. Defaults to [Colors.black].
   TextAnnotation({
-    required this.normalizedPosition,
+    required Offset normalizedPosition,
     required this.text,
     this.normalizedFontSize = 0.0,
     Color textColor = Colors.black,
-  }) : super(textColor);
+  })  : assert(
+          normalizedPosition.dx >= 0 && normalizedPosition.dx <= 1,
+          'X coordinate is not normalized.',
+        ),
+        assert(
+          normalizedPosition.dy >= 0 && normalizedPosition.dy <= 1,
+          'Y coordinate is not normalized.',
+        ),
+        _normalizedPosition = normalizedPosition,
+        super(textColor);
+
+  Offset get normalizedPosition => _normalizedPosition;
 
   @override
   String toString() {
     final buffer = StringBuffer()
       ..writeln("TextAnnotation(")
       ..writeln("  text: \"$text\",")
-      ..writeln("  normalizedPosition: $normalizedPosition,")
+      ..writeln("  normalizedPosition: $_normalizedPosition,")
       ..writeln("  normalizedFontSize: $normalizedFontSize,")
       ..writeln("  color: $color,")
-      ..writeln(")");
+      ..write(")");
     return buffer.toString();
   }
 }
@@ -131,6 +142,8 @@ class ShapeAnnotation extends Annotation {
   ///
   /// - [point]: The point to be added, which should be normalized.
   void add(Offset point) {
+    assert(point.dx >= 0 && point.dx <= 1, 'X coordinate is not normalized.');
+    assert(point.dy >= 0 && point.dy <= 1, 'Y coordinate is not normalized.');
     _normalizedPoints.add(point);
   }
 
