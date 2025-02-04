@@ -181,11 +181,11 @@ class DetectedAnnotation extends ShapeAnnotation {
 
   /// Creates a [DetectedAnnotation] instance.
   ///
-  /// - [label]: The label of the detected object.
-  /// - [confidenceScore]: The confidence score of the detection.
-  /// - [normalizedPoints]: A list of normalized [Offset] objects defining the rectangle.
-  /// - [strokeWidth]: The width of the stroke used to draw the shape.
-  /// - [color]: The color of the annotation.
+  /// - [label] : The label of the detected object.
+  /// - [confidenceScore] : The confidence score of the detection.
+  /// - [normalizedPoints] : A list of normalized [Offset] objects defining the rectangle.
+  /// - [strokeWidth] : The width of the stroke used to draw the shape.
+  /// - [color] : The color of the annotation.
   DetectedAnnotation({
     required this.label,
     required this.confidenceScore,
