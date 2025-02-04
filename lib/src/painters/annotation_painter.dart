@@ -180,10 +180,7 @@ class AnnotationPainter extends CustomPainter {
         topLeftCorner.dx,
         topLeftCorner.dy - controller.strokeWidth,
       ),
-      Offset(
-        topLeftCorner.dx + textPainter.width,
-        topLeftCorner.dy - textPainter.height,
-      ),
+      topLeftCorner,
     );
 
     canvas.drawRect(labelRect, labelPaint);
@@ -191,7 +188,7 @@ class AnnotationPainter extends CustomPainter {
     textPainter.paint(
       canvas,
       Offset(
-        topLeftCorner.dx + textPainter.width,
+        topLeftCorner.dx,
         topLeftCorner.dy - textPainter.height,
       ),
     );
