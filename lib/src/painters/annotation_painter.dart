@@ -147,9 +147,10 @@ class AnnotationPainter extends CustomPainter {
     canvas.drawRect(rect, paint);
 
     final Paint labelPaint = paint..style = PaintingStyle.fill;
+    final labelText = "${annotation.label} ${annotation.confidenceScore.toStringAsFixed(2)}";
 
     final textSpan = TextSpan(
-      text: annotation.label,
+      text: labelText,
       style: TextStyle(
         color: Colors.white,
         fontSize: convertToRenderFontSize(
@@ -168,7 +169,10 @@ class AnnotationPainter extends CustomPainter {
 
     textPainter.layout();
 
-    final Offset topLeftCorner = annotation.topLeftPoint!;
+    final Offset topLeftCorner = convertToRenderPosition(
+      relativePoint: annotation.topLeftPoint!,
+      visualImageSize: visualImageSize,
+    );
 
     final labelRect = Rect.fromPoints(
       topLeftCorner,
