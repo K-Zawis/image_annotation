@@ -183,35 +183,41 @@ class DetectedAnnotation extends ShapeAnnotation {
   ///
   /// - [label]: The label of the detected object.
   /// - [confidenceScore]: The confidence score of the detection.
-  /// - [points]: A list of [Offset] objects defining the rectangle.
-  ///   Relative to the original image size.
+  /// - [normalizedPoints]: A list of normalized [Offset] objects defining the rectangle.
   /// - [strokeWidth]: The width of the stroke used to draw the shape.
   /// - [color]: The color of the annotation.
   DetectedAnnotation({
     required this.label,
     required this.confidenceScore,
-    required List<Offset> relativePoints,
+    required List<Offset> normalizedPoints,
     double strokeWidth = 2.0,
     Color color = Colors.red,
-  }) : super(
+  })  : assert(
+          normalizedPoints.every((p) => p.dx >= 0 && p.dx <= 1),
+          'X coordinate is not normalized.',
+        ),
+        assert(
+          normalizedPoints.every((p) => p.dy >= 0 && p.dy <= 1),
+          'Y coordinate is not normalized.',
+        ),
+        super(
           AnnotationType.rectangle,
           strokeWidth: strokeWidth,
           color: color,
         ) {
-    for (final point in relativePoints) {
+    for (final point in normalizedPoints) {
       add(point);
-      // TODO: assert normalized? we will see
     }
   }
 
   /// Finds the top-left point from the list of points.
   Offset? get topLeftPoint {
-    if (relativePoints.isEmpty) return null;
+    if (_normalizedPoints.isEmpty) return null;
 
-    final minX = relativePoints.map((Offset p) => p.dx).reduce(
+    final minX = _normalizedPoints.map((Offset p) => p.dx).reduce(
           (x1, x2) => x1 < x2 ? x1 : x2,
         );
-    final maxY = relativePoints.map((Offset p) => p.dy).reduce(
+    final maxY = _normalizedPoints.map((Offset p) => p.dy).reduce(
           (y1, y2) => y1 > y2 ? y1 : y2,
         );
 
@@ -220,12 +226,12 @@ class DetectedAnnotation extends ShapeAnnotation {
 
   /// Finds the bottom-left point from the list of points.
   Offset? get bottomLeftPoint {
-    if (relativePoints.isEmpty) return null;
+    if (_normalizedPoints.isEmpty) return null;
 
-    final minX = relativePoints.map((Offset p) => p.dx).reduce(
+    final minX = _normalizedPoints.map((Offset p) => p.dx).reduce(
           (x1, x2) => x1 < x2 ? x1 : x2,
         );
-    final minY = relativePoints.map((Offset p) => p.dy).reduce(
+    final minY = _normalizedPoints.map((Offset p) => p.dy).reduce(
           (y1, y2) => y1 < y2 ? y1 : y2,
         );
 
@@ -234,12 +240,12 @@ class DetectedAnnotation extends ShapeAnnotation {
 
   /// Finds the top-right point from the list of points.
   Offset? get topRightPoint {
-    if (relativePoints.isEmpty) return null;
+    if (_normalizedPoints.isEmpty) return null;
 
-    final maxX = relativePoints.map((Offset p) => p.dx).reduce(
+    final maxX = _normalizedPoints.map((Offset p) => p.dx).reduce(
           (x1, x2) => x1 > x2 ? x1 : x2,
         );
-    final maxY = relativePoints.map((Offset p) => p.dy).reduce(
+    final maxY = _normalizedPoints.map((Offset p) => p.dy).reduce(
           (y1, y2) => y1 > y2 ? y1 : y2,
         );
 
@@ -248,12 +254,12 @@ class DetectedAnnotation extends ShapeAnnotation {
 
   /// Finds the bottom-right point from the list of points.
   Offset? get bottomRightPoint {
-    if (relativePoints.isEmpty) return null;
+    if (_normalizedPoints.isEmpty) return null;
 
-    final maxX = relativePoints.map((Offset p) => p.dx).reduce(
+    final maxX = _normalizedPoints.map((Offset p) => p.dx).reduce(
           (x1, x2) => x1 > x2 ? x1 : x2,
         );
-    final minY = relativePoints.map((Offset p) => p.dy).reduce(
+    final minY = _normalizedPoints.map((Offset p) => p.dy).reduce(
           (y1, y2) => y1 < y2 ? y1 : y2,
         );
 
@@ -269,8 +275,8 @@ class DetectedAnnotation extends ShapeAnnotation {
       ..writeln('  confidenceScore: $confidenceScore,')
       ..writeln('  strokeWidth: $strokeWidth,')
       ..writeln('  color: $color,')
-      ..writeln('  firstRelativePoint: $firstRelativePoint,')
-      ..writeln('  lastRelativePoint: $lastRelativePoint,')
+      ..writeln('  firstNormalizedPoint: $firstNormalizedPoint,')
+      ..writeln('  lastNormalizedPoint: $lastNormalizedPoint,')
       ..write(')');
     return buffer.toString();
   }
