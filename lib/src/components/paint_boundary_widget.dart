@@ -47,6 +47,7 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
         context: context,
         relativePosition: textPosition,
         controller: widget.controller,
+        visualImageSize: boundarySize,
       );
     }
   }

@@ -157,7 +157,7 @@ class AnnotationPainter extends CustomPainter {
         fontSize: convertToRenderFontSize(
           relativePoint: convertToNormalizedFontSize(
             fontSize: controller.fontSize,
-            originalImageSize: controller.originalImageSize!,
+            visualImageSize: visualImageSize,
           ),
           visualImageSize: visualImageSize,
         ),
