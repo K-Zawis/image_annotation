@@ -126,6 +126,11 @@ class ImageAnnotation extends StatefulWidget {
   /// Defaults to a 45x45 [CircularProgressIndicator].
   final Widget Function(BuildContext context)? loadingBuilder;
 
+  /// Optional list of detected annotation objects
+  ///
+  /// This is used for adding initial annotations when using an object detection model.
+  final List<DetectedAnnotation>? detectedAnnotations;
+
   const ImageAnnotation({
     super.key,
     required this.imageWidget,
@@ -139,6 +144,7 @@ class ImageAnnotation extends StatefulWidget {
     this.fontSize,
     this.finalizeOnRelease = false,
     this.annotationLimit,
+    this.detectedAnnotations,
   })  : assert(strokeWidth == null || strokeWidth > 0.0),
         assert(fontSize == null || fontSize > 0.0);
 
@@ -155,6 +161,7 @@ class ImageAnnotation extends StatefulWidget {
     this.fontSize,
     this.finalizeOnRelease = false,
     this.annotationLimit,
+    this.detectedAnnotations,
   })  : imageWidget = Image.network(
           src,
           fit: BoxFit.fill,
@@ -175,6 +182,7 @@ class ImageAnnotation extends StatefulWidget {
     this.fontSize,
     this.finalizeOnRelease = false,
     this.annotationLimit,
+    this.detectedAnnotations,
   })  : imageWidget = Image.asset(
           name,
           fit: BoxFit.fill,
@@ -195,6 +203,7 @@ class ImageAnnotation extends StatefulWidget {
     this.fontSize,
     this.finalizeOnRelease = false,
     this.annotationLimit,
+    this.detectedAnnotations,
   })  : assert(
           !kIsWeb,
           'ImageAnnotation.file is not supported on Flutter Web. '
@@ -220,6 +229,7 @@ class ImageAnnotation extends StatefulWidget {
     this.fontSize,
     this.finalizeOnRelease = false,
     this.annotationLimit,
+    this.detectedAnnotations,
   })  : imageWidget = Image.memory(
           bytes,
           fit: BoxFit.fill,
@@ -250,6 +260,10 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
     _controller.loadImageSize(
       widget.imageWidget.image,
+    );
+
+    widget.detectedAnnotations?.forEach(
+      (annotation) => _controller.add(annotation),
     );
   }
 
