@@ -84,6 +84,8 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   }
 
   void _onDrawStart(details) {
+    _drawShape(details.localPosition);
+    
     if (widget.controller.canEditCurrentAnnotation) {
       setState(() {
         _editing = true;
