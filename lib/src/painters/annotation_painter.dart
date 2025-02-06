@@ -96,7 +96,8 @@ class AnnotationPainter extends CustomPainter {
       style: TextStyle(
         color: annotation.color,
         fontSize: convertToRenderFontSize(
-          relativePoint: annotation.normalizedFontSize,
+          normalizedFontSize: annotation.normalizedFontSize,
+          originalImageSize: controller.originalImageSize!,
           visualImageSize: visualImageSize,
         ),
       ),
@@ -155,10 +156,12 @@ class AnnotationPainter extends CustomPainter {
       style: TextStyle(
         color: Colors.white,
         fontSize: convertToRenderFontSize(
-          relativePoint: convertToNormalizedFontSize(
+          normalizedFontSize: convertToNormalizedFontSize(
             fontSize: controller.fontSize,
+            originalImageSize: controller.originalImageSize!,
             visualImageSize: visualImageSize,
           ),
+          originalImageSize: controller.originalImageSize!,
           visualImageSize: visualImageSize,
         ),
       ),
