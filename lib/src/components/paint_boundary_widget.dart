@@ -96,55 +96,74 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      key: _boundaryKey,
-      child: GestureDetector(
-        onPanUpdate: (details) {
-          if (!_editing) return;
-          if (!widget.controller.isShape) return;
+    return Stack(
+      children: [
+        Center(
+          child: RepaintBoundary(
+            key: _boundaryKey,
+            child: GestureDetector(
+              onPanUpdate: (details) {
+                if (!_editing) return;
+                if (!widget.controller.isShape) return;
 
-          _draw(position: details.localPosition);
-        },
-        onPanStart: _onDrawStart,
-        onPanEnd: (details) {
-          _onDrawEnd.call();
-          widget.onDrawEnd?.call(details);
-        },
-        onPanCancel: _onDrawEnd,
-        onTapDown: (details) {
-          switch (widget.controller.annotationType) {
-            case AnnotationType.polyline:
-              _draw(position: details.localPosition);
-              break;
-            case AnnotationType.text:
-              _draw(position: details.localPosition, isText: true);
-              break;
-            case AnnotationType.polygon:
-              if (!_drawingPolygon) {
-                widget.controller.add(
-                  PolygonAnnotation(
-                    strokeWidth: widget.controller.strokeWidth,
-                    color: widget.controller.color,
+                _draw(position: details.localPosition);
+              },
+              onPanStart: _onDrawStart,
+              onPanEnd: (details) {
+                _onDrawEnd.call();
+                widget.onDrawEnd?.call(details);
+              },
+              onPanCancel: _onDrawEnd,
+              onTapDown: (details) {
+                switch (widget.controller.annotationType) {
+                  case AnnotationType.polyline:
+                    _draw(position: details.localPosition);
+                    break;
+                  case AnnotationType.text:
+                    _draw(position: details.localPosition, isText: true);
+                    break;
+                  case AnnotationType.polygon:
+                    if (!_drawingPolygon) {
+                      // widget.controller.add(
+                      //   PolygonAnnotation(
+                      //     strokeWidth: widget.controller.strokeWidth,
+                      //     color: widget.controller.color,
+                      //   ),
+                      // );
+                      _drawingPolygon = true;
+                      setState(() {});
+                    }
+                    break;
+                  default:
+                    break;
+                }
+              },
+              child: CustomPaint(
+                foregroundPainter: AnnotationPainter(widget.controller),
+                child: AspectRatio(
+                  aspectRatio: widget.controller.aspectRatio!,
+                  child: SizedBox.expand(
+                    child: widget.imageWidget,
                   ),
-                );
-                _drawingPolygon = true;
-                setState(() {});
-              }
-              break;
-            default:
-              break;
-          }
-        },
-        child: CustomPaint(
-          foregroundPainter: AnnotationPainter(widget.controller),
-          child: AspectRatio(
-            aspectRatio: widget.controller.aspectRatio!,
-            child: SizedBox.expand(
-              child: widget.imageWidget,
+                ),
+              ),
             ),
           ),
         ),
-      ),
+        if (_drawingPolygon) Align(
+          alignment: Alignment.bottomCenter,
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                _drawingPolygon = false;
+              });
+            },
+            icon: const Icon(
+              Icons.check_rounded,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
