@@ -31,8 +31,6 @@ class _ImageAnnotationPaintBoundaryState
 
   /// Shows the text annotation dialogue with the given [position].
   void _drawText(Offset position) {
-    if (widget.controller.annotationType != AnnotationType.text) return;
-
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null) return;
 
@@ -57,8 +55,7 @@ class _ImageAnnotationPaintBoundaryState
   /// Updates the current annotation path with the given [position].
   void _drawShape(Offset position) {
     if (!_editing) return;
-    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation)
-      return;
+    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
 
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null) return;
@@ -78,7 +75,24 @@ class _ImageAnnotationPaintBoundaryState
     }
   }
 
-  void _drawPlyLine(Offset position) {}
+  void _drawPolyLine(Offset position) {
+    Size? boundarySize = _boundaryKey.currentContext?.size;
+    if (boundarySize == null) return;
+
+    if (position.dx >= 0 &&
+        position.dy >= 0 &&
+        position.dx <= boundarySize.width &&
+        position.dy <= boundarySize.height) {
+      final polylinePoint = convertToNormalizedPosition(
+        point: position,
+        visualImageSize: boundarySize,
+      );
+
+      (widget.controller.currentAnnotation! as ShapeAnnotation)
+          .add(polylinePoint);
+      widget.controller.updateView();
+    }
+  }
 
   void _onDrawEnd() {
     if (!widget.controller.canEditCurrentAnnotation) {
@@ -112,10 +126,18 @@ class _ImageAnnotationPaintBoundaryState
           widget.onDrawEnd?.call(details);
         },
         onPanCancel: _onDrawEnd,
-        onTapDown: (details) =>
-            widget.controller.annotationType == AnnotationType.text
-                ? _drawText(details.localPosition)
-                : _drawPlyLine(details.localPosition),
+        onTapDown: (details) {
+          switch (widget.controller.annotationType) {
+            case AnnotationType.text:
+              _drawText(details.localPosition);
+              break;
+            case AnnotationType.polyline:
+              _drawPolyLine(details.localPosition);
+              break;
+            default:
+              break;
+          }
+        },
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),
           child: AspectRatio(
