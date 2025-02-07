@@ -34,21 +34,23 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final boundarySize = _boundaryKey.currentContext?.size;
-      if (boundarySize == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeFontSizes);
+  }
 
-      for (Annotation annotation in widget.controller.annotations) {
-        if (annotation is DetectedAnnotation) {
-          annotation.normalizedFontSize = convertToNormalizedFontSize(
-            fontSize: widget.controller.fontSize,
-            visualImageSize: boundarySize,
-          );
-        }
+  void _initializeFontSizes() {
+    final boundarySize = _boundaryKey.currentContext?.size;
+    if (boundarySize == null) return;
+
+    for (final Annotation annotation in widget.controller.annotations) {
+      if (annotation is DetectedAnnotation) {
+        annotation.normalizedFontSize = convertToNormalizedFontSize(
+          fontSize: widget.controller.fontSize,
+          visualImageSize: boundarySize,
+        );
       }
+    }
 
-      setState(() {});
-    });
+    setState(() {});
   }
 
   void _draw(Offset position, {bool isText = false}) {
