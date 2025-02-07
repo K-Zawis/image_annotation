@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -183,6 +184,8 @@ class AnnotationController extends ChangeNotifier {
   Future<void> loadImageSize(
     ImageProvider imageProvider,
   ) async {
+    log('Loading image...', name: 'I/ImageAnnotation');
+    
     final completer = Completer<ui.Image>();
 
     imageProvider.resolve(const ImageConfiguration()).addListener(
@@ -192,6 +195,8 @@ class AnnotationController extends ChangeNotifier {
     );
 
     final ui.Image loadedImage = await completer.future;
+
+    log('Image loaded.', name: 'I/ImageAnnotation');
 
     _model.originalImageSize = Size(
       loadedImage.width.toDouble(),
@@ -205,11 +210,14 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// Notifies listeners if the value changes. Does nothing if the annotation limit is reached.
   void add(Annotation annotation) {
-    if (_annotationLimit != null && annotations.length >= _annotationLimit)
+    if (_annotationLimit != null && annotations.length >= _annotationLimit) {
       return;
+    }
 
     _model.annotations.add(annotation);
     _model.redoStack.clear();
+
+    log('$annotationType added', name: 'I/ImageAnnotation');
 
     notifyListeners();
   }
@@ -223,6 +231,8 @@ class AnnotationController extends ChangeNotifier {
     final lastAnnotation = _model.annotations.removeLast();
     _model.redoStack.add([lastAnnotation]);
 
+    log('Undone ${lastAnnotation.annotationType}', name: 'I/ImageAnnotation');
+
     notifyListeners();
   }
 
@@ -234,6 +244,8 @@ class AnnotationController extends ChangeNotifier {
 
     final lastUndone = _model.redoStack.removeLast();
     _model.annotations.addAll(lastUndone);
+
+    log('Redone ${lastUndone.length} annotation(s)', name: 'I/ImageAnnotation');
 
     notifyListeners();
   }
@@ -247,6 +259,11 @@ class AnnotationController extends ChangeNotifier {
     final clearedAnnotations = List.of(_model.annotations);
     _model.redoStack.add(clearedAnnotations);
     _model.annotations.clear();
+
+    log(
+      '${clearedAnnotations.length} annotation(s) have been cleared',
+      name: 'I/ImageAnnotation',
+    );
 
     notifyListeners();
   }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
@@ -62,10 +60,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
     switch (widget.controller.currentAnnotation.runtimeType) {
       case PolygonAnnotation:
-        log(
-          'Position: ${normalizedPosition.dx},${normalizedPosition.dy}',
-          name: 'ImageAnnotation',
-        );
         (annotation as PolygonAnnotation).add(normalizedPosition);
         widget.controller.updateView();
         break;
@@ -87,6 +81,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _onDrawStart(details) {
+    if (_drawingPolygon) return;
+
     if (widget.controller.canEditCurrentAnnotation) {
       setState(() {
         _editing = true;
@@ -105,12 +101,9 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             key: _boundaryKey,
             child: GestureDetector(
               onPanUpdate: (details) {
-                if (!_editing ||
-                    !widget.controller.isShape ||
-                    widget.controller.currentAnnotation?.annotationType ==
-                        AnnotationType.polygon) return;
-
-                log('onPanUpdate: fired', name: 'ImageAnnotation');
+                if (!_editing || !widget.controller.isShape || _drawingPolygon) {
+                  return;
+                }
 
                 _draw(position: details.localPosition);
               },
@@ -168,7 +161,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                     final polygon = widget.controller.currentAnnotation!
                         as PolygonAnnotation;
                     polygon.close();
-                    log('Polygon: $polygon', name: 'ImageAnnotation');
                     setState(() {
                       _drawingPolygon = false;
                     });
