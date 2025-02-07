@@ -115,6 +115,16 @@ class AnnotationController extends ChangeNotifier {
   Annotation? get currentAnnotation =>
       annotations.isNotEmpty ? annotations.last : null;
 
+  /// Whether the current [Annotation] is of type [ShapeAnnotation]
+  bool get isShape =>
+      currentAnnotation != null &&
+      currentAnnotation.runtimeType == ShapeAnnotation;
+
+  /// Whether the current [Annotation] is of type [TextAnnotation]
+  bool get isText =>
+      currentAnnotation != null &&
+      currentAnnotation.runtimeType == TextAnnotation;
+
   // ==== SETTERS ====
 
   /// Updates the colour for new annotations.

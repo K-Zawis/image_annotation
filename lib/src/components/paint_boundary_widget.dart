@@ -55,7 +55,7 @@ class _ImageAnnotationPaintBoundaryState
   /// Updates the current annotation path with the given [position].
   void _drawShape(Offset position) {
     if (!_editing) return;
-    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
+    if (!widget.controller.isShape) return;
 
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null) return;
