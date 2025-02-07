@@ -49,7 +49,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       }
     }
 
-    setState(() {});
+    widget.controller.updateView();
   }
 
   void _draw(Offset position, {bool isText = false}) {
@@ -145,7 +145,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
         Center(
           child: RepaintBoundary(
