@@ -5,6 +5,7 @@
 /// - [line] : Draws a line annotation.
 /// - [polyline] : Draws a polygon using corner points.
 /// - [rectangle] : Draws a rectangle annotation.
+/// - [polygon] : Draws a custom polygon.
 /// - [oval] : Draws an oval annotation.
 /// - [text] : Allows the user to add a text annotation to the image.
 /// 
@@ -13,6 +14,7 @@ enum AnnotationType {
   line,
   polyline,
   rectangle,
+  polygon,
   oval,
   text,
 }
