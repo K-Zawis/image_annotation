@@ -28,6 +28,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
   bool _drawingPolygon = false;
+  bool _drawingPolyline = false;
 
   @override
   void initState() {
@@ -90,7 +91,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _handleDrawStart(_) {
-    if (_drawingPolygon) return;
+    if (_drawingPolygon || _drawingPolyline) return;
 
     if (widget.controller.canEditCurrentAnnotation) {
       setState(() => _editing = true);
@@ -107,11 +108,11 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
   void _handleTap(Offset position) {
     switch (widget.controller.annotationType) {
-      case AnnotationType.polyline:
-        _draw(position);
-        break;
       case AnnotationType.text:
         _draw(position, isText: true);
+        break;
+      case AnnotationType.polyline:
+        _startPolylineDrawing(position);
         break;
       case AnnotationType.polygon:
         _startPolygonDrawing(position);
@@ -121,8 +122,27 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
   }
 
+  void _startPolylineDrawing(Offset position) {
+    if (!_drawingPolyline && !_drawingPolygon) {
+      widget.controller.add(ShapeAnnotation(
+        AnnotationType.polyline,
+        strokeWidth: widget.controller.strokeWidth,
+        color: widget.controller.color,
+      ));
+      setState(() => _drawingPolyline = true);
+    }
+    _draw(position);
+  }
+
+  void _completePolyline() => setState(() => _drawingPolyline = false);
+
+  void _cancelPolyline() {
+    widget.controller.undoAnnotation();
+    setState(() => _drawingPolyline = false);
+  }
+
   void _startPolygonDrawing(Offset position) {
-    if (!_drawingPolygon) {
+    if (!_drawingPolygon && !_drawingPolyline) {
       widget.controller.add(PolygonAnnotation(
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
@@ -154,7 +174,10 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
               onPanCancel: _handleDrawEnd,
               onPanStart: _handleDrawStart,
               onPanUpdate: (details) {
-                if (_editing && widget.controller.isShape && !_drawingPolygon) {
+                if (_editing &&
+                    widget.controller.isShape &&
+                    !_drawingPolygon &&
+                    !_drawingPolyline) {
                   _draw(details.localPosition);
                 }
               },
@@ -180,20 +203,21 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             ),
           ),
         ),
-        if (_drawingPolygon)
+        if (_drawingPolygon || _drawingPolyline)
           Align(
             alignment: Alignment.bottomCenter,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 IconButton(
-                  onPressed: _completePolygon,
+                  onPressed:
+                      _drawingPolygon ? _completePolygon : _completePolyline,
                   icon: const Icon(
                     Icons.check_rounded,
                   ),
                 ),
                 IconButton(
-                  onPressed: _cancelPolygon,
+                  onPressed: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
                   icon: const Icon(
                     Icons.close_rounded,
                   ),
