@@ -21,13 +21,12 @@ class AnnotationPainter extends CustomPainter {
           drawTextAnnotations(canvas, annotation as TextAnnotation, size);
           break;
         case ShapeAnnotation:
+        case PolygonAnnotation:
           drawShapeAnnotations(canvas, annotation as ShapeAnnotation, size);
           break;
         case DetectedAnnotation:
           drawDetectedAnnotations(
               canvas, annotation as DetectedAnnotation, size);
-          break;
-        case PolygonAnnotation:
           break;
         default:
           throw UnsupportedError(
@@ -59,6 +58,7 @@ class AnnotationPainter extends CustomPainter {
     switch (annotation.annotationType) {
       case AnnotationType.line:
       case AnnotationType.polyline:
+      case AnnotationType.polygon:
         for (var index = 0; index < visualPoints.length - 1; index++) {
           canvas.drawLine(
             visualPoints[index],
