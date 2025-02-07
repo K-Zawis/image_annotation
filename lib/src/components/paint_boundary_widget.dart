@@ -22,8 +22,7 @@ class AnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AnnotationPaintBoundary> createState() =>
-      _AnnotationPaintBoundaryState();
+  State<AnnotationPaintBoundary> createState() => _AnnotationPaintBoundaryState();
 }
 
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
