@@ -52,6 +52,16 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       return;
     }
 
+    if (isText) {
+      showTextAnnotationDialog(
+        context: context,
+        relativePosition: normalizedPosition,
+        controller: widget.controller,
+        visualImageSize: boundarySize,
+      );
+      return;
+    }
+
     final Annotation? annotation = widget.controller.currentAnnotation;
     if (annotation == null) return;
 
