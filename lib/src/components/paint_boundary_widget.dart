@@ -111,6 +111,10 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         onPanCancel: _onDrawEnd,
         onTapDown: (details) {
           switch (widget.controller.annotationType) {
+            case AnnotationType.polyline:
+            case AnnotationType.text:
+              _draw(details.localPosition);
+              break;
             case AnnotationType.polygon:
               if (!_drawingPolygon) {
                 widget.controller.add(
@@ -124,7 +128,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
               }
               break;
             default:
-              _draw(details.localPosition);
               break;
           }
         },
