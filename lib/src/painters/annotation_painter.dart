@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
@@ -57,8 +59,20 @@ class AnnotationPainter extends CustomPainter {
 
     switch (annotation.annotationType) {
       case AnnotationType.line:
+        for (var index = 0; index < visualPoints.length - 1; index++) {
+          canvas.drawLine(
+            visualPoints[index],
+            visualPoints[index + 1],
+            paint,
+          );
+        }
+        break;
+
       case AnnotationType.polyline:
       case AnnotationType.polygon:
+        if (visualPoints.length == 1) {
+          canvas.drawPoints(PointMode.points, visualPoints, paint);
+        } 
         for (var index = 0; index < visualPoints.length - 1; index++) {
           canvas.drawLine(
             visualPoints[index],
