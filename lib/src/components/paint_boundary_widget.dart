@@ -20,10 +20,12 @@ class ImageAnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ImageAnnotationPaintBoundary> createState() => _ImageAnnotationPaintBoundaryState();
+  State<ImageAnnotationPaintBoundary> createState() =>
+      _ImageAnnotationPaintBoundaryState();
 }
 
-class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBoundary> {
+class _ImageAnnotationPaintBoundaryState
+    extends State<ImageAnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
 
@@ -55,7 +57,8 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   /// Updates the current annotation path with the given [position].
   void _drawShape(Offset position) {
     if (!_editing) return;
-    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
+    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation)
+      return;
 
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null) return;
@@ -75,6 +78,8 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
     }
   }
 
+  void _drawPlyLine(Offset position) {}
+
   void _onDrawEnd() {
     if (!widget.controller.canEditCurrentAnnotation) {
       setState(() {
@@ -85,7 +90,7 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
 
   void _onDrawStart(details) {
     _drawShape(details.localPosition);
-    
+
     if (widget.controller.canEditCurrentAnnotation) {
       setState(() {
         _editing = true;
@@ -107,7 +112,10 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
           widget.onDrawEnd?.call(details);
         },
         onPanCancel: _onDrawEnd,
-        onTapDown: (details) => _drawText(details.localPosition),
+        onTapDown: (details) =>
+            widget.controller.annotationType == AnnotationType.text
+                ? _drawText(details.localPosition)
+                : _drawPlyLine(details.localPosition),
         child: CustomPaint(
           foregroundPainter: AnnotationPainter(widget.controller),
           child: AspectRatio(

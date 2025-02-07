@@ -81,6 +81,7 @@ class AnnotationPainter extends CustomPainter {
         canvas.drawOval(oval, paint);
         break;
 
+      case AnnotationType.polyline:
       default:
         break;
     }
