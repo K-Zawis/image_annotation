@@ -286,6 +286,7 @@ class PolygonAnnotation extends ShapeAnnotation {
       ..writeln("  strokeWidth: $strokeWidth,")
       ..writeln("  color: $color,")
       ..writeln("  normalizedPoints: $normalizedPoints,")
+      ..writeln("  isValidPolygon: $isValid,")
       ..write(")");
 
     return buffer.toString();

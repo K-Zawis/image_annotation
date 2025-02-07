@@ -22,8 +22,7 @@ class AnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AnnotationPaintBoundary> createState() =>
-      _AnnotationPaintBoundaryState();
+  State<AnnotationPaintBoundary> createState() => _AnnotationPaintBoundaryState();
 }
 
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
@@ -70,6 +69,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
           'Position: ${normalizedPosition.dx},${normalizedPosition.dy}',
           name: 'ImageAnnotation',
         );
+        (annotation as PolygonAnnotation).add(normalizedPosition);
+        widget.controller.updateView();
         break;
       default:
         break;
@@ -124,15 +125,16 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                     break;
                   case AnnotationType.polygon:
                     if (!_drawingPolygon) {
-                      // widget.controller.add(
-                      //   PolygonAnnotation(
-                      //     strokeWidth: widget.controller.strokeWidth,
-                      //     color: widget.controller.color,
-                      //   ),
-                      // );
+                      widget.controller.add(
+                        PolygonAnnotation(
+                          strokeWidth: widget.controller.strokeWidth,
+                          color: widget.controller.color,
+                        ),
+                      );
                       _drawingPolygon = true;
                       setState(() {});
                     }
+                    _draw(position: details.localPosition);
                     break;
                   default:
                     break;
@@ -150,34 +152,40 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             ),
           ),
         ),
-        if (_drawingPolygon) Align(
-          alignment: Alignment.bottomCenter,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _drawingPolygon = false;
-                  });
-                },
-                icon: const Icon(
-                  Icons.check_rounded,
+        if (_drawingPolygon)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    final polygon = widget.controller.currentAnnotation!
+                        as PolygonAnnotation;
+                    polygon.close();
+                    log('Polygon: $polygon', name: 'ImageAnnotation');
+                    setState(() {
+                      _drawingPolygon = false;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.check_rounded,
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _drawingPolygon = false;
-                  });
-                },
-                icon: const Icon(
-                  Icons.close_rounded,
+                IconButton(
+                  onPressed: () {
+                    widget.controller.undoAnnotation();
+                    setState(() {
+                      _drawingPolygon = false;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.close_rounded,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

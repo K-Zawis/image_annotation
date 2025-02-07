@@ -27,6 +27,8 @@ class AnnotationPainter extends CustomPainter {
           drawDetectedAnnotations(
               canvas, annotation as DetectedAnnotation, size);
           break;
+        case PolygonAnnotation:
+          break;
         default:
           throw UnsupportedError(
             'Unknown annotation type: ${annotation.runtimeType}',
