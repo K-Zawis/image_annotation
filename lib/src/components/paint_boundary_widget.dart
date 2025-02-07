@@ -33,30 +33,28 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final boundarySize = _boundaryKey.currentContext?.size;
-      if (boundarySize == null) return;
-
-      for (Annotation annotation in widget.controller.annotations) {
-        if (annotation is DetectedAnnotation) {
-          annotation.normalizedFontSize = convertToNormalizedFontSize(
-            fontSize: widget.controller.fontSize,
-            visualImageSize: boundarySize,
-          );
-        }
-      }
-
-      setState(() {});
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeFontSizes);
   }
 
-  void _draw({required Offset position, bool isText = false}) {
+  void _initializeFontSizes() {
+    final boundarySize = _boundaryKey.currentContext?.size;
+    if (boundarySize == null) return;
+
+    for (final Annotation annotation in widget.controller.annotations) {
+      if (annotation is DetectedAnnotation) {
+        annotation.normalizedFontSize = convertToNormalizedFontSize(
+          fontSize: widget.controller.fontSize,
+          visualImageSize: boundarySize,
+        );
+      }
+    }
+
+    setState(() {});
+  }
+
+  void _draw(Offset position, {bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null ||
-        position.dx < 0 ||
-        position.dy < 0 ||
-        position.dx > boundarySize.width ||
-        position.dy > boundarySize.height) {
+    if (boundarySize == null || !_isWithinBounds(position, boundarySize)) {
       return;
     }
 
@@ -76,91 +74,95 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
 
     final Annotation? annotation = widget.controller.currentAnnotation;
-
     if (annotation == null) return;
 
-    switch (widget.controller.currentAnnotation.runtimeType) {
-      case PolygonAnnotation:
-        (annotation as PolygonAnnotation).add(normalizedPosition);
-        widget.controller.updateView();
+    if (annotation is PolygonAnnotation || annotation is ShapeAnnotation) {
+      (annotation as dynamic).add(normalizedPosition);
+      widget.controller.updateView();
+    }
+  }
+
+  bool _isWithinBounds(Offset position, Size size) {
+    return position.dx >= 0 &&
+        position.dy >= 0 &&
+        position.dx <= size.width &&
+        position.dy <= size.height;
+  }
+
+  void _handleDrawStart(_) {
+    if (_drawingPolygon) return;
+
+    if (widget.controller.canEditCurrentAnnotation) {
+      setState(() => _editing = true);
+    }
+
+    widget.onDrawStart?.call(_);
+  }
+
+  void _handleDrawEnd() {
+    if (!widget.controller.canEditCurrentAnnotation) {
+      setState(() => _editing = false);
+    }
+  }
+
+  void _handleTap(Offset position) {
+    switch (widget.controller.annotationType) {
+      case AnnotationType.polyline:
+        _draw(position);
         break;
-      case ShapeAnnotation:
-        (annotation as ShapeAnnotation).add(normalizedPosition);
-        widget.controller.updateView();
+      case AnnotationType.text:
+        _draw(position, isText: true);
+        break;
+      case AnnotationType.polygon:
+        _startPolygonDrawing(position);
         break;
       default:
         break;
     }
   }
 
-  void _onDrawEnd() {
-    if (!widget.controller.canEditCurrentAnnotation) {
-      setState(() {
-        _editing = false;
-      });
+  void _startPolygonDrawing(Offset position) {
+    if (!_drawingPolygon) {
+      widget.controller.add(PolygonAnnotation(
+        strokeWidth: widget.controller.strokeWidth,
+        color: widget.controller.color,
+      ));
+      setState(() => _drawingPolygon = true);
     }
+    _draw(position);
   }
 
-  void _onDrawStart(details) {
-    if (_drawingPolygon) return;
+  void _completePolygon() {
+    final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
+    polygon?.close();
+    setState(() => _drawingPolygon = false);
+  }
 
-    if (widget.controller.canEditCurrentAnnotation) {
-      setState(() {
-        _editing = true;
-      });
-    }
-
-    widget.onDrawStart?.call(details);
+  void _cancelPolygon() {
+    widget.controller.undoAnnotation();
+    setState(() => _drawingPolygon = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
       children: [
         Center(
           child: RepaintBoundary(
             key: _boundaryKey,
             child: GestureDetector(
+              onPanCancel: _handleDrawEnd,
+              onPanStart: _handleDrawStart,
               onPanUpdate: (details) {
-                if (!_editing ||
-                    !widget.controller.isShape ||
-                    _drawingPolygon) {
-                  return;
+                if (_editing && widget.controller.isShape && !_drawingPolygon) {
+                  _draw(details.localPosition);
                 }
-
-                _draw(position: details.localPosition);
               },
-              onPanStart: _onDrawStart,
               onPanEnd: (details) {
-                _onDrawEnd.call();
+                _handleDrawEnd.call();
                 widget.onDrawEnd?.call(details);
               },
-              onPanCancel: _onDrawEnd,
-              onTapDown: (details) {
-                switch (widget.controller.annotationType) {
-                  case AnnotationType.polyline:
-                    _draw(position: details.localPosition);
-                    break;
-                  case AnnotationType.text:
-                    _draw(position: details.localPosition, isText: true);
-                    break;
-                  case AnnotationType.polygon:
-                    if (!_drawingPolygon) {
-                      widget.controller.add(
-                        PolygonAnnotation(
-                          strokeWidth: widget.controller.strokeWidth,
-                          color: widget.controller.color,
-                        ),
-                      );
-                      _drawingPolygon = true;
-                      setState(() {});
-                    }
-                    _draw(position: details.localPosition);
-                    break;
-                  default:
-                    break;
-                }
-              },
+              onTapDown: (details) => _handleTap(details.localPosition),
               child: ListenableBuilder(
                 listenable: widget.controller,
                 builder: (context, child) {
@@ -185,25 +187,13 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 IconButton(
-                  onPressed: () {
-                    final polygon = widget.controller.currentAnnotation!
-                        as PolygonAnnotation;
-                    polygon.close();
-                    setState(() {
-                      _drawingPolygon = false;
-                    });
-                  },
+                  onPressed: _completePolygon,
                   icon: const Icon(
                     Icons.check_rounded,
                   ),
                 ),
                 IconButton(
-                  onPressed: () {
-                    widget.controller.undoAnnotation();
-                    setState(() {
-                      _drawingPolygon = false;
-                    });
-                  },
+                  onPressed: _cancelPolygon,
                   icon: const Icon(
                     Icons.close_rounded,
                   ),
