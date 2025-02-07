@@ -22,7 +22,8 @@ class AnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AnnotationPaintBoundary> createState() => _AnnotationPaintBoundaryState();
+  State<AnnotationPaintBoundary> createState() =>
+      _AnnotationPaintBoundaryState();
 }
 
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
@@ -104,10 +105,10 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             key: _boundaryKey,
             child: GestureDetector(
               onPanUpdate: (details) {
-                if (!_editing) return;
-                if (!widget.controller.isShape) return;
-
-                log('onPanUpdate: ${widget.controller.currentAnnotation}', name: 'ImageAnnotation');
+                if (!_editing ||
+                    !widget.controller.isShape ||
+                    widget.controller.currentAnnotation?.annotationType ==
+                        AnnotationType.polygon) return;
 
                 _draw(position: details.localPosition);
               },
