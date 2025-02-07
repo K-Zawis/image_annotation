@@ -46,7 +46,9 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       visualImageSize: boundarySize,
     );
 
-    final Annotation annotation = widget.controller.currentAnnotation!;
+    final Annotation? annotation = widget.controller.currentAnnotation;
+
+    if (annotation == null) return;
 
     switch (widget.controller.currentAnnotation.runtimeType) {
       case ShapeAnnotation:
