@@ -30,6 +30,25 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
 
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final boundarySize = _boundaryKey.currentContext?.size;
+      if (boundarySize == null) return;
+
+      for (Annotation annotation in widget.controller.annotations) {
+        if (annotation is DetectedAnnotation) {
+          annotation.normalizedFontSize = convertToNormalizedFontSize(
+            fontSize: widget.controller.fontSize,
+            visualImageSize: boundarySize,
+          );
+        }
+      }
+    });
+  }
+
   void _draw(Offset position, {bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
 
