@@ -46,6 +46,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
           );
         }
       }
+
+      setState(() {});
     });
   }
 
