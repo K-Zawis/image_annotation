@@ -61,16 +61,16 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     if (annotation == null) return;
 
     switch (widget.controller.currentAnnotation.runtimeType) {
-      case ShapeAnnotation:
-        (annotation as ShapeAnnotation).add(normalizedPosition);
-        widget.controller.updateView();
-        break;
       case PolygonAnnotation:
         log(
           'Position: ${normalizedPosition.dx},${normalizedPosition.dy}',
           name: 'ImageAnnotation',
         );
         (annotation as PolygonAnnotation).add(normalizedPosition);
+        widget.controller.updateView();
+        break;
+      case ShapeAnnotation:
+        (annotation as ShapeAnnotation).add(normalizedPosition);
         widget.controller.updateView();
         break;
       default:
@@ -109,6 +109,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                     !widget.controller.isShape ||
                     widget.controller.currentAnnotation?.annotationType ==
                         AnnotationType.polygon) return;
+
+                log('onPanUpdate: fired', name: 'ImageAnnotation');
 
                 _draw(position: details.localPosition);
               },
