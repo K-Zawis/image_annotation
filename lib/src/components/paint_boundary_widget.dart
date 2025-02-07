@@ -29,7 +29,6 @@ class AnnotationPaintBoundary extends StatefulWidget {
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
-  bool _drawingPolygon = false;
 
   void _draw(Offset position, {bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
