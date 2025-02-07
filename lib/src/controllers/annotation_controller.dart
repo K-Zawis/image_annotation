@@ -180,7 +180,12 @@ class AnnotationController extends ChangeNotifier {
   Future<void> loadImageSize(
     ImageProvider imageProvider,
   ) async {
-    log('Loading image...', name: 'I/ImageAnnotation');
+    log(
+      'Loading image...',
+      level: 800,
+      name: 'I/ImageAnnotation',
+      time: DateTime.now(),
+    );
 
     final completer = Completer<ui.Image>();
 
@@ -192,7 +197,12 @@ class AnnotationController extends ChangeNotifier {
 
     final ui.Image loadedImage = await completer.future;
 
-    log('Image loaded.', name: 'I/ImageAnnotation');
+    log(
+      'Image loaded.',
+      level: 800,
+      name: 'I/ImageAnnotation',
+      time: DateTime.now(),
+    );
 
     _model.originalImageSize = Size(
       loadedImage.width.toDouble(),
@@ -213,7 +223,12 @@ class AnnotationController extends ChangeNotifier {
     _model.annotations.add(annotation);
     _model.redoStack.clear();
 
-    log('$annotationType added', name: 'I/ImageAnnotation');
+    log(
+      '$annotationType added',
+      level: 800,
+      name: 'I/ImageAnnotation',
+      time: DateTime.now(),
+    );
 
     notifyListeners();
   }
@@ -227,7 +242,12 @@ class AnnotationController extends ChangeNotifier {
     final lastAnnotation = _model.annotations.removeLast();
     _model.redoStack.add([lastAnnotation]);
 
-    log('Undone ${lastAnnotation.annotationType}', name: 'I/ImageAnnotation');
+    log(
+      'Undone ${lastAnnotation.annotationType}',
+      level: 800,
+      name: 'I/ImageAnnotation',
+      time: DateTime.now(),
+    );
 
     notifyListeners();
   }
@@ -241,7 +261,12 @@ class AnnotationController extends ChangeNotifier {
     final lastUndone = _model.redoStack.removeLast();
     _model.annotations.addAll(lastUndone);
 
-    log('Redone ${lastUndone.length} annotation(s)', name: 'I/ImageAnnotation');
+    log(
+      'Redone ${lastUndone.length} annotation(s)',
+      level: 800,
+      name: 'I/ImageAnnotation',
+      time: DateTime.now(),
+    );
 
     notifyListeners();
   }
@@ -258,7 +283,9 @@ class AnnotationController extends ChangeNotifier {
 
     log(
       '${clearedAnnotations.length} annotation(s) have been cleared',
+      level: 800,
       name: 'I/ImageAnnotation',
+      time: DateTime.now(),
     );
 
     notifyListeners();
