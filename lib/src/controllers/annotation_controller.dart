@@ -11,6 +11,9 @@ import '../models/models.dart';
 /// This class serves as the bridge between the UI and the model, providing
 /// state management and utility methods for annotations.
 class AnnotationController extends ChangeNotifier {
+  /// Whether the size of the original image has been loaded.
+  final ValueNotifier<bool> hasLoadedSizeNotifier = ValueNotifier(false);
+
   /// The current annotation model holding all state data.
   final ImageAnnotationModel _model;
 
@@ -88,9 +91,6 @@ class AnnotationController extends ChangeNotifier {
 
   /// The currently selected annotation type.
   AnnotationType get annotationType => _model.currentAnnotationType;
-
-  /// Whether the size of the original image has been loaded.
-  bool get hasLoadedSize => _model.originalImageSize != null;
 
   /// Whether undo operation is possible.
   bool get canUndo => _model.annotations.isNotEmpty;
@@ -209,7 +209,7 @@ class AnnotationController extends ChangeNotifier {
       loadedImage.height.toDouble(),
     );
 
-    notifyListeners();
+    hasLoadedSizeNotifier.value = true;
   }
 
   /// Adds a new annotation to the list and clears the redo stack.

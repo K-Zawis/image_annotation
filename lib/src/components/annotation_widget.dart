@@ -289,10 +289,10 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        return ListenableBuilder(
-          listenable: _controller,
-          builder: (context, child) {
-            if (!_controller.hasLoadedSize) {
+        return ValueListenableBuilder<bool>(
+          valueListenable: _controller.hasLoadedSizeNotifier,
+          builder: (context, hasLoadedSize, child) {
+            if (!hasLoadedSize) {
               return widget.loadingBuilder != null
                   ? widget.loadingBuilder!(context)
                   : const Center(
@@ -304,42 +304,25 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     );
             }
 
+            final annotationBoundary = AnnotationPaintBoundary(
+              imageWidget: widget.imageWidget,
+              controller: _controller,
+              onDrawEnd: widget.onDrawEnd,
+              onDrawStart: _controller.finalizeOnRelease
+                  ? _handleDrawStartWithFinalize
+                  : widget.onDrawStart,
+            );
+
             return widget.builder != null
                 ? widget.builder!(
                     context,
                     _controller,
-                    AnnotationPaintBoundary(
-                      imageWidget: widget.imageWidget,
-                      controller: _controller,
-                      onDrawEnd: widget.onDrawEnd,
-                      onDrawStart: _controller.finalizeOnRelease
-                          ? _handleDrawStartWithFinalize
-                          : widget.onDrawStart,
-                    ),
+                    annotationBoundary,
                   )
                 : GestureDetector(
                     onLongPress: _controller.clearAnnotations,
                     onDoubleTap: _controller.undoAnnotation,
-                    onTapDown: (details) {
-                      if (_controller.annotationType != AnnotationType.text &&
-                          !_controller.finalizeOnRelease) {
-                        _controller.add(
-                          ShapeAnnotation(
-                            _controller.annotationType,
-                            color: _controller.color,
-                            strokeWidth: _controller.strokeWidth,
-                          ),
-                        );
-                      }
-                    },
-                    child: AnnotationPaintBoundary(
-                      imageWidget: widget.imageWidget,
-                      controller: _controller,
-                      onDrawEnd: widget.onDrawEnd,
-                      onDrawStart: _controller.finalizeOnRelease
-                          ? _handleDrawStartWithFinalize
-                          : widget.onDrawStart,
-                    ),
+                    child: annotationBoundary,
                   );
           },
         );

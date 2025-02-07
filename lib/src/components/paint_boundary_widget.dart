@@ -161,14 +161,19 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                     break;
                 }
               },
-              child: CustomPaint(
-                foregroundPainter: AnnotationPainter(widget.controller),
-                child: AspectRatio(
-                  aspectRatio: widget.controller.aspectRatio!,
-                  child: SizedBox.expand(
-                    child: widget.imageWidget,
-                  ),
-                ),
+              child: ListenableBuilder(
+                listenable: widget.controller,
+                builder: (context, child) {
+                  return CustomPaint(
+                    foregroundPainter: AnnotationPainter(widget.controller),
+                    child: AspectRatio(
+                      aspectRatio: widget.controller.aspectRatio!,
+                      child: SizedBox.expand(
+                        child: widget.imageWidget,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
