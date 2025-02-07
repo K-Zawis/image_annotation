@@ -56,6 +56,7 @@ class AnnotationPainter extends CustomPainter {
 
     switch (annotation.annotationType) {
       case AnnotationType.line:
+      case AnnotationType.polyline:
         for (var index = 0; index < visualPoints.length - 1; index++) {
           canvas.drawLine(
             visualPoints[index],
@@ -81,7 +82,6 @@ class AnnotationPainter extends CustomPainter {
         canvas.drawOval(oval, paint);
         break;
 
-      case AnnotationType.polyline:
       default:
         break;
     }
