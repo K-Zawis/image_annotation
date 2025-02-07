@@ -152,15 +152,30 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         ),
         if (_drawingPolygon) Align(
           alignment: Alignment.bottomCenter,
-          child: IconButton(
-            onPressed: () {
-              setState(() {
-                _drawingPolygon = false;
-              });
-            },
-            icon: const Icon(
-              Icons.check_rounded,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _drawingPolygon = false;
+                  });
+                },
+                icon: const Icon(
+                  Icons.check_rounded,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _drawingPolygon = false;
+                  });
+                },
+                icon: const Icon(
+                  Icons.close_rounded,
+                ),
+              ),
+            ],
           ),
         ),
       ],
