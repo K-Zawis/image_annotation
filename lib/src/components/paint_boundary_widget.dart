@@ -164,7 +164,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         break;
     }
   }
-
+  
   List<Widget> _buildOverlayPoints(
     List<Offset> points,
     BoxConstraints constraints,
