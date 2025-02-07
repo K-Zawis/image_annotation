@@ -107,6 +107,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 if (!_editing) return;
                 if (!widget.controller.isShape) return;
 
+                log('onPanUpdate: ${widget.controller.currentAnnotation}', name: 'ImageAnnotation');
+
                 _draw(position: details.localPosition);
               },
               onPanStart: _onDrawStart,
