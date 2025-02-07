@@ -33,7 +33,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeFontSizes);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeFontSizes());
   }
 
   void _initializeFontSizes() {
