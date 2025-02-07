@@ -17,10 +17,17 @@ abstract class Annotation {
   /// colour.
   final Color color;
 
+  /// The type of the annotation that defines the shape.
+  ///
+  /// @see
+  /// [AnnotationType]
+  final AnnotationType annotationType;
+
   /// Creates an [Annotation] instance with the specified [color].
   ///
+  /// - [annotationType] : The [AnnotationType] of this object.
   /// - [color] : The colour of the annotation.
-  Annotation(this.color);
+  Annotation(this.annotationType, {required this.color});
 }
 
 /// Represents a text annotation, which consists of a normalized position, a text
@@ -68,7 +75,7 @@ class TextAnnotation extends Annotation {
           'Y coordinate is not normalized.',
         ),
         _normalizedPosition = normalizedPosition,
-        super(textColor);
+        super(AnnotationType.text, color:textColor);
 
   Offset get normalizedPosition => _normalizedPosition;
 
@@ -106,12 +113,6 @@ class ShapeAnnotation extends Annotation {
   /// Defaults to `2.0` if not explicitly provided.
   final double strokeWidth;
 
-  /// The type of the annotation that defines the shape.
-  ///
-  /// @see
-  /// [AnnotationType]
-  final AnnotationType annotationType;
-
   /// Creates a [ShapeAnnotation] instance.
   ///
   /// - [annotationType] : The [AnnotationType] of this shape.
@@ -119,11 +120,11 @@ class ShapeAnnotation extends Annotation {
   ///   Defaults to `2.0`.
   /// - [color] : The colour of the annotation. Defaults to [Colors.red].
   ShapeAnnotation(
-    this.annotationType, {
+    AnnotationType annotationType, {
     this.strokeWidth = 2.0, // TODO: normalize this value
     Color color = Colors.red,
   })  : _normalizedPoints = [],
-        super(color);
+        super(annotationType, color: color);
 
   /// Provides an unmodifiable view of the normalized points of the shape.
   List<Offset> get normalizedPoints => List.unmodifiable(_normalizedPoints);

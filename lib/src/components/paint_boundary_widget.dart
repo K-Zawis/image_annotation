@@ -31,7 +31,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   bool _editing = true;
   bool _drawingPolygon = false;
 
-  void _draw(Offset position) {
+  void _draw({required Offset position, bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null ||
         position.dx < 0 ||
@@ -46,6 +46,16 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       visualImageSize: boundarySize,
     );
 
+    if (isText) {
+      showTextAnnotationDialog(
+        context: context,
+        relativePosition: normalizedPosition,
+        controller: widget.controller,
+        visualImageSize: boundarySize,
+      );
+      return;
+    }
+
     final Annotation? annotation = widget.controller.currentAnnotation;
 
     if (annotation == null) return;
@@ -54,14 +64,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       case ShapeAnnotation:
         (annotation as ShapeAnnotation).add(normalizedPosition);
         widget.controller.updateView();
-        break;
-      case TextAnnotation:
-        showTextAnnotationDialog(
-          context: context,
-          relativePosition: normalizedPosition,
-          controller: widget.controller,
-          visualImageSize: boundarySize,
-        );
         break;
       case PolygonAnnotation:
         log(
@@ -101,7 +103,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
           if (!_editing) return;
           if (!widget.controller.isShape) return;
 
-          _draw(details.localPosition);
+          _draw(position: details.localPosition);
         },
         onPanStart: _onDrawStart,
         onPanEnd: (details) {
@@ -112,8 +114,10 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         onTapDown: (details) {
           switch (widget.controller.annotationType) {
             case AnnotationType.polyline:
+              _draw(position: details.localPosition);
+              break;
             case AnnotationType.text:
-              _draw(details.localPosition);
+              _draw(position: details.localPosition, isText: true);
               break;
             case AnnotationType.polygon:
               if (!_drawingPolygon) {
