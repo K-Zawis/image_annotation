@@ -39,7 +39,6 @@ void showTextAnnotationDialog({
                     textColor: controller.color,
                     normalizedFontSize: convertToNormalizedFontSize(
                       fontSize: controller.fontSize,
-                      originalImageSize: controller.originalImageSize!,
                       visualImageSize: visualImageSize,
                     ),
                   ),

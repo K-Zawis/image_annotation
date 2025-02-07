@@ -305,6 +305,12 @@ class DetectedAnnotation extends ShapeAnnotation {
   /// The confidence score of the detection, between 0.0 and 1.0.
   final double confidenceScore;
 
+  /// The normalized font size.
+  ///
+  /// Defaults to `0.0`, but when rendered, it should be scaled
+  /// according to the image's visual size.
+  double normalizedFontSize = 0.0;
+
   /// Creates a [DetectedAnnotation] instance.
   ///
   /// - [label] : The label of the detected object.

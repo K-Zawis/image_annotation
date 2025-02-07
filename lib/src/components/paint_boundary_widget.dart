@@ -29,6 +29,25 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   bool _editing = true;
   bool _drawingPolygon = false;
 
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final boundarySize = _boundaryKey.currentContext?.size;
+      if (boundarySize == null) return;
+
+      for (Annotation annotation in widget.controller.annotations) {
+        if (annotation is DetectedAnnotation) {
+          annotation.normalizedFontSize = convertToNormalizedFontSize(
+            fontSize: widget.controller.fontSize,
+            visualImageSize: boundarySize,
+          );
+        }
+      }
+    });
+  }
+
   void _draw({required Offset position, bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null ||
@@ -101,7 +120,9 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             key: _boundaryKey,
             child: GestureDetector(
               onPanUpdate: (details) {
-                if (!_editing || !widget.controller.isShape || _drawingPolygon) {
+                if (!_editing ||
+                    !widget.controller.isShape ||
+                    _drawingPolygon) {
                   return;
                 }
 

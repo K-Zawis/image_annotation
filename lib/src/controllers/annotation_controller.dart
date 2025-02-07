@@ -117,14 +117,10 @@ class AnnotationController extends ChangeNotifier {
       annotations.isNotEmpty ? annotations.last : null;
 
   /// Whether the current [Annotation] is of type [ShapeAnnotation]
-  bool get isShape =>
-      currentAnnotation != null &&
-      currentAnnotation.runtimeType == ShapeAnnotation;
+  bool get isShape => currentAnnotation is ShapeAnnotation;
 
   /// Whether the current [Annotation] is of type [TextAnnotation]
-  bool get isText =>
-      currentAnnotation != null &&
-      currentAnnotation.runtimeType == TextAnnotation;
+  bool get isText => currentAnnotation is TextAnnotation;
 
   /// Whether the current [Annotation] is `null`
   bool get isNull => currentAnnotation == null;
@@ -185,7 +181,7 @@ class AnnotationController extends ChangeNotifier {
     ImageProvider imageProvider,
   ) async {
     log('Loading image...', name: 'I/ImageAnnotation');
-    
+
     final completer = Completer<ui.Image>();
 
     imageProvider.resolve(const ImageConfiguration()).addListener(

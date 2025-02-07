@@ -72,7 +72,7 @@ class AnnotationPainter extends CustomPainter {
       case AnnotationType.polygon:
         if (visualPoints.length == 1) {
           canvas.drawPoints(PointMode.points, visualPoints, paint);
-        } 
+        }
         for (var index = 0; index < visualPoints.length - 1; index++) {
           canvas.drawLine(
             visualPoints[index],
@@ -114,7 +114,6 @@ class AnnotationPainter extends CustomPainter {
         color: annotation.color,
         fontSize: convertToRenderFontSize(
           normalizedFontSize: annotation.normalizedFontSize,
-          originalImageSize: controller.originalImageSize!,
           visualImageSize: visualImageSize,
         ),
       ),
@@ -173,12 +172,7 @@ class AnnotationPainter extends CustomPainter {
       style: TextStyle(
         color: Colors.white,
         fontSize: convertToRenderFontSize(
-          normalizedFontSize: convertToNormalizedFontSize(
-            fontSize: controller.fontSize,
-            originalImageSize: controller.originalImageSize!,
-            visualImageSize: visualImageSize,
-          ),
-          originalImageSize: controller.originalImageSize!,
+          normalizedFontSize: annotation.normalizedFontSize,
           visualImageSize: visualImageSize,
         ),
       ),
