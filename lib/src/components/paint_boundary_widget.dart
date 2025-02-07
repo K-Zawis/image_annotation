@@ -29,7 +29,7 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
 
   /// Shows the text annotation dialogue with the given [position].
   void _drawText(Offset position) {
-    if (widget.controller.annotationType != AnnotationType.text) return;
+    if (!widget.controller.isText) return;
 
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null) return;
@@ -54,7 +54,7 @@ class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBound
   /// Updates the current annotation path with the given [position].
   void _drawShape(Offset position) {
     if (!_editing) return;
-    if (widget.controller.currentAnnotation?.runtimeType != ShapeAnnotation) return;
+    if (!widget.controller.isShape) return;
 
     Size? boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null) return;

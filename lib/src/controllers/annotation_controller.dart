@@ -68,7 +68,7 @@ class AnnotationController extends ChangeNotifier {
 
   /// The aspect ratio of the original image being annotated.
   ///
-  /// Used for maintaining the aspect ratio of the image within 
+  /// Used for maintaining the aspect ratio of the image within
   /// the package
   ///
   /// Returns `null` if the size has not been loaded yet.
@@ -114,6 +114,14 @@ class AnnotationController extends ChangeNotifier {
   /// The most recently added annotation, if any.
   Annotation? get currentAnnotation =>
       annotations.isNotEmpty ? annotations.last : null;
+
+  bool get isShape =>
+      currentAnnotation != null &&
+      currentAnnotation.runtimeType == ShapeAnnotation;
+
+  bool get isText =>
+      currentAnnotation != null &&
+      currentAnnotation.runtimeType == TextAnnotation;
 
   // ==== SETTERS ====
 
@@ -192,7 +200,8 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// Notifies listeners if the value changes. Does nothing if the annotation limit is reached.
   void add(Annotation annotation) {
-    if (_annotationLimit != null && annotations.length >= _annotationLimit) return;
+    if (_annotationLimit != null && annotations.length >= _annotationLimit)
+      return;
 
     _model.annotations.add(annotation);
     _model.redoStack.clear();
