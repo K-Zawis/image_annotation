@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
@@ -5,13 +7,13 @@ import '../painters/painters.dart';
 import '../models/models.dart';
 import '../utils/utils.dart';
 
-class ImageAnnotationPaintBoundary extends StatefulWidget {
+class AnnotationPaintBoundary extends StatefulWidget {
   final Image imageWidget;
   final GestureDragStartCallback? onDrawStart;
   final GestureDragEndCallback? onDrawEnd;
   final AnnotationController controller;
 
-  const ImageAnnotationPaintBoundary({
+  const AnnotationPaintBoundary({
     Key? key,
     required this.imageWidget,
     required this.controller,
@@ -20,77 +22,53 @@ class ImageAnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ImageAnnotationPaintBoundary> createState() =>
-      _ImageAnnotationPaintBoundaryState();
+  State<AnnotationPaintBoundary> createState() =>
+      _AnnotationPaintBoundaryState();
 }
 
-class _ImageAnnotationPaintBoundaryState
-    extends State<ImageAnnotationPaintBoundary> {
+class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
+  bool _drawingPolygon = false;
 
-  /// Shows the text annotation dialogue with the given [position].
-  void _drawText(Offset position) {
+  void _draw(Offset position) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null) return;
-
-    if (position.dx >= 0 &&
-        position.dy >= 0 &&
-        position.dx <= boundarySize.width &&
-        position.dy <= boundarySize.height) {
-      final textPosition = convertToNormalizedPosition(
-        point: position,
-        visualImageSize: boundarySize,
-      );
-
-      showTextAnnotationDialog(
-        context: context,
-        relativePosition: textPosition,
-        controller: widget.controller,
-        visualImageSize: boundarySize,
-      );
+    if (boundarySize == null ||
+        position.dx < 0 ||
+        position.dy < 0 ||
+        position.dx > boundarySize.width ||
+        position.dy > boundarySize.height) {
+      return;
     }
-  }
 
-  /// Updates the current annotation path with the given [position].
-  void _drawShape(Offset position) {
-    if (!_editing) return;
-    if (!widget.controller.isShape) return;
+    final normalizedPosition = convertToNormalizedPosition(
+      point: position,
+      visualImageSize: boundarySize,
+    );
 
-    Size? boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null) return;
+    final Annotation annotation = widget.controller.currentAnnotation!;
 
-    if (position.dx >= 0 &&
-        position.dy >= 0 &&
-        position.dx <= boundarySize.width &&
-        position.dy <= boundarySize.height) {
-      final shapePosition = convertToNormalizedPosition(
-        point: position,
-        visualImageSize: boundarySize,
-      );
-
-      (widget.controller.currentAnnotation! as ShapeAnnotation)
-          .add(shapePosition);
-      widget.controller.updateView();
-    }
-  }
-
-  void _drawPolyLine(Offset position) {
-    Size? boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null) return;
-
-    if (position.dx >= 0 &&
-        position.dy >= 0 &&
-        position.dx <= boundarySize.width &&
-        position.dy <= boundarySize.height) {
-      final polylinePoint = convertToNormalizedPosition(
-        point: position,
-        visualImageSize: boundarySize,
-      );
-
-      (widget.controller.currentAnnotation! as ShapeAnnotation)
-          .add(polylinePoint);
-      widget.controller.updateView();
+    switch (widget.controller.currentAnnotation.runtimeType) {
+      case ShapeAnnotation:
+        (annotation as ShapeAnnotation).add(normalizedPosition);
+        widget.controller.updateView();
+        break;
+      case TextAnnotation:
+        showTextAnnotationDialog(
+          context: context,
+          relativePosition: normalizedPosition,
+          controller: widget.controller,
+          visualImageSize: boundarySize,
+        );
+        break;
+      case PolygonAnnotation:
+        log(
+          'Position: ${normalizedPosition.dx},${normalizedPosition.dy}',
+          name: 'ImageAnnotation',
+        );
+        break;
+      default:
+        break;
     }
   }
 
@@ -103,8 +81,6 @@ class _ImageAnnotationPaintBoundaryState
   }
 
   void _onDrawStart(details) {
-    _drawShape(details.localPosition);
-
     if (widget.controller.canEditCurrentAnnotation) {
       setState(() {
         _editing = true;
@@ -119,7 +95,12 @@ class _ImageAnnotationPaintBoundaryState
     return RepaintBoundary(
       key: _boundaryKey,
       child: GestureDetector(
-        onPanUpdate: (details) => _drawShape(details.localPosition),
+        onPanUpdate: (details) {
+          if (!_editing) return;
+          if (!widget.controller.isShape) return;
+
+          _draw(details.localPosition);
+        },
         onPanStart: _onDrawStart,
         onPanEnd: (details) {
           _onDrawEnd.call();
@@ -128,13 +109,20 @@ class _ImageAnnotationPaintBoundaryState
         onPanCancel: _onDrawEnd,
         onTapDown: (details) {
           switch (widget.controller.annotationType) {
-            case AnnotationType.text:
-              _drawText(details.localPosition);
-              break;
-            case AnnotationType.polyline:
-              _drawPolyLine(details.localPosition);
+            case AnnotationType.polygon:
+              if (!_drawingPolygon) {
+                widget.controller.add(
+                  PolygonAnnotation(
+                    strokeWidth: widget.controller.strokeWidth,
+                    color: widget.controller.color,
+                  ),
+                );
+                _drawingPolygon = true;
+                setState(() {});
+              }
               break;
             default:
+              _draw(details.localPosition);
               break;
           }
         },

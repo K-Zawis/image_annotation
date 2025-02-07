@@ -308,7 +308,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                 ? widget.builder!(
                     context,
                     _controller,
-                    ImageAnnotationPaintBoundary(
+                    AnnotationPaintBoundary(
                       imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
@@ -332,7 +332,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                         );
                       }
                     },
-                    child: ImageAnnotationPaintBoundary(
+                    child: AnnotationPaintBoundary(
                       imageWidget: widget.imageWidget,
                       controller: _controller,
                       onDrawEnd: widget.onDrawEnd,
