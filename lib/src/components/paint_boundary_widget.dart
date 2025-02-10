@@ -209,18 +209,14 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                IconButton(
+                TextButton(
                   onPressed:
                       _drawingPolygon ? _completePolygon : _completePolyline,
-                  icon: const Icon(
-                    Icons.check_rounded,
-                  ),
+                  child: const Text("Close Polygon"),
                 ),
-                IconButton(
+                TextButton(
                   onPressed: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
-                  icon: const Icon(
-                    Icons.close_rounded,
-                  ),
+                  child: const Text("Cancel"),
                 ),
               ],
             ),
