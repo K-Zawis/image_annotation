@@ -163,6 +163,12 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     setState(() => _drawingPolygon = false);
   }
 
+  bool _polygonContainsThreePoints() {
+    final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
+    if (polygon == null) return false;
+    return polygon.normalizedPoints.length >= 3;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -210,8 +216,11 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextButton(
-                  onPressed:
-                      _drawingPolygon ? _completePolygon : _completePolyline,
+                  onPressed: _drawingPolygon
+                      ? (_polygonContainsThreePoints()
+                          ? _completePolygon
+                          : null)
+                      : _completePolyline,
                   child: const Text("Close Polygon"),
                 ),
                 TextButton(
