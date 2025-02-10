@@ -147,9 +147,10 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
-      setState(() => _drawingPolygon = true);
+      _drawingPolygon = true;
     }
     _draw(position);
+    setState(() {});
   }
 
   void _completePolygon() {
