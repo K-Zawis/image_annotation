@@ -270,6 +270,7 @@ class AnnotationController extends ChangeNotifier {
     );
 
     notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   /// Undoes the most recent annotation.

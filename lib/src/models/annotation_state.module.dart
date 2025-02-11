@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'annotation_enums.dart';
-import 'annotation_models.dart';
+import 'annotation_enums.module.dart';
+import 'annotation.module.dart';
 
 /// A model representing the state and configuration of an image annotation tool.
 class ImageAnnotationModel {

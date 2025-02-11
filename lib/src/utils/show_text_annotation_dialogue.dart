@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:image_annotation/src/utils/font_utils.dart';
+import 'package:image_annotation/src/utils/font.utils.dart';
 
 import '../../image_annotation.dart';
 
