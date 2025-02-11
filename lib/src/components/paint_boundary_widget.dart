@@ -10,11 +10,13 @@ class AnnotationPaintBoundary extends StatefulWidget {
   final GestureDragStartCallback? onDrawStart;
   final GestureDragEndCallback? onDrawEnd;
   final AnnotationController controller;
+  final bool polyDrawingActive;
 
   const AnnotationPaintBoundary({
     Key? key,
     required this.imageWidget,
     required this.controller,
+    required this.polyDrawingActive,
     this.onDrawStart,
     this.onDrawEnd,
   }) : super(key: key);
@@ -89,7 +91,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _handleDrawStart(_) {
-    if (widget.controller.polyDrawingActive) return;
+    if (widget.polyDrawingActive) return;
 
     if (widget.controller.canEditCurrentAnnotation) {
       setState(() => _editing = true);
@@ -121,7 +123,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _startPolylineDrawing(Offset position) {
-    if (!widget.controller.polyDrawingActive) {
+    if (!widget.polyDrawingActive) {
       widget.controller.add(ShapeAnnotation(
         AnnotationType.polyline,
         strokeWidth: widget.controller.strokeWidth,
@@ -133,7 +135,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _startPolygonDrawing(Offset position) {
-    if (!widget.controller.polyDrawingActive) {
+    if (!widget.polyDrawingActive) {
       widget.controller.add(PolygonAnnotation(
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
@@ -157,7 +159,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
               onPanUpdate: (details) {
                 if (_editing &&
                     widget.controller.isShape &&
-                    !widget.controller.polyDrawingActive) {
+                    !widget.polyDrawingActive) {
                   _draw(details.localPosition);
                 }
               },

@@ -285,6 +285,10 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     widget.onDrawStart?.call(details);
   }
 
+  bool polyDrawingActive() {
+    return _controller.drawingPolygon || _controller.drawingPolyline;
+  }
+
   void completePolyline() =>
       setState(() => _controller.drawingPolyline = false);
 
@@ -332,6 +336,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
             final annotationBoundary = AnnotationPaintBoundary(
               imageWidget: widget.imageWidget,
               controller: _controller,
+              polyDrawingActive: polyDrawingActive(),
               onDrawEnd: widget.onDrawEnd,
               onDrawStart: _controller.finalizeOnRelease
                   ? _handleDrawStartWithFinalize
@@ -354,7 +359,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                           fit: FlexFit.loose,
                           child: annotationBoundary,
                         ),
-                        if (_controller.polyDrawingActive)
+                        if (polyDrawingActive())
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Row(
