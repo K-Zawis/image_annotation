@@ -149,7 +149,7 @@ class AnnotationController extends ChangeNotifier {
     if (color == newColor) return;
 
     _model.currentColor = newColor;
-    notifyListeners();
+    // notifyListeners();
   }
 
   /// Updates the stroke width for new annotations.
@@ -159,7 +159,7 @@ class AnnotationController extends ChangeNotifier {
     if (strokeWidth == newWidth || newWidth <= 0.0) return;
 
     _model.currentStrokeWidth = newWidth;
-    notifyListeners();
+    // notifyListeners();
   }
 
   /// Updates the font size for text annotations.
@@ -169,7 +169,7 @@ class AnnotationController extends ChangeNotifier {
     if (fontSize == newFontSize || newFontSize <= 0.0) return;
 
     _model.currentFontSize = newFontSize;
-    notifyListeners();
+    // notifyListeners();
   }
 
   /// Updates the current annotation type.
@@ -179,7 +179,7 @@ class AnnotationController extends ChangeNotifier {
     if (annotationType == newAnnotationOption) return;
 
     _model.currentAnnotationType = newAnnotationOption;
-    notifyListeners();
+    // notifyListeners();
   }
 
   /// Updates the state for drawing polygons.
@@ -187,7 +187,7 @@ class AnnotationController extends ChangeNotifier {
   /// Notifies listeners if the value changes.
   set drawingPolygon(bool newState) {
     _model.drawingPolygon = newState;
-    notifyListeners();
+    // notifyListeners();
   }
 
   /// Updates the state for drawing polylines.
@@ -195,7 +195,7 @@ class AnnotationController extends ChangeNotifier {
   /// Notifies listeners if the value changes.
   set drawingPolyline(bool newState) {
     _model.drawingPolyline = newState;
-    notifyListeners();
+    // notifyListeners();
   }
 
   // ==== FUNCTIONS ====
