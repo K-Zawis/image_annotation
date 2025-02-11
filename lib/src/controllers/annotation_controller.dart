@@ -183,13 +183,19 @@ class AnnotationController extends ChangeNotifier {
   }
 
   /// Updates the state for drawing polygons.
+  /// 
+  /// Notifies listeners if the value changes.
   set drawingPolygon(bool newState) {
     _model.drawingPolygon = newState;
+    notifyListeners();
   }
 
   /// Updates the state for drawing polylines.
+  /// 
+  /// Notifies listeners if the value changes.
   set drawingPolyline(bool newState) {
     _model.drawingPolyline = newState;
+    notifyListeners();
   }
 
   // ==== FUNCTIONS ====
