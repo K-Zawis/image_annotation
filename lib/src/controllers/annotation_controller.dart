@@ -132,6 +132,11 @@ class AnnotationController extends ChangeNotifier {
   /// Whether the current [Annotation] is of type [ShapeAnnotation]
   bool get isShape => currentAnnotation is ShapeAnnotation;
 
+  /// Whether the current [Annotation] is of type [ShapeAnnotation]
+  bool get isPoly =>
+      currentAnnotation is PolygonAnnotation ||
+      annotationType == AnnotationType.polyline;
+
   /// Whether the current [Annotation] is of type [TextAnnotation]
   bool get isText => currentAnnotation is TextAnnotation;
 

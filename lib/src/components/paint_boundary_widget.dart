@@ -194,7 +194,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 onPanUpdate: (details) {
                   if (_editing &&
                       widget.controller.isShape &&
-                      !widget.controller.polyDrawingActive) {
+                      !widget.controller.isPoly) {
                     _draw(details.localPosition);
                   }
                 },
