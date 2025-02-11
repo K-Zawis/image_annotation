@@ -11,6 +11,13 @@ import '../models/models.dart';
 /// This class serves as the bridge between the UI and the model, providing
 /// state management and utility methods for annotations.
 class AnnotationController extends ChangeNotifier {
+  /// A notifier to trigger UI layer updates that should occur independently
+  /// of the canvas layer.
+  ///
+  /// This is used to refresh UI components like annotation
+  /// settings, which may change without altering the actual canvas drawing.
+  final ChangeNotifier uiBuildNotifier = ChangeNotifier();
+
   /// Whether the size of the original image has been loaded.
   final ValueNotifier<bool> hasLoadedSizeNotifier = ValueNotifier(false);
 
@@ -21,7 +28,7 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// If `null`, there is no limit to the number of annotations.
   ///
-  /// Set when `ImageAnnotationController` is initialised.
+  /// Set when `AnnotationControllerController` is initialised.
   final int? _annotationLimit;
 
   /// Determines if [ShapeAnnotation] is finalised immediately after drawing.
@@ -149,7 +156,7 @@ class AnnotationController extends ChangeNotifier {
     if (color == newColor) return;
 
     _model.currentColor = newColor;
-    // notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   /// Updates the stroke width for new annotations.
@@ -159,7 +166,7 @@ class AnnotationController extends ChangeNotifier {
     if (strokeWidth == newWidth || newWidth <= 0.0) return;
 
     _model.currentStrokeWidth = newWidth;
-    // notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   /// Updates the font size for text annotations.
@@ -169,7 +176,7 @@ class AnnotationController extends ChangeNotifier {
     if (fontSize == newFontSize || newFontSize <= 0.0) return;
 
     _model.currentFontSize = newFontSize;
-    // notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   /// Updates the current annotation type.
@@ -179,28 +186,28 @@ class AnnotationController extends ChangeNotifier {
     if (annotationType == newAnnotationOption) return;
 
     _model.currentAnnotationType = newAnnotationOption;
-    // notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   /// Updates the state for drawing polygons.
-  /// 
+  ///
   /// Notifies listeners if the value changes.
   set drawingPolygon(bool newState) {
     _model.drawingPolygon = newState;
-    // notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   /// Updates the state for drawing polylines.
-  /// 
+  ///
   /// Notifies listeners if the value changes.
   set drawingPolyline(bool newState) {
     _model.drawingPolyline = newState;
-    // notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   // ==== FUNCTIONS ====
 
-  /// Manually triggers a UI update.
+  /// Manually triggers a CanvasRedraw update.
   void updateView() {
     notifyListeners();
   }
@@ -214,7 +221,7 @@ class AnnotationController extends ChangeNotifier {
     log(
       'Loading image...',
       level: 800,
-      name: 'I/ImageAnnotation',
+      name: 'I/AnnotationController',
       time: DateTime.now(),
     );
 
@@ -231,7 +238,7 @@ class AnnotationController extends ChangeNotifier {
     log(
       'Image loaded.',
       level: 800,
-      name: 'I/ImageAnnotation',
+      name: 'I/AnnotationController',
       time: DateTime.now(),
     );
 
@@ -255,9 +262,9 @@ class AnnotationController extends ChangeNotifier {
     _model.redoStack.clear();
 
     log(
-      '$annotationType added',
+      '${annotationType.name} annotation added',
       level: 800,
-      name: 'I/ImageAnnotation',
+      name: 'I/AnnotationController',
       time: DateTime.now(),
     );
 
@@ -274,13 +281,14 @@ class AnnotationController extends ChangeNotifier {
     _model.redoStack.add([lastAnnotation]);
 
     log(
-      'Undone ${lastAnnotation.annotationType}',
+      'Undone ${lastAnnotation.annotationType.name} annotation',
       level: 800,
-      name: 'I/ImageAnnotation',
+      name: 'I/AnnotationController',
       time: DateTime.now(),
     );
 
     notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   /// Redoes the most recently undone annotation(s).
@@ -295,11 +303,12 @@ class AnnotationController extends ChangeNotifier {
     log(
       'Redone ${lastUndone.length} annotation(s)',
       level: 800,
-      name: 'I/ImageAnnotation',
+      name: 'I/AnnotationController',
       time: DateTime.now(),
     );
 
     notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   /// Clears all annotations and moves them to the redo stack.
@@ -315,17 +324,19 @@ class AnnotationController extends ChangeNotifier {
     log(
       '${clearedAnnotations.length} annotation(s) have been cleared',
       level: 800,
-      name: 'I/ImageAnnotation',
+      name: 'I/AnnotationController',
       time: DateTime.now(),
     );
 
     notifyListeners();
+    uiBuildNotifier.notifyListeners();
   }
 
   @override
   void dispose() {
     _model.annotations.clear();
     _model.redoStack.clear();
+    uiBuildNotifier.dispose();
     super.dispose();
   }
 }
