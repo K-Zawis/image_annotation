@@ -105,17 +105,11 @@ class AnnotationController extends ChangeNotifier {
   /// Whether redo operation is possible.
   bool get canRedo => _model.redoStack.isNotEmpty;
 
-  /// Returns `true` if polygon drawing mode is active.
+  /// Returns `true` if poly drawing mode is active.
   ///
-  /// This reflects the current state of [_model.drawingPolygon] and determines
-  /// whether the user is in the process of drawing a polygon.
-  bool get drawingPolygon => _model.drawingPolygon;
-
-  /// Returns `true` if polyline drawing mode is active.
-  ///
-  /// This reflects the current state of [_model.drawingPolyline] and determines
-  /// whether the user is in the process of drawing a polyline.
-  bool get drawingPolyline => _model.drawingPolyline;
+  /// This reflects the current state of [_model.polyDrawingActive] and determines
+  /// whether the user is in the process of drawing a polygon or polyline.
+  bool get polyDrawingActive => _model.polyDrawingActive;
 
   /// The maximum number of annotations allowed.
   ///
@@ -143,9 +137,6 @@ class AnnotationController extends ChangeNotifier {
 
   /// Whether the current [Annotation] is `null`
   bool get isNull => currentAnnotation == null;
-
-  /// Whether drawingPolygon is `true` or drawingPolyline is `true`.
-  bool get polyDrawingActive => drawingPolygon || drawingPolyline;
 
   // ==== SETTERS ====
 
@@ -189,19 +180,11 @@ class AnnotationController extends ChangeNotifier {
     uiBuildNotifier.notifyListeners();
   }
 
-  /// Updates the state for drawing polygons.
+  /// Updates the state for poly drawing mode.
   ///
   /// Notifies listeners if the value changes.
-  set drawingPolygon(bool newState) {
-    _model.drawingPolygon = newState;
-    uiBuildNotifier.notifyListeners();
-  }
-
-  /// Updates the state for drawing polylines.
-  ///
-  /// Notifies listeners if the value changes.
-  set drawingPolyline(bool newState) {
-    _model.drawingPolyline = newState;
+  set polyDrawingActive(bool newState) {
+    _model.polyDrawingActive = newState;
     uiBuildNotifier.notifyListeners();
   }
 

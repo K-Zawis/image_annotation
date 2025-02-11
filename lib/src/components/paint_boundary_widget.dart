@@ -27,6 +27,8 @@ class AnnotationPaintBoundary extends StatefulWidget {
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
+  bool _drawingPolygon = false;
+  bool _drawingPolyline = false;
 
   @override
   void initState() {
@@ -127,7 +129,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
-      setState(() => widget.controller.drawingPolyline = true);
+      setState(() => _drawingPolyline = true);
+      widget.controller.polyDrawingActive = _drawingPolygon || _drawingPolyline;
     }
     _draw(position);
   }
@@ -138,29 +141,35 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
-      widget.controller.drawingPolygon = true;
+      _drawingPolygon = true;
+      widget.controller.polyDrawingActive = _drawingPolygon || _drawingPolyline;
     }
     _draw(position);
     setState(() {});
   }
 
-  void _completePolyline() =>
-      setState(() => widget.controller.drawingPolyline = false);
+  void _completePolyline() {
+    setState(() => _drawingPolyline = false);
+    widget.controller.polyDrawingActive = _drawingPolygon || _drawingPolyline;
+  }
 
   void _cancelPolyline() {
     widget.controller.undoAnnotation();
-    setState(() => widget.controller.drawingPolyline = false);
+    setState(() => _drawingPolyline = false);
+    widget.controller.polyDrawingActive = _drawingPolygon || _drawingPolyline;
   }
 
   void _completePolygon() {
     final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
     polygon?.close();
-    setState(() => widget.controller.drawingPolygon = false);
+    setState(() => _drawingPolygon = false);
+    widget.controller.polyDrawingActive = _drawingPolygon || _drawingPolyline;
   }
 
   void _cancelPolygon() {
     widget.controller.undoAnnotation();
-    setState(() => widget.controller.drawingPolygon = false);
+    setState(() => _drawingPolygon = false);
+    widget.controller.polyDrawingActive = _drawingPolygon || _drawingPolyline;
   }
 
   bool _polygonContainsThreePoints() {
@@ -219,7 +228,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextButton(
-                  onPressed: widget.controller.drawingPolygon
+                  onPressed: _drawingPolygon
                       ? (_polygonContainsThreePoints()
                           ? _completePolygon
                           : null)
@@ -227,9 +236,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                   child: const Text("Close Polygon"),
                 ),
                 TextButton(
-                  onPressed: widget.controller.drawingPolygon
-                      ? _cancelPolygon
-                      : _cancelPolyline,
+                  onPressed: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
                   child: const Text("Cancel"),
                 ),
               ],

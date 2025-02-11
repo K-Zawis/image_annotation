@@ -43,19 +43,11 @@ class ImageAnnotationModel {
   /// Applies only to text annotations.
   double currentFontSize;
 
-  /// Whether the user is currently drawing a polygon.
+  /// Whether the user is currently drawing a poly annotation.
   ///
-  /// When `true`, the user has initiated polygon drawing mode. This can be
-  /// used to adjust the UI, such as hiding certain elements and showing
-  /// confirmation buttons relevant to polygon completion.
-  bool drawingPolygon;
-
-  /// Whether the user is currently drawing a polyline.
-  ///
-  /// When `true`, the user has started drawing a polyline. Similar to
-  /// [drawingPolygon], this can be used to modify the UI when polyline 
-  /// editing is active.
-  bool drawingPolyline;
+  /// When `true`, the user has started drawing a polyline or polygon. This can be
+  /// used to adjust the UI, such as hiding certain elements.
+  bool polyDrawingActive;
 
   /// Creates an instance of [ImageAnnotationModel].
   ///
@@ -78,15 +70,13 @@ class ImageAnnotationModel {
     double? fontSize,
     List<Annotation>? annotations,
     List<List<Annotation>>? redoStack,
-    bool? drawingPolygon,
-    bool? drawingPolyline,
+    bool? isPolyDrawingActive,
   })  : currentColor = color ?? Colors.red,
         currentStrokeWidth = strokeWidth ?? 2.0,
         currentFontSize = fontSize ?? 16.0,
         annotations = annotations ?? <Annotation>[],
         redoStack = redoStack ?? <List<Annotation>>[],
-        drawingPolygon = drawingPolygon ?? false,
-        drawingPolyline = drawingPolyline ?? false;
+        polyDrawingActive = isPolyDrawingActive ?? false;
 
   /// Creates a copy of the model with updated fields.
   ///
@@ -120,8 +110,7 @@ class ImageAnnotationModel {
     Color? color,
     double? strokeWidth,
     double? fontSize,
-    bool? drawingPolygon,
-    bool? drawingPolyline,
+    bool? isPolyDrawingActive,
   }) {
     return ImageAnnotationModel(
       currentAnnotationType: annotationType ?? currentAnnotationType,
@@ -131,8 +120,7 @@ class ImageAnnotationModel {
       color: color ?? currentColor,
       strokeWidth: strokeWidth ?? currentStrokeWidth,
       fontSize: fontSize ?? currentFontSize,
-      drawingPolygon: drawingPolygon ?? this.drawingPolygon,
-      drawingPolyline: drawingPolyline ?? this.drawingPolyline,
+      isPolyDrawingActive: isPolyDrawingActive ?? polyDrawingActive,
     );
   }
 }
