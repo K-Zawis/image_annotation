@@ -27,8 +27,6 @@ class AnnotationPaintBoundary extends StatefulWidget {
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
-  bool _drawingPolygon = false;
-  bool _drawingPolyline = false;
 
   @override
   void initState() {
@@ -91,7 +89,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _handleDrawStart(_) {
-    if (_drawingPolygon || _drawingPolyline) return;
+    if (widget.controller.polyDrawingActive) return;
 
     if (widget.controller.canEditCurrentAnnotation) {
       setState(() => _editing = true);
@@ -123,31 +121,32 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _startPolylineDrawing(Offset position) {
-    if (!_drawingPolyline && !_drawingPolygon) {
+    if (!widget.controller.polyDrawingActive) {
       widget.controller.add(ShapeAnnotation(
         AnnotationType.polyline,
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
-      setState(() => _drawingPolyline = true);
+      setState(() => widget.controller.drawingPolyline = true);
     }
     _draw(position);
   }
 
-  void _completePolyline() => setState(() => _drawingPolyline = false);
+  void _completePolyline() =>
+      setState(() => widget.controller.drawingPolyline = false);
 
   void _cancelPolyline() {
     widget.controller.undoAnnotation();
-    setState(() => _drawingPolyline = false);
+    setState(() => widget.controller.drawingPolyline = false);
   }
 
   void _startPolygonDrawing(Offset position) {
-    if (!_drawingPolygon && !_drawingPolyline) {
+    if (!widget.controller.polyDrawingActive) {
       widget.controller.add(PolygonAnnotation(
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
-      _drawingPolygon = true;
+      widget.controller.drawingPolygon = true;
     }
     _draw(position);
     setState(() {});
@@ -156,12 +155,12 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   void _completePolygon() {
     final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
     polygon?.close();
-    setState(() => _drawingPolygon = false);
+    setState(() => widget.controller.drawingPolygon = false);
   }
 
   void _cancelPolygon() {
     widget.controller.undoAnnotation();
-    setState(() => _drawingPolygon = false);
+    setState(() => widget.controller.drawingPolygon = false);
   }
 
   bool _polygonContainsThreePoints() {
@@ -183,8 +182,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
               onPanUpdate: (details) {
                 if (_editing &&
                     widget.controller.isShape &&
-                    !_drawingPolygon &&
-                    !_drawingPolyline) {
+                    !widget.controller.polyDrawingActive) {
                   _draw(details.localPosition);
                 }
               },
@@ -210,14 +208,14 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             ),
           ),
         ),
-        if (_drawingPolygon || _drawingPolyline)
+        if (widget.controller.polyDrawingActive)
           Align(
             alignment: Alignment.bottomCenter,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextButton(
-                  onPressed: _drawingPolygon
+                  onPressed: widget.controller.drawingPolygon
                       ? (_polygonContainsThreePoints()
                           ? _completePolygon
                           : null)
@@ -225,7 +223,9 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                   child: const Text("Close Polygon"),
                 ),
                 TextButton(
-                  onPressed: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
+                  onPressed: widget.controller.drawingPolygon
+                      ? _cancelPolygon
+                      : _cancelPolyline,
                   child: const Text("Cancel"),
                 ),
               ],

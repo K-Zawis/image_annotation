@@ -43,6 +43,20 @@ class ImageAnnotationModel {
   /// Applies only to text annotations.
   double currentFontSize;
 
+  /// Whether the user is currently drawing a polygon.
+  ///
+  /// When `true`, the user has initiated polygon drawing mode. This can be
+  /// used to adjust the UI, such as hiding certain elements and showing
+  /// confirmation buttons relevant to polygon completion.
+  bool drawingPolygon;
+
+  /// Whether the user is currently drawing a polyline.
+  ///
+  /// When `true`, the user has started drawing a polyline. Similar to
+  /// [drawingPolygon], this can be used to modify the UI when polyline 
+  /// editing is active.
+  bool drawingPolyline;
+
   /// Creates an instance of [ImageAnnotationModel].
   ///
   /// [currentAnnotationType] is required and must be provided.
@@ -54,6 +68,8 @@ class ImageAnnotationModel {
   /// - [color] : Defaults to `Colors.red`.
   /// - [strokeWidth] : Defaults to `2.0`.
   /// - [fontSize] : Defaults to `16.0`.
+  /// - [drawingPolygon] : Defaults to `false`.
+  /// - [drawingPolyline] : Defaults to `false`.
   ImageAnnotationModel({
     required this.currentAnnotationType,
     this.originalImageSize,
@@ -62,11 +78,15 @@ class ImageAnnotationModel {
     double? fontSize,
     List<Annotation>? annotations,
     List<List<Annotation>>? redoStack,
+    bool? drawingPolygon,
+    bool? drawingPolyline,
   })  : currentColor = color ?? Colors.red,
         currentStrokeWidth = strokeWidth ?? 2.0,
         currentFontSize = fontSize ?? 16.0,
         annotations = annotations ?? <Annotation>[],
-        redoStack = redoStack ?? <List<Annotation>>[];
+        redoStack = redoStack ?? <List<Annotation>>[],
+        drawingPolygon = drawingPolygon ?? false,
+        drawingPolyline = drawingPolyline ?? false;
 
   /// Creates a copy of the model with updated fields.
   ///
@@ -90,6 +110,8 @@ class ImageAnnotationModel {
   /// - [color] : The updated colour for annotations.
   /// - [strokeWidth] : The new stroke width.
   /// - [fontSize] : The updated font size.
+  /// - [drawingPolygon] : The updated state for polygon drawing.
+  /// - [drawingPolyline] : The updated state for polyline drawing.
   ImageAnnotationModel copyWith({
     AnnotationType? annotationType,
     List<Annotation>? annotations,
@@ -98,6 +120,8 @@ class ImageAnnotationModel {
     Color? color,
     double? strokeWidth,
     double? fontSize,
+    bool? drawingPolygon,
+    bool? drawingPolyline,
   }) {
     return ImageAnnotationModel(
       currentAnnotationType: annotationType ?? currentAnnotationType,
@@ -107,6 +131,8 @@ class ImageAnnotationModel {
       color: color ?? currentColor,
       strokeWidth: strokeWidth ?? currentStrokeWidth,
       fontSize: fontSize ?? currentFontSize,
+      drawingPolygon: drawingPolygon ?? this.drawingPolygon,
+      drawingPolyline: drawingPolyline ?? this.drawingPolyline,
     );
   }
 }

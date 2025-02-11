@@ -98,6 +98,18 @@ class AnnotationController extends ChangeNotifier {
   /// Whether redo operation is possible.
   bool get canRedo => _model.redoStack.isNotEmpty;
 
+  /// Returns `true` if polygon drawing mode is active.
+  ///
+  /// This reflects the current state of [_model.drawingPolygon] and determines
+  /// whether the user is in the process of drawing a polygon.
+  bool get drawingPolygon => _model.drawingPolygon;
+
+  /// Returns `true` if polyline drawing mode is active.
+  ///
+  /// This reflects the current state of [_model.drawingPolyline] and determines
+  /// whether the user is in the process of drawing a polyline.
+  bool get drawingPolyline => _model.drawingPolyline;
+
   /// The maximum number of annotations allowed.
   ///
   /// Returns `null` if no limit is set.
@@ -124,6 +136,9 @@ class AnnotationController extends ChangeNotifier {
 
   /// Whether the current [Annotation] is `null`
   bool get isNull => currentAnnotation == null;
+
+  /// Whether drawingPolygon is `true` or drawingPolyline is `true`.
+  bool get polyDrawingActive => drawingPolygon || drawingPolyline;
 
   // ==== SETTERS ====
 
@@ -165,6 +180,16 @@ class AnnotationController extends ChangeNotifier {
 
     _model.currentAnnotationType = newAnnotationOption;
     notifyListeners();
+  }
+
+  /// Updates the state for drawing polygons.
+  set drawingPolygon(bool newState) {
+    _model.drawingPolygon = newState;
+  }
+
+  /// Updates the state for drawing polylines.
+  set drawingPolyline(bool newState) {
+    _model.drawingPolyline = newState;
   }
 
   // ==== FUNCTIONS ====
