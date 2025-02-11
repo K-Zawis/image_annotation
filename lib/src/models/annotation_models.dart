@@ -1,39 +1,63 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
+import '../utils/utils.dart';
 import 'annotation_enums.dart';
 
-/// A base class for defining all variations of annotations.
+/// An abstract base class for all types of annotations.
 ///
-/// This class serves as the foundation for specific annotation types such as
-/// [ShapeAnnotation] and [TextAnnotation]. It includes properties common to
-/// all annotations, such:
-/// - [Path] : for the shape/position,
-/// - [Color] : for the visual appearance,
-/// - [AnnotationType] : to classify the annotation.
+/// This class serves as the foundation for specific annotation types, such as
+/// [ShapeAnnotation] and [TextAnnotation]. It defines the common properties and
+/// behaviors that all annotations must have. Subclasses are expected to extend
+/// this class and provide additional properties or methods relevant to their
+/// specific annotation type.
 ///
-/// Subclasses are expected to extend this class and provide additional
-/// properties or methods relevant to their specific annotation type.
+/// Subclasses must also override the [render] method to define how the annotation
+/// should be drawn on a [Canvas].
 abstract class Annotation {
+  /// The path that defines the shape and position of the annotation.
+  ///
+  /// The [path] represents the geometric form of the annotation. This could be 
+  /// a series of points, lines, or other shapes that define the annotation's 
+  /// visual structure.
   final Path path = Path();
 
-  /// The colour of the annotation.
+  /// The color of the annotation.
   ///
-  /// This defines the visual appearance of the annotation, such as the stroke
-  /// colour.
+  /// This defines the visual appearance of the annotation, including the color 
+  /// used for strokes, fills, and other graphical elements.
   final Color color;
 
-  /// The type of the annotation that defines the shape.
+  /// The type of annotation that defines the specific shape or structure.
   ///
-  /// @see
-  /// [AnnotationType]
+  /// The [annotationType] determines what kind of annotation is being used, 
+  /// such as a polygon, text, or line. The type helps distinguish between 
+  /// different annotation types that may require different rendering logic.
+  ///
+  /// @see [AnnotationType]
   final AnnotationType annotationType;
 
-  /// Creates an [Annotation] instance with the specified [color].
+  /// Creates an [Annotation] with the specified [color] and [annotationType].
   ///
-  /// - [annotationType] : The [AnnotationType] of this object.
-  /// - [path] : The [Path] that defines the shape and position of the annotation.
-  /// - [color] : The [Color] of the annotation.
+  /// The constructor initializes the [Annotation] with the provided 
+  /// [annotationType] and [color], while the [path] is set to its default value.
+  ///
+  /// - [annotationType] : The type of the annotation, specifying its shape or 
+  /// structure.
+  /// - [color] : The color used to render the annotation.
   Annotation(this.annotationType, {required this.color});
+
+  /// Renders the annotation on the given [canvas] within the specified [size].
+  ///
+  /// This method is abstract and must be implemented by subclasses. Each specific 
+  /// annotation type should override this method to provide custom rendering logic 
+  /// for how the annotation is drawn on the canvas.
+  /// 
+  /// @see 
+  /// [Canvas]
+  /// [AnnotationPainter]
+  void render(Canvas canvas, Size size);
 }
 
 /// Represents a text annotation, which consists of a normalized position, a text
@@ -84,6 +108,38 @@ class TextAnnotation extends Annotation {
         super(AnnotationType.text, color: textColor);
 
   Offset get normalizedPosition => _normalizedPosition;
+
+  @override
+  void render(Canvas canvas, Size size) {
+    final textSpan = TextSpan(
+      text: text,
+      style: TextStyle(
+        color: color,
+        fontSize: convertToRenderFontSize(
+          normalizedFontSize: normalizedFontSize,
+          visualImageSize: size,
+        ),
+      ),
+    );
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+
+    textPainter.layout();
+
+    final Offset renderPosition = convertToRenderPosition(
+      relativePoint: normalizedPosition,
+      visualImageSize: size,
+    );
+
+    final textPosition = Offset(
+      renderPosition.dx - textPainter.width / 2,
+      renderPosition.dy - textPainter.height / 2,
+    );
+
+    textPainter.paint(canvas, textPosition);
+  }
 
   @override
   String toString() {
@@ -152,6 +208,67 @@ class ShapeAnnotation extends Annotation {
     assert(point.dx >= 0 && point.dx <= 1, 'X coordinate is not normalized.');
     assert(point.dy >= 0 && point.dy <= 1, 'Y coordinate is not normalized.');
     _normalizedPoints.add(point);
+  }
+
+  @override
+  void render(Canvas canvas, Size size) {
+    if (normalizedPoints.isEmpty) return;
+
+    final Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    List<Offset> visualPoints = normalizedPoints
+        .map((point) => convertToRenderPosition(
+              relativePoint: point,
+              visualImageSize: size,
+            ))
+        .toList();
+
+    switch (annotationType) {
+      case AnnotationType.line:
+        for (var index = 0; index < visualPoints.length - 1; index++) {
+          canvas.drawLine(
+            visualPoints[index],
+            visualPoints[index + 1],
+            paint,
+          );
+        }
+        break;
+
+      case AnnotationType.polyline:
+        if (visualPoints.length == 1) {
+          canvas.drawPoints(PointMode.points, visualPoints, paint);
+        }
+        for (var index = 0; index < visualPoints.length - 1; index++) {
+          canvas.drawLine(
+            visualPoints[index],
+            visualPoints[index + 1],
+            paint,
+          );
+        }
+        break;
+
+      case AnnotationType.rectangle:
+        final rect = Rect.fromPoints(
+          visualPoints.first,
+          visualPoints.last,
+        );
+        canvas.drawRect(rect, paint);
+        break;
+
+      case AnnotationType.oval:
+        final oval = Rect.fromPoints(
+          visualPoints.first,
+          visualPoints.last,
+        );
+        canvas.drawOval(oval, paint);
+        break;
+
+      default:
+        break;
+    }
   }
 
   @override
@@ -283,6 +400,34 @@ class PolygonAnnotation extends ShapeAnnotation {
     double cross4 = crossProduct(cd, cb);
 
     return (cross1 * cross2 < 0) && (cross3 * cross4 < 0);
+  }
+
+  @override
+  void render(Canvas canvas, Size size) {
+    if (normalizedPoints.isEmpty) return;
+
+    final Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    List<Offset> visualPoints = normalizedPoints
+        .map((point) => convertToRenderPosition(
+              relativePoint: point,
+              visualImageSize: size,
+            ))
+        .toList();
+
+    if (visualPoints.length == 1) {
+      canvas.drawPoints(PointMode.points, visualPoints, paint);
+    }
+    for (var index = 0; index < visualPoints.length - 1; index++) {
+      canvas.drawLine(
+        visualPoints[index],
+        visualPoints[index + 1],
+        paint,
+      );
+    }
   }
 
   @override
