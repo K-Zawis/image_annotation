@@ -91,7 +91,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _handleDrawStart(_) {
-    if (widget.controller.polyDrawingActive) return;
+    if (widget.controller.isPoly) return;
 
     if (widget.controller.canEditCurrentAnnotation) {
       setState(() => _editing = true);
