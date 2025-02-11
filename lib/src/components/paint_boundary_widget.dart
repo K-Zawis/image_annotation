@@ -12,11 +12,13 @@ class AnnotationPaintBoundary extends StatefulWidget {
   final GestureDragStartCallback? onDrawStart;
   final GestureDragEndCallback? onDrawEnd;
   final AnnotationController controller;
+  final bool polyDrawingActive;
 
   const AnnotationPaintBoundary({
     Key? key,
     required this.imageWidget,
     required this.controller,
+    required this.polyDrawingActive,
     this.onDrawStart,
     this.onDrawEnd,
   }) : super(key: key);
