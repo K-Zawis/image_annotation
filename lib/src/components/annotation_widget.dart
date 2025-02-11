@@ -285,35 +285,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     widget.onDrawStart?.call(details);
   }
 
-  bool polyDrawingActive() {
-    return _controller.drawingPolygon || _controller.drawingPolyline;
-  }
-
-  void completePolyline() =>
-      setState(() => _controller.drawingPolyline = false);
-
-  void cancelPolyline() {
-    _controller.undoAnnotation();
-    setState(() => _controller.drawingPolyline = false);
-  }
-
-  void completePolygon() {
-    final polygon = _controller.currentAnnotation as PolygonAnnotation?;
-    polygon?.close();
-    setState(() => _controller.drawingPolygon = false);
-  }
-
-  void cancelPolygon() {
-    _controller.undoAnnotation();
-    setState(() => _controller.drawingPolygon = false);
-  }
-
-  bool _polygonContainsThreePoints() {
-    final polygon = _controller.currentAnnotation as PolygonAnnotation?;
-    if (polygon == null) return false;
-    return polygon.normalizedPoints.length >= 3;
-  }
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -336,7 +307,6 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
             final annotationBoundary = AnnotationPaintBoundary(
               imageWidget: widget.imageWidget,
               controller: _controller,
-              polyDrawingActive: polyDrawingActive(),
               onDrawEnd: widget.onDrawEnd,
               onDrawStart: _controller.finalizeOnRelease
                   ? _handleDrawStartWithFinalize
@@ -352,38 +322,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                 : GestureDetector(
                     onLongPress: _controller.clearAnnotations,
                     onDoubleTap: _controller.undoAnnotation,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          fit: FlexFit.loose,
-                          child: annotationBoundary,
-                        ),
-                        if (polyDrawingActive())
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                TextButton(
-                                  onPressed: _controller.drawingPolygon
-                                      ? (_polygonContainsThreePoints()
-                                          ? completePolygon
-                                          : null)
-                                      : completePolyline,
-                                  child: const Text("Close Polygon"),
-                                ),
-                                TextButton(
-                                  onPressed: _controller.drawingPolygon
-                                      ? cancelPolygon
-                                      : cancelPolyline,
-                                  child: const Text("Cancel"),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
+                    child: annotationBoundary,
                   );
           },
         );

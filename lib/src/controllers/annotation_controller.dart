@@ -144,6 +144,9 @@ class AnnotationController extends ChangeNotifier {
   /// Whether the current [Annotation] is `null`
   bool get isNull => currentAnnotation == null;
 
+  /// Whether drawingPolygon is `true` or drawingPolyline is `true`.
+  bool get polyDrawingActive => drawingPolygon || drawingPolyline;
+
   // ==== SETTERS ====
 
   /// Updates the colour for new annotations.

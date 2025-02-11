@@ -10,13 +10,11 @@ class AnnotationPaintBoundary extends StatefulWidget {
   final GestureDragStartCallback? onDrawStart;
   final GestureDragEndCallback? onDrawEnd;
   final AnnotationController controller;
-  final bool polyDrawingActive;
 
   const AnnotationPaintBoundary({
     Key? key,
     required this.imageWidget,
     required this.controller,
-    required this.polyDrawingActive,
     this.onDrawStart,
     this.onDrawEnd,
   }) : super(key: key);
@@ -91,7 +89,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _handleDrawStart(_) {
-    if (widget.polyDrawingActive) return;
+    if (widget.controller.polyDrawingActive) return;
 
     if (widget.controller.canEditCurrentAnnotation) {
       setState(() => _editing = true);
@@ -123,7 +121,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _startPolylineDrawing(Offset position) {
-    if (!widget.polyDrawingActive) {
+    if (!widget.controller.polyDrawingActive) {
       widget.controller.add(ShapeAnnotation(
         AnnotationType.polyline,
         strokeWidth: widget.controller.strokeWidth,
@@ -135,7 +133,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _startPolygonDrawing(Offset position) {
-    if (!widget.polyDrawingActive) {
+    if (!widget.controller.polyDrawingActive) {
       widget.controller.add(PolygonAnnotation(
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
@@ -146,45 +144,97 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     setState(() {});
   }
 
+  void _completePolyline() =>
+      setState(() => widget.controller.drawingPolyline = false);
+
+  void _cancelPolyline() {
+    widget.controller.undoAnnotation();
+    setState(() => widget.controller.drawingPolyline = false);
+  }
+
+  void _completePolygon() {
+    final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
+    polygon?.close();
+    setState(() => widget.controller.drawingPolygon = false);
+  }
+
+  void _cancelPolygon() {
+    widget.controller.undoAnnotation();
+    setState(() => widget.controller.drawingPolygon = false);
+  }
+
+  bool _polygonContainsThreePoints() {
+    final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
+    if (polygon == null) return false;
+    return polygon.normalizedPoints.length >= 3;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Center(
-          child: RepaintBoundary(
-            key: _boundaryKey,
-            child: GestureDetector(
-              onPanCancel: _handleDrawEnd,
-              onPanStart: _handleDrawStart,
-              onPanUpdate: (details) {
-                if (_editing &&
-                    widget.controller.isShape &&
-                    !widget.polyDrawingActive) {
-                  _draw(details.localPosition);
-                }
-              },
-              onPanEnd: (details) {
-                _handleDrawEnd.call();
-                widget.onDrawEnd?.call(details);
-              },
-              onTapDown: (details) => _handleTap(details.localPosition),
-              child: ListenableBuilder(
-                listenable: widget.controller,
-                builder: (context, child) {
-                  return CustomPaint(
-                    foregroundPainter: AnnotationPainter(widget.controller),
-                    child: AspectRatio(
-                      aspectRatio: widget.controller.aspectRatio!,
-                      child: SizedBox.expand(
-                        child: widget.imageWidget,
-                      ),
-                    ),
-                  );
+        Flexible(
+          fit: FlexFit.loose,
+          child: Center(
+            child: RepaintBoundary(
+              key: _boundaryKey,
+              child: GestureDetector(
+                onPanCancel: _handleDrawEnd,
+                onPanStart: _handleDrawStart,
+                onPanUpdate: (details) {
+                  if (_editing &&
+                      widget.controller.isShape &&
+                      !widget.controller.polyDrawingActive) {
+                    _draw(details.localPosition);
+                  }
                 },
+                onPanEnd: (details) {
+                  _handleDrawEnd.call();
+                  widget.onDrawEnd?.call(details);
+                },
+                onTapDown: (details) => _handleTap(details.localPosition),
+                child: ListenableBuilder(
+                  listenable: widget.controller,
+                  builder: (context, child) {
+                    return CustomPaint(
+                      foregroundPainter: AnnotationPainter(widget.controller),
+                      child: AspectRatio(
+                        aspectRatio: widget.controller.aspectRatio!,
+                        child: SizedBox.expand(
+                          child: widget.imageWidget,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
         ),
+        if (widget.controller.polyDrawingActive)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: widget.controller.drawingPolygon
+                      ? (_polygonContainsThreePoints()
+                          ? _completePolygon
+                          : null)
+                      : _completePolyline,
+                  child: const Text("Close Polygon"),
+                ),
+                TextButton(
+                  onPressed: widget.controller.drawingPolygon
+                      ? _cancelPolygon
+                      : _cancelPolyline,
+                  child: const Text("Cancel"),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
