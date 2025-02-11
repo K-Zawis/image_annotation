@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
@@ -21,6 +23,7 @@ class AnnotationPainter extends CustomPainter {
           drawTextAnnotations(canvas, annotation as TextAnnotation, size);
           break;
         case ShapeAnnotation:
+        case PolygonAnnotation:
           drawShapeAnnotations(canvas, annotation as ShapeAnnotation, size);
           break;
         default:
@@ -61,6 +64,20 @@ class AnnotationPainter extends CustomPainter {
         }
         break;
 
+      case AnnotationType.polyline:
+      case AnnotationType.polygon:
+        if (visualPoints.length == 1) {
+          canvas.drawPoints(PointMode.points, visualPoints, paint);
+        }
+        for (var index = 0; index < visualPoints.length - 1; index++) {
+          canvas.drawLine(
+            visualPoints[index],
+            visualPoints[index + 1],
+            paint,
+          );
+        }
+        break;
+
       case AnnotationType.rectangle:
         final rect = Rect.fromPoints(
           visualPoints.first,
@@ -82,7 +99,6 @@ class AnnotationPainter extends CustomPainter {
     }
   }
 
-  // Draw text annotations on the canvas
   void drawTextAnnotations(
     Canvas canvas,
     TextAnnotation annotation,
@@ -93,7 +109,7 @@ class AnnotationPainter extends CustomPainter {
       style: TextStyle(
         color: annotation.color,
         fontSize: convertToRenderFontSize(
-          relativePoint: annotation.normalizedFontSize,
+          normalizedFontSize: annotation.normalizedFontSize,
           visualImageSize: visualImageSize,
         ),
       ),
@@ -109,7 +125,7 @@ class AnnotationPainter extends CustomPainter {
       relativePoint: annotation.normalizedPosition,
       visualImageSize: visualImageSize,
     );
-    
+
     final textPosition = Offset(
       renderPosition.dx - textPainter.width / 2,
       renderPosition.dy - textPainter.height / 2,

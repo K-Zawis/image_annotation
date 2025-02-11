@@ -8,6 +8,7 @@ void showTextAnnotationDialog({
   required BuildContext context,
   required Offset relativePosition,
   required AnnotationController controller,
+  required Size visualImageSize,
 }) {
   final ThemeData theme = Theme.of(context);
   String text = '';
@@ -38,7 +39,7 @@ void showTextAnnotationDialog({
                     textColor: controller.color,
                     normalizedFontSize: convertToNormalizedFontSize(
                       fontSize: controller.fontSize,
-                      originalImageSize: controller.originalImageSize!,
+                      visualImageSize: visualImageSize,
                     ),
                   ),
                 );

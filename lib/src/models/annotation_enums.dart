@@ -10,6 +10,8 @@
 /// This enum ensures that only the valid annotation types are used with the [ImageAnnotation] widget.
 enum AnnotationType {
   line,
+  polyline,
+  polygon,
   rectangle,
   oval,
   text,

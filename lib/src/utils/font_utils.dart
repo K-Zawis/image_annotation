@@ -2,14 +2,14 @@ import 'dart:ui';
 
 double convertToNormalizedFontSize({
   required double fontSize,
-  required Size originalImageSize,
+  required Size visualImageSize,
 }) {
-  return fontSize / originalImageSize.height;
+  return fontSize / visualImageSize.height; 
 }
 
 double convertToRenderFontSize({
-  required double relativePoint,
+  required double normalizedFontSize,
   required Size visualImageSize,
 }) {
-  return relativePoint * visualImageSize.height;
+  return normalizedFontSize * visualImageSize.height;
 }

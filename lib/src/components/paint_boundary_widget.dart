@@ -5,13 +5,13 @@ import '../painters/painters.dart';
 import '../models/models.dart';
 import '../utils/utils.dart';
 
-class ImageAnnotationPaintBoundary extends StatefulWidget {
+class AnnotationPaintBoundary extends StatefulWidget {
   final Image imageWidget;
   final GestureDragStartCallback? onDrawStart;
   final GestureDragEndCallback? onDrawEnd;
   final AnnotationController controller;
 
-  const ImageAnnotationPaintBoundary({
+  const AnnotationPaintBoundary({
     Key? key,
     required this.imageWidget,
     required this.controller,
@@ -20,98 +20,118 @@ class ImageAnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ImageAnnotationPaintBoundary> createState() => _ImageAnnotationPaintBoundaryState();
+  State<AnnotationPaintBoundary> createState() =>
+      _AnnotationPaintBoundaryState();
 }
 
-class _ImageAnnotationPaintBoundaryState extends State<ImageAnnotationPaintBoundary> {
+class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
+  // bool _drawingPolygon = false;
+  // bool _drawingPolyline = false;
 
-  /// Shows the text annotation dialogue with the given [position].
-  void _drawText(Offset position) {
-    if (!widget.controller.isText) return;
-
+  void _draw(Offset position, {bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null) return;
+    if (boundarySize == null || !_isWithinBounds(position, boundarySize)) {
+      return;
+    }
 
-    if (position.dx >= 0 &&
-        position.dy >= 0 &&
-        position.dx <= boundarySize.width &&
-        position.dy <= boundarySize.height) {
-      final textPosition = convertToNormalizedPosition(
-        point: position,
-        visualImageSize: boundarySize,
-      );
+    final normalizedPosition = convertToNormalizedPosition(
+      point: position,
+      visualImageSize: boundarySize,
+    );
 
+    if (isText) {
       showTextAnnotationDialog(
         context: context,
-        relativePosition: textPosition,
+        relativePosition: normalizedPosition,
         controller: widget.controller,
-      );
-    }
-  }
-
-  /// Updates the current annotation path with the given [position].
-  void _drawShape(Offset position) {
-    if (!_editing) return;
-    if (!widget.controller.isShape) return;
-
-    Size? boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null) return;
-
-    if (position.dx >= 0 &&
-        position.dy >= 0 &&
-        position.dx <= boundarySize.width &&
-        position.dy <= boundarySize.height) {
-      final shapePosition = convertToNormalizedPosition(
-        point: position,
         visualImageSize: boundarySize,
       );
+      return;
+    }
 
-      (widget.controller.currentAnnotation! as ShapeAnnotation)
-          .add(shapePosition);
+    final Annotation? annotation = widget.controller.currentAnnotation;
+    if (annotation == null) return;
+
+    if (annotation is PolygonAnnotation || annotation is ShapeAnnotation) {
+      (annotation as dynamic).add(normalizedPosition);
       widget.controller.updateView();
     }
   }
 
-  void _onDrawEnd() {
+  bool _isWithinBounds(Offset position, Size size) {
+    return position.dx >= 0 &&
+        position.dy >= 0 &&
+        position.dx <= size.width &&
+        position.dy <= size.height;
+  }
+
+  void _handleDrawStart(_) {
+    if (widget.controller.isPolygonalAnnotation) return;
+
+    if (widget.controller.canEditCurrentAnnotation) {
+      setState(() => _editing = true);
+    }
+
+    widget.onDrawStart?.call(_);
+  }
+
+  void _handleDrawEnd() {
     if (!widget.controller.canEditCurrentAnnotation) {
-      setState(() {
-        _editing = false;
-      });
+      setState(() => _editing = false);
     }
   }
 
-  void _onDrawStart(details) {
-    if (widget.controller.canEditCurrentAnnotation) {
-      setState(() {
-        _editing = true;
-      });
+  void _handleTap(Offset position) {
+    switch (widget.controller.annotationType) {
+      case AnnotationType.text:
+        _draw(position, isText: true);
+        break;
+      case AnnotationType.polyline:
+        // _startPolylineDrawing(position);
+        break;
+      case AnnotationType.polygon:
+        // _startPolygonDrawing(position);
+        break;
+      default:
+        break;
     }
-
-    widget.onDrawStart?.call(details);
   }
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      key: _boundaryKey,
-      child: GestureDetector(
-        onPanUpdate: (details) => _drawShape(details.localPosition),
-        onPanStart: _onDrawStart,
-        onPanEnd: (details) {
-          _onDrawEnd.call();
-          widget.onDrawEnd?.call(details);
-        },
-        onPanCancel: _onDrawEnd,
-        onTapDown: (details) => _drawText(details.localPosition),
-        child: CustomPaint(
-          foregroundPainter: AnnotationPainter(widget.controller),
-          child: AspectRatio(
-            aspectRatio: widget.controller.aspectRatio!,
-            child: SizedBox.expand(
-              child: widget.imageWidget,
-            ),
+    return Center(
+      child: RepaintBoundary(
+        key: _boundaryKey,
+        child: GestureDetector(
+          onPanCancel: _handleDrawEnd,
+          onPanStart: _handleDrawStart,
+          onPanUpdate: (details) {
+            if (_editing &&
+                widget.controller.isShapeAnnotation &&
+                !widget.controller.isPolygonalAnnotation) {
+              _draw(details.localPosition);
+            }
+          },
+          onPanEnd: (details) {
+            _handleDrawEnd.call();
+            widget.onDrawEnd?.call(details);
+          },
+          onTapDown: (details) => _handleTap(details.localPosition),
+          child: ListenableBuilder(
+            listenable: widget.controller,
+            builder: (context, child) {
+              return CustomPaint(
+                foregroundPainter: AnnotationPainter(widget.controller),
+                child: AspectRatio(
+                  aspectRatio: widget.controller.aspectRatio!,
+                  child: SizedBox.expand(
+                    child: widget.imageWidget,
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
