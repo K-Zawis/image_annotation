@@ -222,25 +222,22 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
           ),
         ),
         if (widget.controller.polyDrawingActive)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                TextButton(
-                  onPressed: _drawingPolygon
-                      ? (_polygonContainsThreePoints()
-                          ? _completePolygon
-                          : null)
-                      : _completePolyline,
-                  child: const Text("Close Polygon"),
-                ),
-                TextButton(
-                  onPressed: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
-                  child: const Text("Cancel"),
-                ),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              TextButton(
+                onPressed: _drawingPolygon
+                    ? (_polygonContainsThreePoints()
+                        ? _completePolygon
+                        : null)
+                    : _completePolyline,
+                child: Text(_drawingPolygon ? "Close Polygon" : "Done"),
+              ),
+              TextButton(
+                onPressed: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
+                child: const Text("Cancel"),
+              ),
+            ],
           ),
       ],
     );

@@ -75,7 +75,7 @@ class TextAnnotation extends Annotation {
           'Y coordinate is not normalized.',
         ),
         _normalizedPosition = normalizedPosition,
-        super(AnnotationType.text, color:textColor);
+        super(AnnotationType.text, color: textColor);
 
   Offset get normalizedPosition => _normalizedPosition;
 
@@ -156,7 +156,8 @@ class ShapeAnnotation extends Annotation {
       ..writeln("  strokeWidth: $strokeWidth,")
       ..writeln("  color: $color,");
 
-    if (annotationType == AnnotationType.line) {
+    if (annotationType == AnnotationType.line ||
+        annotationType == AnnotationType.polyline) {
       buffer.writeln("  normalizedPoints: $normalizedPoints,");
     } else {
       buffer.writeln("  firstNormalizedPoint: $firstNormalizedPoint,");
