@@ -131,13 +131,8 @@ class PolygonAnnotation extends ShapeAnnotation {
 
     if (visualPoints.length == 1) {
       canvas.drawPoints(PointMode.points, visualPoints, paint);
-    }
-    for (var index = 0; index < visualPoints.length - 1; index++) {
-      canvas.drawLine(
-        visualPoints[index],
-        visualPoints[index + 1],
-        paint,
-      );
+    } else {
+      canvas.drawPoints(PointMode.polygon, visualPoints, paint);
     }
   }
 
