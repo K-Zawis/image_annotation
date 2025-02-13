@@ -287,12 +287,9 @@ class _DraggableConfirmationButtonsState
                 TextButton(
                   onPressed: widget.onConfirm,
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
+                    padding: EdgeInsets.zero,
                     textStyle: const TextStyle(fontSize: 14),
-                    fixedSize: Size(100, 24)
+                    fixedSize: const Size(100, 24)
                   ),
                   child: const Text("Finish"),
                 ),
@@ -300,12 +297,9 @@ class _DraggableConfirmationButtonsState
                 TextButton(
                   onPressed: widget.onCancel,
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
+                    padding: EdgeInsets.zero,
                     textStyle: const TextStyle(fontSize: 14),
-                    fixedSize: Size(100, 24)
+                    fixedSize: const Size(100, 24)
                   ),
                   child: const Text("Cancel"),
                 ),
