@@ -266,7 +266,7 @@ class DraggableConfirmationButtons extends StatefulWidget {
 
 class _DraggableConfirmationButtonsState
     extends State<DraggableConfirmationButtons> {
-  Offset position = const Offset(0,0); 
+  Offset position = const Offset(0, 0);
 
   @override
   Widget build(BuildContext context) {
@@ -300,8 +300,11 @@ class _DraggableConfirmationButtonsState
             },
             child: Container(
               width: 100,
-              height: 20,
-              color: Theme.of(context).colorScheme.primary,
+              height: 10,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(5),
+              ),
             ),
           ),
         ],
