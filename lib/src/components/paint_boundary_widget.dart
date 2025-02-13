@@ -180,8 +180,9 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Stack(
+      alignment: Alignment.center,
+      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Flexible(
           fit: FlexFit.loose,
