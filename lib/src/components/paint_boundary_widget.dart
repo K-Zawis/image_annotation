@@ -298,7 +298,7 @@ class _DraggableConfirmationButtonsState
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                width: 60,
+                width: 24,
                 height: 18,
                 decoration: BoxDecoration(
                   color: Theme.of(context)
