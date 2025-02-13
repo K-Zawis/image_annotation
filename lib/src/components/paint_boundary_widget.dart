@@ -272,18 +272,26 @@ class _DraggableConfirmationButtonsState
                 TextButton(
                   onPressed: widget.onConfirm,
                   style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      minimumSize: const Size(100, 24)),
+                    padding: EdgeInsets.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    minimumSize: const Size(100, 24),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                   child: const Text("Finish"),
                 ),
                 const SizedBox(width: 10),
                 TextButton(
                   onPressed: widget.onCancel,
                   style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      minimumSize: const Size(100, 24)),
+                    padding: EdgeInsets.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    minimumSize: const Size(100, 24),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                   child: const Text("Cancel"),
                 ),
               ],
@@ -296,7 +304,7 @@ class _DraggableConfirmationButtonsState
               });
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Container(
                 width: 24,
                 height: 18,
