@@ -184,8 +184,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       alignment: Alignment.center,
       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          // fit: FlexFit.loose,
+        Flexible(
+          fit: FlexFit.loose,
           child: Center(
             child: RepaintBoundary(
               key: _boundaryKey,
