@@ -276,22 +276,26 @@ class _DraggableConfirmationButtonsState
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              FloatingActionButton(
-                onPressed: widget.onConfirm,
-                backgroundColor: Colors.green,
-                child: const Icon(Icons.check),
-              ),
-              const SizedBox(width: 10),
-              FloatingActionButton(
-                onPressed: widget.onCancel,
-                backgroundColor: Colors.red,
-                child: const Icon(Icons.close),
-              ),
-            ],
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(),
+            ),
+            child: Row(
+              children: [
+                TextButton(
+                  onPressed: widget.onConfirm,
+                  child: const Text("Finish"),
+                ),
+                const SizedBox(width: 10),
+                TextButton(
+                  onPressed: widget.onCancel,
+                  child: const Text("Cancel"),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
           GestureDetector(
             onPanUpdate: (details) {
               setState(() {
@@ -299,6 +303,7 @@ class _DraggableConfirmationButtonsState
               });
             },
             child: Container(
+              padding: const EdgeInsets.all(8),
               width: 60,
               height: 18,
               decoration: BoxDecoration(
