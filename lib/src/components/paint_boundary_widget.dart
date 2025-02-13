@@ -299,11 +299,11 @@ class _DraggableConfirmationButtonsState
               });
             },
             child: Container(
-              width: 100,
-              height: 10,
+              width: 60,
+              height: 18,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
-                borderRadius: BorderRadius.circular(5),
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(9),
               ),
             ),
           ),
