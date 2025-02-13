@@ -222,24 +222,78 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
           ),
         ),
         if (widget.controller.polyDrawingActive)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              TextButton(
-                onPressed: _drawingPolygon
-                    ? (_polygonContainsThreePoints()
-                        ? _completePolygon
-                        : null)
-                    : _completePolyline,
-                child: Text(_drawingPolygon ? "Close Polygon" : "Done"),
-              ),
-              TextButton(
-                onPressed: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
-                child: const Text("Cancel"),
-              ),
-            ],
+          DraggableConfirmationButtons(
+            onConfirm: _drawingPolygon
+                ? (_polygonContainsThreePoints() ? _completePolygon : null)
+                : _completePolyline,
+            onCancel: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
           ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //   children: [
+        //     TextButton(
+        //       onPressed: _drawingPolygon
+        //           ? (_polygonContainsThreePoints() ? _completePolygon : null)
+        //           : _completePolyline,
+        //       child: Text(_drawingPolygon ? "Close Polygon" : "Done"),
+        //     ),
+        //     TextButton(
+        //       onPressed: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
+        //       child: const Text("Cancel"),
+        //     ),
+        //   ],
+        // ),
       ],
+    );
+  }
+}
+
+class DraggableConfirmationButtons extends StatefulWidget {
+  final VoidCallback? onConfirm;
+  final VoidCallback? onCancel;
+
+  const DraggableConfirmationButtons({
+    super.key,
+    required this.onConfirm,
+    required this.onCancel,
+  });
+
+  @override
+  State<DraggableConfirmationButtons> createState() =>
+      _DraggableConfirmationButtonsState();
+}
+
+class _DraggableConfirmationButtonsState
+    extends State<DraggableConfirmationButtons> {
+  Offset position = const Offset(200, 500); // Default position
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: position.dx,
+      top: position.dy,
+      child: GestureDetector(
+        onPanUpdate: (details) {
+          setState(() {
+            position += details.delta; // Allow user to drag
+          });
+        },
+        child: Row(
+          children: [
+            FloatingActionButton(
+              onPressed: widget.onConfirm,
+              backgroundColor: Colors.green,
+              child: const Icon(Icons.check),
+            ),
+            const SizedBox(width: 10),
+            FloatingActionButton(
+              onPressed: widget.onCancel,
+              backgroundColor: Colors.red,
+              child: const Icon(Icons.close),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
