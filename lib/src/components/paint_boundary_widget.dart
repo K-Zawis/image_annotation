@@ -60,8 +60,13 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       return;
     }
 
+    final clampedPosition = Offset(
+      position.dx.clamp(0.0, boundarySize.width),
+      position.dy.clamp(0.0, boundarySize.height),
+    );
+
     final normalizedPosition = convertToNormalizedPosition(
-      point: position,
+      point: clampedPosition,
       visualImageSize: boundarySize,
     );
 
