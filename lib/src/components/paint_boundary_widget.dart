@@ -273,30 +273,38 @@ class _DraggableConfirmationButtonsState
     return Positioned(
       left: position.dx,
       top: position.dy,
-      child: GestureDetector(
-        onPanUpdate: (details) {
-          setState(() {
-            position += details.delta; 
-          });
-        },
-        child: Container(
-
-        ),
-        // Row(
-        //   children: [
-        //     FloatingActionButton(
-        //       onPressed: widget.onConfirm,
-        //       backgroundColor: Colors.green,
-        //       child: const Icon(Icons.check),
-        //     ),
-        //     const SizedBox(width: 10),
-        //     FloatingActionButton(
-        //       onPressed: widget.onCancel,
-        //       backgroundColor: Colors.red,
-        //       child: const Icon(Icons.close),
-        //     ),
-        //   ],
-        // ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              FloatingActionButton(
+                onPressed: widget.onConfirm,
+                backgroundColor: Colors.green,
+                child: const Icon(Icons.check),
+              ),
+              const SizedBox(width: 10),
+              FloatingActionButton(
+                onPressed: widget.onCancel,
+                backgroundColor: Colors.red,
+                child: const Icon(Icons.close),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          GestureDetector(
+            onPanUpdate: (details) {
+              setState(() {
+                position += details.delta;
+              });
+            },
+            child: Container(
+              width: 100,
+              height: 20,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ],
       ),
     );
   }
