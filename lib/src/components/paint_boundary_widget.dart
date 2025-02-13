@@ -292,6 +292,7 @@ class _DraggableConfirmationButtonsState
                       vertical: 4,
                     ),
                     textStyle: const TextStyle(fontSize: 14),
+                    fixedSize: Size(100, 24)
                   ),
                   child: const Text("Finish"),
                 ),
@@ -304,6 +305,7 @@ class _DraggableConfirmationButtonsState
                       vertical: 4,
                     ),
                     textStyle: const TextStyle(fontSize: 14),
+                    fixedSize: Size(100, 24)
                   ),
                   child: const Text("Cancel"),
                 ),
