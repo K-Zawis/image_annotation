@@ -278,19 +278,33 @@ class _DraggableConfirmationButtonsState
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(4),
               border: Border.all(),
             ),
             child: Row(
               children: [
                 TextButton(
                   onPressed: widget.onConfirm,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    textStyle: const TextStyle(fontSize: 14),
+                  ),
                   child: const Text("Finish"),
                 ),
                 const SizedBox(width: 10),
                 TextButton(
                   onPressed: widget.onCancel,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    textStyle: const TextStyle(fontSize: 14),
+                  ),
                   child: const Text("Cancel"),
                 ),
               ],
@@ -302,13 +316,15 @@ class _DraggableConfirmationButtonsState
                 position += details.delta;
               });
             },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              width: 60,
-              height: 18,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                borderRadius: BorderRadius.circular(9),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: 60,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(9),
+                ),
               ),
             ),
           ),
