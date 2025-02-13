@@ -229,21 +229,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 : _completePolyline,
             onCancel: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
           ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //   children: [
-        //     TextButton(
-        //       onPressed: _drawingPolygon
-        //           ? (_polygonContainsThreePoints() ? _completePolygon : null)
-        //           : _completePolyline,
-        //       child: Text(_drawingPolygon ? "Close Polygon" : "Done"),
-        //     ),
-        //     TextButton(
-        //       onPressed: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
-        //       child: const Text("Cancel"),
-        //     ),
-        //   ],
-        // ),
       ],
     );
   }
@@ -287,20 +272,18 @@ class _DraggableConfirmationButtonsState
                 TextButton(
                   onPressed: widget.onConfirm,
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    textStyle: const TextStyle(fontSize: 14),
-                    fixedSize: const Size(100, 24)
-                  ),
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      minimumSize: const Size(100, 24)),
                   child: const Text("Finish"),
                 ),
                 const SizedBox(width: 10),
                 TextButton(
                   onPressed: widget.onCancel,
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    textStyle: const TextStyle(fontSize: 14),
-                    fixedSize: const Size(100, 24)
-                  ),
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      minimumSize: const Size(100, 24)),
                   child: const Text("Cancel"),
                 ),
               ],
@@ -318,7 +301,10 @@ class _DraggableConfirmationButtonsState
                 width: 60,
                 height: 18,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurfaceVariant
+                      .withOpacity(0.6),
                   borderRadius: BorderRadius.circular(9),
                 ),
               ),
