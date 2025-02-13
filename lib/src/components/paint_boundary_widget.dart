@@ -55,12 +55,17 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
   void _draw(Offset position, {bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null || !_isWithinBounds(position, boundarySize)) {
+    if (boundarySize == null) {
       return;
     }
 
+    final clampedPosition = Offset(
+      position.dx.clamp(0.0, boundarySize.width),
+      position.dy.clamp(0.0, boundarySize.height),
+    );
+
     final normalizedPosition = convertToNormalizedPosition(
-      point: position,
+      point: clampedPosition,
       visualImageSize: boundarySize,
     );
 
@@ -83,12 +88,12 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
   }
 
-  bool _isWithinBounds(Offset position, Size size) {
-    return position.dx >= 0 &&
-        position.dy >= 0 &&
-        position.dx <= size.width &&
-        position.dy <= size.height;
-  }
+  // bool _isWithinBounds(Offset position, Size size) {
+  //   return position.dx >= 0 &&
+  //       position.dy >= 0 &&
+  //       position.dx <= size.width &&
+  //       position.dy <= size.height;
+  // }
 
   void _handleDrawStart(_) {
     if (widget.controller.isPoly) return;
@@ -274,7 +279,7 @@ class _DraggableConfirmationButtonsState
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    minimumSize: const Size(100, 24),
+                    minimumSize: const Size(80, 24),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -287,7 +292,7 @@ class _DraggableConfirmationButtonsState
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    minimumSize: const Size(100, 24),
+                    minimumSize: const Size(80, 24),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
