@@ -228,6 +228,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 ? (_polygonContainsThreePoints() ? _completePolygon : null)
                 : _completePolyline,
             onCancel: _drawingPolygon ? _cancelPolygon : _cancelPolyline,
+            withinBounds: _isWithinBounds,
+            boundarySize: _boundaryKey.currentContext?.size,
           ),
         // Row(
         //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -252,11 +254,15 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 class DraggableConfirmationButtons extends StatefulWidget {
   final VoidCallback? onConfirm;
   final VoidCallback? onCancel;
+  final Function withinBounds;
+  final Size? boundarySize;
 
   const DraggableConfirmationButtons({
     super.key,
     required this.onConfirm,
     required this.onCancel,
+    required this.withinBounds,
+    required this.boundarySize,
   });
 
   @override
@@ -275,9 +281,13 @@ class _DraggableConfirmationButtonsState
       top: position.dy,
       child: GestureDetector(
         onPanUpdate: (details) {
-          setState(() {
-            position += details.delta; // Allow user to drag
-          });
+          if (widget.boundarySize == null) return;
+          if (widget.withinBounds
+              .call(details.localPosition, widget.boundarySize)) {
+            setState(() {
+              position += details.delta;
+            });
+          }
         },
         child: Row(
           children: [
