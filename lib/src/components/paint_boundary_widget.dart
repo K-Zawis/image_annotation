@@ -266,7 +266,7 @@ class DraggableConfirmationButtons extends StatefulWidget {
 
 class _DraggableConfirmationButtonsState
     extends State<DraggableConfirmationButtons> {
-  Offset position = const Offset(200, 500); // Default position
+  Offset position = const Offset(0,0); 
 
   @override
   Widget build(BuildContext context) {
