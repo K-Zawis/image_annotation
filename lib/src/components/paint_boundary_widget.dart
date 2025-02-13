@@ -55,7 +55,9 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
   void _draw(Offset position, {bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null) {
+    if (boundarySize == null ||
+        (widget.controller.annotationType == AnnotationType.line &&
+            !_isWithinBounds(position, boundarySize))) {
       return;
     }
 
@@ -88,12 +90,12 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
   }
 
-  // bool _isWithinBounds(Offset position, Size size) {
-  //   return position.dx >= 0 &&
-  //       position.dy >= 0 &&
-  //       position.dx <= size.width &&
-  //       position.dy <= size.height;
-  // }
+  bool _isWithinBounds(Offset position, Size size) {
+    return position.dx >= 0 &&
+        position.dy >= 0 &&
+        position.dx <= size.width &&
+        position.dy <= size.height;
+  }
 
   void _handleDrawStart(_) {
     if (widget.controller.isPoly) return;
