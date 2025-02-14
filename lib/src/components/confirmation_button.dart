@@ -59,6 +59,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
     final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
     polygon?.close();
     widget.controller.polygonDrawingActive = false;
+    widget.controller.polygonContainsThreePoints.value = false;
     widget.controller.updateCanvas();
     widget.onConfirm?.call();
     widget.controller.updateView();
@@ -66,6 +67,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
 
   void _cancelPolygon() {
     widget.controller.polygonDrawingActive = false;
+    widget.controller.polygonContainsThreePoints.value = false;
     widget.controller.undoAnnotation();
     widget.onCancel?.call();
   }
