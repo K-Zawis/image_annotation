@@ -103,40 +103,45 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                 ),
                 child: Row(
                   children: [
-                    TextButton(
-                      onPressed: !moving
-                          ? widget.controller.polygonDrawingActive
-                              ? (_polygonContainsThreePoints()
-                                  ? _completePolygon
-                                  : null)
-                              : _completePolyline
-                          : null,
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        minimumSize: const Size(80, 24),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(4),
-                            bottomLeft: Radius.circular(4),
-                          ),
-                        ),
-                        foregroundColor:
-                            colorScheme.onSurfaceVariant.withOpacity(0.8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.check_rounded,
-                            size: 16,
-                            color:
+                    ListenableBuilder(
+                      listenable: widget.controller.uiBuildNotifier,
+                      builder: (context, child) {
+                        return TextButton(
+                          onPressed: !moving
+                              ? widget.controller.polygonDrawingActive
+                                  ? (_polygonContainsThreePoints()
+                                      ? _completePolygon
+                                      : null)
+                                  : _completePolyline
+                              : null,
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            minimumSize: const Size(80, 24),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(4),
+                                bottomLeft: Radius.circular(4),
+                              ),
+                            ),
+                            foregroundColor:
                                 colorScheme.onSurfaceVariant.withOpacity(0.8),
                           ),
-                          const SizedBox(width: 4),
-                          const Text("Finish"),
-                        ],
-                      ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.check_rounded,
+                                size: 16,
+                                color:
+                                    colorScheme.onSurfaceVariant.withOpacity(0.8),
+                              ),
+                              const SizedBox(width: 4),
+                              const Text("Finish"),
+                            ],
+                          ),
+                        );
+                      }
                     ),
                     SizedBox(
                       height: 18,
