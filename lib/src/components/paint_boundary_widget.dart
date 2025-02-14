@@ -102,7 +102,15 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       widget.controller.polygonDrawingActive = true;
     }
     _draw(position);
-    widget.controller.uiBuildNotifier;
+    if (_polygonContainsThreePoints()) {
+      widget.controller.polygonContainsThreePoints.value = true;
+    }
+  }
+
+  bool _polygonContainsThreePoints() {
+    final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
+    if (polygon == null) return false;
+    return polygon.normalizedPoints.length >= 3;
   }
 
   void _handleTap(Offset position) {

@@ -70,12 +70,6 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
     widget.onCancel?.call();
   }
 
-  bool _polygonContainsThreePoints() {
-    final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
-    if (polygon == null) return false;
-    return polygon.normalizedPoints.length >= 3;
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -103,15 +97,14 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                 ),
                 child: Row(
                   children: [
-                    ListenableBuilder(
-                      listenable: widget.controller.uiBuildNotifier,
-                      builder: (context, child) {
+                    ValueListenableBuilder(
+                      valueListenable:
+                          widget.controller.polygonContainsThreePoints,
+                      builder: (context, value, child) {
                         return TextButton(
                           onPressed: !moving
                               ? widget.controller.polygonDrawingActive
-                                  ? (_polygonContainsThreePoints()
-                                      ? _completePolygon
-                                      : null)
+                                  ? (value ? _completePolygon : null)
                                   : _completePolyline
                               : null,
                           style: TextButton.styleFrom(
@@ -127,21 +120,22 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                             foregroundColor:
                                 colorScheme.onSurfaceVariant.withOpacity(0.8),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.check_rounded,
-                                size: 16,
-                                color:
-                                    colorScheme.onSurfaceVariant.withOpacity(0.8),
-                              ),
-                              const SizedBox(width: 4),
-                              const Text("Finish"),
-                            ],
-                          ),
+                          child: child!,
                         );
-                      }
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_rounded,
+                            size: 16,
+                            color:
+                                colorScheme.onSurfaceVariant.withOpacity(0.8),
+                          ),
+                          const SizedBox(width: 4),
+                          const Text("Finish"),
+                        ],
+                      ),
                     ),
                     SizedBox(
                       height: 18,

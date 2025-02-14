@@ -24,6 +24,8 @@ class AnnotationController extends ChangeNotifier {
   /// Whether polygon or polyline drawing mode is active
   final ValueNotifier<bool> polyDrawingActiveNotifier = ValueNotifier(false);
 
+  late ValueNotifier<bool> polygonContainsThreePoints = ValueNotifier(false);
+
   /// The current annotation model holding all state data.
   final ImageAnnotationModel _model;
 
