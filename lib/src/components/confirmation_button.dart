@@ -45,47 +45,35 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
 
   void _completePolyline() {
     widget.controller.polylineDrawingActive = false;
+    widget.onConfirm?.call();
+    widget.controller.updateView();
   }
 
   void _cancelPolyline() {
     widget.controller.polylineDrawingActive = false;
     widget.controller.undoAnnotation();
+    widget.onCancel?.call();
   }
 
   void _completePolygon() {
     final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
     polygon?.close();
     widget.controller.polygonDrawingActive = false;
+    widget.controller.updateCanvas();
+    widget.onConfirm?.call();
     widget.controller.updateView();
   }
 
   void _cancelPolygon() {
     widget.controller.polygonDrawingActive = false;
     widget.controller.undoAnnotation();
+    widget.onCancel?.call();
   }
 
   bool _polygonContainsThreePoints() {
     final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
     if (polygon == null) return false;
     return polygon.normalizedPoints.length >= 3;
-  }
-
-  void _onConfirm() {
-    final func = widget.controller.polygonDrawingActive
-        ? (_polygonContainsThreePoints() ? _completePolygon : null)
-        : _completePolyline;
-
-    func?.call();
-    widget.onConfirm?.call();
-  }
-
-  void _onCancel() {
-    final func = widget.controller.polygonDrawingActive
-        ? _cancelPolygon
-        : _cancelPolyline;
-
-    func.call();
-    widget.onCancel?.call();
   }
 
   @override
@@ -116,7 +104,13 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                 child: Row(
                   children: [
                     TextButton(
-                      onPressed: !moving ? _onConfirm : null,
+                      onPressed: !moving
+                          ? widget.controller.polygonDrawingActive
+                              ? (_polygonContainsThreePoints()
+                                  ? _completePolygon
+                                  : null)
+                              : _completePolyline
+                          : null,
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -152,7 +146,11 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                       ),
                     ),
                     TextButton(
-                      onPressed: !moving ? _onCancel : null,
+                      onPressed: !moving
+                          ? widget.controller.polygonDrawingActive
+                              ? _cancelPolygon
+                              : _cancelPolyline
+                          : null,
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,

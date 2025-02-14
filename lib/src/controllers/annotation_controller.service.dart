@@ -228,8 +228,13 @@ class AnnotationController extends ChangeNotifier {
   // ==== FUNCTIONS ====
 
   /// Manually triggers a CanvasRedraw update.
-  void updateView() {
+  void updateCanvas() {
     notifyListeners();
+  }
+
+  /// Manually triggers a CanvasRedraw update.
+  void updateView() {
+    uiBuildNotifier.notifyListeners();
   }
 
   /// Loads the size of the image being annotated.
