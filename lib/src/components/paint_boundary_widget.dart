@@ -91,6 +91,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       widget.controller.polylineDrawingActive = true;
     }
     _draw(position);
+    setState(() {});
   }
 
   void _startPolygonDrawing(Offset position) {
@@ -102,6 +103,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       widget.controller.polygonDrawingActive = true;
     }
     _draw(position);
+    setState(() {});
   }
 
   void _handleTap(Offset position) {

@@ -172,7 +172,7 @@ class AnnotationController extends ChangeNotifier {
     if (color == newColor || polyDrawingActive) return;
 
     _model.currentColor = newColor;
-    uiBuildNotifier.notifyListeners();
+    updateView();
   }
 
   /// Updates the stroke width for new annotations.
@@ -182,7 +182,7 @@ class AnnotationController extends ChangeNotifier {
     if (strokeWidth == newWidth || newWidth <= 0.0 || polyDrawingActive) return;
 
     _model.currentStrokeWidth = newWidth;
-    uiBuildNotifier.notifyListeners();
+    updateView();
   }
 
   /// Updates the font size for text annotations.
@@ -194,7 +194,7 @@ class AnnotationController extends ChangeNotifier {
     }
 
     _model.currentFontSize = newFontSize;
-    uiBuildNotifier.notifyListeners();
+    updateView();
   }
 
   /// Updates the current annotation type.
@@ -204,7 +204,7 @@ class AnnotationController extends ChangeNotifier {
     if (annotationType == newAnnotationOption || polyDrawingActive) return;
 
     _model.currentAnnotationType = newAnnotationOption;
-    uiBuildNotifier.notifyListeners();
+    updateView();
   }
 
   /// Updates the state for polygon drawing mode.
@@ -294,8 +294,8 @@ class AnnotationController extends ChangeNotifier {
       time: DateTime.now(),
     );
 
-    notifyListeners();
-    uiBuildNotifier.notifyListeners();
+    updateCanvas();
+    updateView();
   }
 
   /// Undoes the most recent annotation.
@@ -314,8 +314,8 @@ class AnnotationController extends ChangeNotifier {
       time: DateTime.now(),
     );
 
-    notifyListeners();
-    uiBuildNotifier.notifyListeners();
+    updateCanvas();
+    updateView();
   }
 
   /// Redoes the most recently undone annotation(s).
@@ -334,8 +334,8 @@ class AnnotationController extends ChangeNotifier {
       time: DateTime.now(),
     );
 
-    notifyListeners();
-    uiBuildNotifier.notifyListeners();
+    updateCanvas();
+    updateView();
   }
 
   /// Clears all annotations and moves them to the redo stack.
@@ -355,8 +355,8 @@ class AnnotationController extends ChangeNotifier {
       time: DateTime.now(),
     );
 
-    notifyListeners();
-    uiBuildNotifier.notifyListeners();
+    updateCanvas();
+    updateView();
   }
 
   @override
