@@ -169,7 +169,7 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// Notifies listeners if the value changes.
   set color(Color newColor) {
-    if (color == newColor) return;
+    if (color == newColor || polyDrawingActive) return;
 
     _model.currentColor = newColor;
     uiBuildNotifier.notifyListeners();
@@ -179,7 +179,7 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// Notifies listeners if the value changes. The new value must be greater than `0.0`.
   set strokeWidth(double newWidth) {
-    if (strokeWidth == newWidth || newWidth <= 0.0) return;
+    if (strokeWidth == newWidth || newWidth <= 0.0 || polyDrawingActive) return;
 
     _model.currentStrokeWidth = newWidth;
     uiBuildNotifier.notifyListeners();
@@ -189,7 +189,9 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// Notifies listeners if the value changes. The new value must be greater than `0.0`.
   set fontSize(double newFontSize) {
-    if (fontSize == newFontSize || newFontSize <= 0.0) return;
+    if (fontSize == newFontSize || newFontSize <= 0.0 || polyDrawingActive) {
+      return;
+    }
 
     _model.currentFontSize = newFontSize;
     uiBuildNotifier.notifyListeners();
@@ -199,7 +201,7 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// Notifies listeners if the value changes.
   set annotationType(AnnotationType newAnnotationOption) {
-    if (annotationType == newAnnotationOption) return;
+    if (annotationType == newAnnotationOption || polyDrawingActive) return;
 
     _model.currentAnnotationType = newAnnotationOption;
     uiBuildNotifier.notifyListeners();

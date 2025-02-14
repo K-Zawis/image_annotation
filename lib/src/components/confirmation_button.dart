@@ -48,19 +48,20 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
   }
 
   void _cancelPolyline() {
-    widget.controller.undoAnnotation();
     widget.controller.polylineDrawingActive = false;
+    widget.controller.undoAnnotation();
   }
 
   void _completePolygon() {
     final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
     polygon?.close();
     widget.controller.polygonDrawingActive = false;
+    widget.controller.updateView();
   }
 
   void _cancelPolygon() {
-    widget.controller.undoAnnotation();
     widget.controller.polygonDrawingActive = false;
+    widget.controller.undoAnnotation();
   }
 
   bool _polygonContainsThreePoints() {
@@ -79,7 +80,9 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
   }
 
   void _onCancel() {
-    final func = widget.controller.polygonDrawingActive ? _cancelPolygon : _cancelPolyline;
+    final func = widget.controller.polygonDrawingActive
+        ? _cancelPolygon
+        : _cancelPolyline;
 
     func.call();
     widget.onCancel?.call();
@@ -95,112 +98,113 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
       child: ValueListenableBuilder(
         valueListenable: widget.controller.polyDrawingActiveNotifier,
         builder: (context, value, child) {
-          if (value) return child!;
-          return const SizedBox.shrink();
-        },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: BackdropFilter(
-            // later make this optional
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(
-              width: widgetSize.width,
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceDim,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: colorScheme.surface,
+          if (!value) return const SizedBox.shrink();
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: BackdropFilter(
+              // later make this optional
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(
+                width: widgetSize.width,
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceDim,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: colorScheme.surface,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: !moving ? _onConfirm : null,
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        minimumSize: const Size(80, 24),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(4),
+                            bottomLeft: Radius.circular(4),
+                          ),
+                        ),
+                        foregroundColor:
+                            colorScheme.onSurfaceVariant.withOpacity(0.8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_rounded,
+                            size: 16,
+                            color:
+                                colorScheme.onSurfaceVariant.withOpacity(0.8),
+                          ),
+                          const SizedBox(width: 4),
+                          const Text("Finish"),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 18,
+                      width: 1,
+                      child: VerticalDivider(
+                        color: colorScheme.outlineVariant,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: !moving ? _onCancel : null,
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        minimumSize: const Size(80, 24),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
+                        foregroundColor:
+                            colorScheme.onSurfaceVariant.withOpacity(0.8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.close_rounded,
+                            size: 16,
+                            color:
+                                colorScheme.onSurfaceVariant.withOpacity(0.8),
+                          ),
+                          const SizedBox(width: 4),
+                          const Text("Cancel"),
+                        ],
+                      ),
+                    ),
+                    GestureDetector(
+                      onPanUpdate: (details) {
+                        final Offset newPosition = position + details.delta;
+
+                        setState(() {
+                          position = Offset(
+                            newPosition.dx.clamp(0.0, clampSize.width),
+                            newPosition.dy.clamp(0.0, clampSize.height),
+                          );
+                          moving = true;
+                        });
+                      },
+                      onPanEnd: (details) {
+                        setState(() {
+                          moving = false;
+                        });
+                      },
+                      child: Icon(
+                        Icons.drag_indicator_rounded,
+                        color: colorScheme.outlineVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: Row(
-                children: [
-                  TextButton(
-                    onPressed: !moving ? _onConfirm : null,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      minimumSize: const Size(80, 24),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(4),
-                          bottomLeft: Radius.circular(4),
-                        ),
-                      ),
-                      foregroundColor:
-                          colorScheme.onSurfaceVariant.withOpacity(0.8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.check_rounded,
-                          size: 16,
-                          color: colorScheme.onSurfaceVariant.withOpacity(0.8),
-                        ),
-                        const SizedBox(width: 4),
-                        const Text("Finish"),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 18,
-                    width: 1,
-                    child: VerticalDivider(
-                      color: colorScheme.outlineVariant,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: !moving ? _onCancel : null,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      minimumSize: const Size(80, 24),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      foregroundColor:
-                          colorScheme.onSurfaceVariant.withOpacity(0.8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.close_rounded,
-                          size: 16,
-                          color: colorScheme.onSurfaceVariant.withOpacity(0.8),
-                        ),
-                        const SizedBox(width: 4),
-                        const Text("Cancel"),
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onPanUpdate: (details) {
-                      final Offset newPosition = position + details.delta;
-
-                      setState(() {
-                        position = Offset(
-                          newPosition.dx.clamp(0.0, clampSize.width),
-                          newPosition.dy.clamp(0.0, clampSize.height),
-                        );
-                        moving = true;
-                      });
-                    },
-                    onPanEnd: (details) {
-                      setState(() {
-                        moving = false;
-                      });
-                    },
-                    child: Icon(
-                      Icons.drag_indicator_rounded,
-                      color: colorScheme.outlineVariant,
-                    ),
-                  ),
-                ],
-              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
