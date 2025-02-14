@@ -27,8 +27,6 @@ class AnnotationPaintBoundary extends StatefulWidget {
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
-  // bool _drawingPolygon = false;
-  // bool _drawingPolyline = false;
 
   void _draw(Offset position, {bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
@@ -83,16 +81,39 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
   }
 
+  void _startPolylineDrawing(Offset position) {
+    if (!widget.controller.polyDrawingActive) {
+      widget.controller.add(ShapeAnnotation(
+        AnnotationType.polyline,
+        strokeWidth: widget.controller.strokeWidth,
+        color: widget.controller.color,
+      ));
+      widget.controller.polylineDrawingActive = true;
+    }
+    _draw(position);
+  }
+
+  void _startPolygonDrawing(Offset position) {
+    if (!widget.controller.polyDrawingActive) {
+      widget.controller.add(PolygonAnnotation(
+        strokeWidth: widget.controller.strokeWidth,
+        color: widget.controller.color,
+      ));
+      widget.controller.polygonDrawingActive = true;
+    }
+    _draw(position);
+  }
+
   void _handleTap(Offset position) {
     switch (widget.controller.annotationType) {
       case AnnotationType.text:
         _draw(position, isText: true);
         break;
       case AnnotationType.polyline:
-        // _startPolylineDrawing(position);
+        _startPolylineDrawing(position);
         break;
       case AnnotationType.polygon:
-        // _startPolygonDrawing(position);
+        _startPolygonDrawing(position);
         break;
       default:
         break;

@@ -21,6 +21,9 @@ class AnnotationController extends ChangeNotifier {
   /// Whether the size of the original image has been loaded.
   final ValueNotifier<bool> hasLoadedSizeNotifier = ValueNotifier(false);
 
+  /// Whether polygon or polyline drawing mode is active
+  final ValueNotifier<bool> polyDrawingActiveNotifier = ValueNotifier(false);
+
   /// The current annotation model holding all state data.
   final ImageAnnotationModel _model;
 
@@ -100,16 +103,20 @@ class AnnotationController extends ChangeNotifier {
   AnnotationType get annotationType => _model.currentAnnotationType;
 
   /// Whether undo operation is possible.
-  bool get canUndo => _model.annotations.isNotEmpty;
+  bool get canUndo => _model.annotations.isNotEmpty && !polyDrawingActive;
 
   /// Whether redo operation is possible.
-  bool get canRedo => _model.redoStack.isNotEmpty;
+  bool get canRedo => _model.redoStack.isNotEmpty && !polyDrawingActive;
 
   /// Returns `true` if poly drawing mode is active.
   ///
-  /// This reflects the current state of [_model.polyDrawingActive] and determines
-  /// whether the user is in the process of drawing a polygon or polyline.
-  // bool get polyDrawingActive => _model.polyDrawingActive;
+  /// This reflects the current state of [ _model.drawingPolygon] and [ _model.drawingPolyline] and
+  /// determines whether the user is in the process of drawing a polygon or polyline.
+  bool get polyDrawingActive => polyDrawingActiveNotifier.value;
+
+  bool get polygonDrawingActive => _model.drawingPolygon;
+
+  bool get polylineDrawingActive => _model.drawingPolyline;
 
   /// The maximum number of annotations allowed.
   ///
@@ -198,13 +205,23 @@ class AnnotationController extends ChangeNotifier {
     uiBuildNotifier.notifyListeners();
   }
 
-  /// Updates the state for poly drawing mode.
+  /// Updates the state for polygon drawing mode.
   ///
   /// Notifies listeners if the value changes.
-  // set polyDrawingActive(bool newState) {
-  //   _model.polyDrawingActive = newState;
-  //   uiBuildNotifier.notifyListeners();
-  // }
+  set polygonDrawingActive(bool newState) {
+    _model.drawingPolygon = newState;
+    polyDrawingActiveNotifier.value =
+        _model.drawingPolygon || _model.drawingPolyline;
+  }
+
+  /// Updates the state for polylione drawing mode.
+  ///
+  /// Notifies listeners if the value changes.
+  set polylineDrawingActive(bool newState) {
+    _model.drawingPolyline = newState;
+    polyDrawingActiveNotifier.value =
+        _model.drawingPolygon || _model.drawingPolyline;
+  }
 
   // ==== FUNCTIONS ====
 
@@ -255,7 +272,8 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// Notifies listeners if the value changes. Does nothing if the annotation limit is reached.
   void add(Annotation annotation) {
-    if (_annotationLimit != null && annotations.length >= _annotationLimit) {
+    if ((_annotationLimit != null && annotations.length >= _annotationLimit) ||
+        polyDrawingActive) {
       return;
     }
 

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_annotation/src/components/confirmation_button.dart';
 
 import 'paint_boundary_widget.dart';
 import '../controllers/controllers.dart';
@@ -299,17 +300,28 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                   : widget.onDrawStart,
             );
 
-            return widget.builder != null
-                ? widget.builder!(
-                    context,
-                    _controller,
-                    annotationBoundary,
-                  )
-                : GestureDetector(
-                    onLongPress: _controller.clearAnnotations,
-                    onDoubleTap: _controller.undoAnnotation,
-                    child: annotationBoundary,
-                  );
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                widget.builder != null
+                    ? widget.builder!(
+                        context,
+                        _controller,
+                        annotationBoundary,
+                      )
+                    : GestureDetector(
+                        onLongPress: _controller.clearAnnotations,
+                        onDoubleTap: _controller.undoAnnotation,
+                        child: annotationBoundary,
+                      ),
+                DragConfirmationButtons(
+                  controller: _controller,
+                  size: constraints.biggest,
+                  onConfirm: () {},
+                  onCancel: () {},
+                ),
+              ],
+            );
           },
         );
       },

@@ -43,6 +43,9 @@ class ImageAnnotationModel {
   /// Applies only to text annotations.
   double currentFontSize;
 
+  bool drawingPolygon;
+  bool drawingPolyline;
+
   /// Creates an instance of [ImageAnnotationModel].
   ///
   /// [currentAnnotationType] is required and must be provided.
@@ -62,11 +65,15 @@ class ImageAnnotationModel {
     double? fontSize,
     List<Annotation>? annotations,
     List<List<Annotation>>? redoStack,
+    bool? drawingPolygon,
+    bool? drawingPolyline,
   })  : currentColor = color ?? Colors.red,
         currentStrokeWidth = strokeWidth ?? 2.0,
         currentFontSize = fontSize ?? 16.0,
         annotations = annotations ?? <Annotation>[],
-        redoStack = redoStack ?? <List<Annotation>>[];
+        redoStack = redoStack ?? <List<Annotation>>[],
+        drawingPolygon = drawingPolygon ?? false,
+        drawingPolyline = drawingPolyline ?? false;
 
   /// Creates a copy of the model with updated fields.
   ///
