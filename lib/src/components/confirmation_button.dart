@@ -50,6 +50,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
     widget.controller.polylineDrawingActive = false;
     widget.onConfirm?.call();
     widget.controller.updateView();
+    widget.controller.updateCanvas();
   }
 
   void _cancelPolyline() {

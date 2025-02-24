@@ -69,6 +69,29 @@ class ShapeAnnotation extends Annotation {
     _normalizedPoints.add(point);
   }
 
+  /// Removes a specific point from the list of normalized points.
+  ///
+  /// If the point does not exist, no changes are made.
+  ///
+  /// - [point] : The point to be removed.
+  void remove(Offset point) {
+    _normalizedPoints.remove(point);
+  }
+
+  /// Removes a point at a specific index from the list of normalized points.
+  ///
+  /// - [index] : The index of th epoint to be removed
+  ///
+  /// @ throws OutOfBounds assertion
+  void removeAt(int index) {
+    assert(
+      index >= 0 && index < _normalizedPoints.length,
+      'Index out of bounds',
+    );
+
+    _normalizedPoints.removeAt(index);
+  }
+
   @override
   void render(Canvas canvas, Size size) {
     if (_normalizedPoints.isEmpty) return;

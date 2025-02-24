@@ -159,6 +159,12 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
               name: 'D/AnnotationPaintBoundary',
               time: DateTime.now(),
             );
+
+            final annotation =
+                (widget.controller.currentAnnotation as ShapeAnnotation);
+
+            annotation.remove(point);
+            widget.controller.updateCanvas();
           },
           child: SizedBox(
             height: 40,
