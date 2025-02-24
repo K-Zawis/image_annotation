@@ -10,6 +10,7 @@ class DragConfirmationButtons extends StatefulWidget {
   final VoidCallback? onCancel;
   final AnnotationController controller;
   final Size size;
+  final Offset? position;
 
   const DragConfirmationButtons({
     super.key,
@@ -17,6 +18,7 @@ class DragConfirmationButtons extends StatefulWidget {
     required this.size,
     this.onConfirm,
     this.onCancel,
+    this.position,
   });
 
   @override
@@ -32,10 +34,11 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
 
   @override
   void initState() {
-    position = Offset(
-      (widget.size.width * 0.5) - widgetSize.width / 2,
-      widget.size.height * 0.9,
-    );
+    position = widget.position ??
+        Offset(
+          (widget.size.width * 0.5) - widgetSize.width / 2,
+          widget.size.height * 0.9,
+        );
     clampSize = Size(
       widget.size.width - widgetSize.width,
       widget.size.height - widgetSize.height,

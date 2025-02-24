@@ -129,6 +129,29 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
   }
 
+  List<Widget> _buildOverlayPoints(List<Offset> points) {
+    Size? boundarySize = _boundaryKey.currentContext?.size;
+    if (boundarySize == null) return [];
+
+    return points.map((point) {
+      final position = convertToRenderPosition(
+          relativePoint: point, visualImageSize: boundarySize);
+
+      return Positioned(
+        left: position.dx,
+        top: position.dy,
+        child: Container(
+          width: 10,
+          height: 10,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.amber,
+          ),
+        ),
+      );
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -152,14 +175,23 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
           child: ListenableBuilder(
             listenable: widget.controller,
             builder: (context, child) {
-              return CustomPaint(
-                foregroundPainter: AnnotationPainter(widget.controller),
-                child: AspectRatio(
-                  aspectRatio: widget.controller.aspectRatio!,
-                  child: SizedBox.expand(
-                    child: widget.imageWidget,
+              return Stack(
+                children: [
+                  CustomPaint(
+                    foregroundPainter: AnnotationPainter(widget.controller),
+                    child: AspectRatio(
+                      aspectRatio: widget.controller.aspectRatio!,
+                      child: SizedBox.expand(
+                        child: widget.imageWidget,
+                      ),
+                    ),
                   ),
-                ),
+                  if (widget.controller.polyDrawingActiveNotifier.value)
+                    ..._buildOverlayPoints(
+                      (widget.controller.currentAnnotation as PolygonAnnotation)
+                          .normalizedPoints,
+                    ),
+                ],
               );
             },
           ),
