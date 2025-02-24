@@ -218,7 +218,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                           if (widget.controller.polyDrawingActiveNotifier.value)
                             ..._buildOverlayPoints(
                               (widget.controller.currentAnnotation
-                                      as PolygonAnnotation)
+                                      as ShapeAnnotation)
                                   .normalizedPoints,
                               constrains,
                             ),
