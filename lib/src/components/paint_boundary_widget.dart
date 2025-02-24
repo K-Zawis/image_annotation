@@ -130,12 +130,17 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   List<Widget> _buildOverlayPoints(List<Offset> points) {
-    Size? boundarySize = _boundaryKey.currentContext?.size;
+    Size? boundarySize;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      boundarySize = _boundaryKey.currentContext?.size;
+    });
+
     if (boundarySize == null) return [];
 
     return points.map((point) {
       final position = convertToRenderPosition(
-          relativePoint: point, visualImageSize: boundarySize);
+          relativePoint: point, visualImageSize: boundarySize!);
 
       return Positioned(
         left: position.dx,
