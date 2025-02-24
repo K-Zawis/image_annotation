@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
@@ -138,6 +140,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       constraints.biggest.shortestSide,
       constraints.biggest.shortestSide,
     );
+    final colorScheme = Theme.of(context).colorScheme;
 
     return points.map((point) {
       final position = convertToRenderPosition(
@@ -146,14 +149,30 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       );
 
       return Positioned(
-        left: position.dx - 5,
-        top: position.dy - 5,
-        child: Container(
-          width: 10,
-          height: 10,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.amber,
+        left: position.dx - 20,
+        top: position.dy - 20,
+        child: GestureDetector(
+          onTap: () {
+            log(
+              "Point: $point",
+              level: 800,
+              name: 'D/AnnotationPaintBoundary',
+              time: DateTime.now(),
+            );
+          },
+          child: SizedBox(
+            height: 40,
+            width: 40,
+            child: Center(
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colorScheme.surfaceDim,
+                ),
+              ),
+            ),
           ),
         ),
       );
