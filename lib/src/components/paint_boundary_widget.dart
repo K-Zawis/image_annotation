@@ -27,17 +27,17 @@ class AnnotationPaintBoundary extends StatefulWidget {
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
-  Size? boundarySize;
 
   void _draw(Offset position, {bool isText = false}) {
-    boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null || !_isWithinBounds(position, boundarySize!)) {
+    Size? boundarySize = _boundaryKey.currentContext?.size;
+
+    if (boundarySize == null || !_isWithinBounds(position, boundarySize)) {
       return;
     }
 
     final normalizedPosition = convertToNormalizedPosition(
       point: position,
-      visualImageSize: boundarySize!,
+      visualImageSize: boundarySize,
     );
 
     if (isText) {
@@ -45,7 +45,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         context: context,
         relativePosition: normalizedPosition,
         controller: widget.controller,
-        visualImageSize: boundarySize!,
+        visualImageSize: boundarySize,
       );
       return;
     }
@@ -130,20 +130,17 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
   }
 
-  List<Widget> _buildOverlayPoints(List<Offset> points) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      boundarySize = _boundaryKey.currentContext?.size;
-    });
-
-    if (boundarySize == null) return [];
-
+  List<Widget> _buildOverlayPoints(
+      List<Offset> points, BoxConstraints constraints) {
     return points.map((point) {
       final position = convertToRenderPosition(
-          relativePoint: point, visualImageSize: boundarySize!);
+        relativePoint: point,
+        visualImageSize: constraints.biggest,
+      );
 
       return Positioned(
-        left: position.dx,
-        top: position.dy,
+        left: position.dx - 5,
+        top: position.dy - 5,
         child: Container(
           width: 10,
           height: 10,
@@ -183,18 +180,26 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 children: [
                   CustomPaint(
                     foregroundPainter: AnnotationPainter(widget.controller),
-                    child: AspectRatio(
-                      aspectRatio: widget.controller.aspectRatio!,
-                      child: SizedBox.expand(
-                        child: widget.imageWidget,
-                      ),
-                    ),
+                    child: LayoutBuilder(builder: (context, constrains) {
+                      return Stack(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: widget.controller.aspectRatio!,
+                            child: SizedBox.expand(
+                              child: widget.imageWidget,
+                            ),
+                          ),
+                          if (widget.controller.polyDrawingActiveNotifier.value)
+                            ..._buildOverlayPoints(
+                              (widget.controller.currentAnnotation
+                                      as PolygonAnnotation)
+                                  .normalizedPoints,
+                              constrains,
+                            ),
+                        ],
+                      );
+                    }),
                   ),
-                  if (widget.controller.polyDrawingActiveNotifier.value)
-                    ..._buildOverlayPoints(
-                      (widget.controller.currentAnnotation as PolygonAnnotation)
-                          .normalizedPoints,
-                    ),
                 ],
               );
             },

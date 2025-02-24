@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_annotation/src/components/confirmation_button.dart';
 
+import 'confirmation_button.dart';
 import 'paint_boundary_widget.dart';
 import '../controllers/controllers.dart';
 import '../models/models.dart';
