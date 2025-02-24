@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
@@ -36,8 +34,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     if (boundarySize == null || !_isWithinBounds(position, boundarySize)) {
       return;
     }
-
-    log('boundary: $boundarySize');
 
     final normalizedPosition = convertToNormalizedPosition(
       point: position,
@@ -135,19 +131,23 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   List<Widget> _buildOverlayPoints(
-      List<Offset> points, BoxConstraints constraints) {
+    List<Offset> points,
+    BoxConstraints constraints,
+  ) {
+    final Size size = Size(
+      constraints.biggest.shortestSide,
+      constraints.biggest.shortestSide,
+    );
+
     return points.map((point) {
       final position = convertToRenderPosition(
         relativePoint: point,
-        visualImageSize: constraints.biggest,
+        visualImageSize: size,
       );
 
-      log('Biggest constraint: ${constraints.biggest}');
-      log('Smallest constraint: ${constraints.smallest}');
-
       return Positioned(
-        left: position.dx,
-        top: position.dy,
+        left: position.dx - 5,
+        top: position.dy - 5,
         child: Container(
           width: 10,
           height: 10,
