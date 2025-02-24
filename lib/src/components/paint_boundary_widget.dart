@@ -166,9 +166,10 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             annotation.remove(point);
             widget.controller.updateCanvas();
           },
-          child: SizedBox(
+          child: Container(
             height: 40,
             width: 40,
+            color: Colors.transparent,
             child: Center(
               child: Container(
                 width: 10,
