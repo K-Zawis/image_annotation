@@ -27,16 +27,17 @@ class AnnotationPaintBoundary extends StatefulWidget {
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   bool _editing = true;
+  Size? boundarySize;
 
   void _draw(Offset position, {bool isText = false}) {
-    Size? boundarySize = _boundaryKey.currentContext?.size;
-    if (boundarySize == null || !_isWithinBounds(position, boundarySize)) {
+    boundarySize = _boundaryKey.currentContext?.size;
+    if (boundarySize == null || !_isWithinBounds(position, boundarySize!)) {
       return;
     }
 
     final normalizedPosition = convertToNormalizedPosition(
       point: position,
-      visualImageSize: boundarySize,
+      visualImageSize: boundarySize!,
     );
 
     if (isText) {
@@ -44,7 +45,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         context: context,
         relativePosition: normalizedPosition,
         controller: widget.controller,
-        visualImageSize: boundarySize,
+        visualImageSize: boundarySize!,
       );
       return;
     }
@@ -130,8 +131,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   List<Widget> _buildOverlayPoints(List<Offset> points) {
-    Size? boundarySize;
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       boundarySize = _boundaryKey.currentContext?.size;
     });
