@@ -164,6 +164,12 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 (widget.controller.currentAnnotation as ShapeAnnotation);
 
             annotation.remove(point);
+
+            if (annotation.annotationType == AnnotationType.polygon &&
+                !_polygonContainsThreePoints()) {
+              widget.controller.polygonContainsThreePoints.value = false;
+            }
+
             widget.controller.updateCanvas();
           },
           child: Container(
