@@ -50,7 +50,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       }
     }
 
-    widget.controller.updateView();
+    widget.controller.updateCanvas();
   }
 
   void _draw(Offset position, {bool isText = false}) {

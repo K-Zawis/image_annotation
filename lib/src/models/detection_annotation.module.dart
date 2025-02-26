@@ -57,7 +57,7 @@ class DetectedAnnotation extends ShapeAnnotation {
           (x1, x2) => x1 < x2 ? x1 : x2,
         );
     final maxY = normalizedPoints.map((Offset p) => p.dy).reduce(
-          (y1, y2) => y1 > y2 ? y1 : y2,
+          (y1, y2) => y1 < y2 ? y1 : y2,
         );
 
     return Offset(minX, maxY);
@@ -71,7 +71,7 @@ class DetectedAnnotation extends ShapeAnnotation {
           (x1, x2) => x1 < x2 ? x1 : x2,
         );
     final minY = normalizedPoints.map((Offset p) => p.dy).reduce(
-          (y1, y2) => y1 < y2 ? y1 : y2,
+          (y1, y2) => y1 > y2 ? y1 : y2,
         );
 
     return Offset(minX, minY);
@@ -85,7 +85,7 @@ class DetectedAnnotation extends ShapeAnnotation {
           (x1, x2) => x1 > x2 ? x1 : x2,
         );
     final maxY = normalizedPoints.map((Offset p) => p.dy).reduce(
-          (y1, y2) => y1 > y2 ? y1 : y2,
+          (y1, y2) => y1 < y2 ? y1 : y2,
         );
 
     return Offset(maxX, maxY);
@@ -99,7 +99,7 @@ class DetectedAnnotation extends ShapeAnnotation {
           (x1, x2) => x1 > x2 ? x1 : x2,
         );
     final minY = normalizedPoints.map((Offset p) => p.dy).reduce(
-          (y1, y2) => y1 < y2 ? y1 : y2,
+          (y1, y2) => y1 > y2 ? y1 : y2,
         );
 
     return Offset(maxX, minY);
