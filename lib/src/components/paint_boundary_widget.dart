@@ -56,7 +56,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   void _draw(Offset position, {bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
 
-    if (boundarySize == null || !_isWithinBounds(position, boundarySize)) {
+    // || !_isWithinBounds(position, boundarySize)
+    if (boundarySize == null) {
       return;
     }
 
@@ -169,7 +170,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         break;
     }
   }
-  
+
   List<Widget> _buildOverlayPoints(
     List<Offset> points,
     BoxConstraints constraints,
