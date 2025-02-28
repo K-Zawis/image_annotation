@@ -250,7 +250,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             _handleDrawEnd.call();
             widget.onDrawEnd?.call(details);
           },
-          onTapDown: (details) =>
+          onTapUp: (details) =>
               !_movingPoint ? _handleTap(details.localPosition) : null,
           child: ListenableBuilder(
             listenable: widget.controller,
