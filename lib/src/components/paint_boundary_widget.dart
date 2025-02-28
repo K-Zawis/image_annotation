@@ -183,45 +183,53 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       return Positioned(
         left: position.dx - 20,
         top: position.dy - 20,
-        child: GestureDetector(
-          onTap: () {
-            final annotation =
-                widget.controller.currentAnnotation as ShapeAnnotation;
+        child: Listener(
+          onPointerDown: (event) => log(
+            "${event.kind}",
+            level: 800,
+            name: 'D/PaintBoundaryWidget',
+            time: DateTime.now(),
+          ),
+          child: GestureDetector(
+            onTap: () {
+              final annotation =
+                  widget.controller.currentAnnotation as ShapeAnnotation;
 
-            annotation.remove(point);
+              annotation.remove(point);
 
-            if (annotation.annotationType == AnnotationType.polygon &&
-                !_polygonContainsThreePoints()) {
-              widget.controller.polygonContainsThreePoints.value = false;
-            }
+              if (annotation.annotationType == AnnotationType.polygon &&
+                  !_polygonContainsThreePoints()) {
+                widget.controller.polygonContainsThreePoints.value = false;
+              }
 
-            widget.controller.updateCanvas();
-          },
-          onPanStart: (position) => setState(() => _movingPoint = true),
-          onPanUpdate: (details) {
-            final clampedPosition = (position + details.delta).clamp(size);
-            final normalizedPosition = clampedPosition.toNormalized(size);
+              widget.controller.updateCanvas();
+            },
+            onPanStart: (position) => setState(() => _movingPoint = true),
+            onPanUpdate: (details) {
+              final clampedPosition = (position + details.delta).clamp(size);
+              final normalizedPosition = clampedPosition.toNormalized(size);
 
-            final annotation =
-                widget.controller.currentAnnotation as ShapeAnnotation;
+              final annotation =
+                  widget.controller.currentAnnotation as ShapeAnnotation;
 
-            annotation.replaceAt(index, point: normalizedPosition);
+              annotation.replaceAt(index, point: normalizedPosition);
 
-            widget.controller.updateCanvas();
-          },
-          onPanEnd: (details) => setState(() => _movingPoint = false),
-          onPanCancel: () => setState(() => _movingPoint = false),
-          child: Container(
-            height: 40,
-            width: 40,
-            color: Colors.transparent,
-            child: Center(
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colorScheme.surfaceDim,
+              widget.controller.updateCanvas();
+            },
+            onPanEnd: (details) => setState(() => _movingPoint = false),
+            onPanCancel: () => setState(() => _movingPoint = false),
+            child: Container(
+              height: 40,
+              width: 40,
+              color: Colors.transparent,
+              child: Center(
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colorScheme.surfaceDim,
+                  ),
                 ),
               ),
             ),
