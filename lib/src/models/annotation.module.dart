@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'annotation_enums.module.dart';
+import 'models.dart' show AnnotationType;
 
 /// An abstract base class for all types of annotations.
 ///
@@ -15,7 +15,6 @@ import 'annotation_enums.module.dart';
 /// Subclasses must also override the [render] method to define how the annotation
 /// should be drawn on a [Canvas].
 abstract class Annotation {
-
   /// The color of the annotation.
   ///
   /// This defines the visual appearance of the annotation, including the color

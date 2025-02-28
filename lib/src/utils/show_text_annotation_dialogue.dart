@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:image_annotation/src/utils/font.utils.dart';
 
-import '../../image_annotation.dart';
+import '../controllers/controllers.dart';
+import '../models/models.dart' show TextAnnotation;
+import 'font.utils.dart';
 
 /// Displays a dialog for adding a text annotation.
 void showTextAnnotationDialog({

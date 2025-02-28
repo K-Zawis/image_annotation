@@ -3,9 +3,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../utils/utils.dart';
-import 'annotation.module.dart';
-import 'annotation_enums.module.dart';
+import '../utils/utils.dart' show OffsetNormalization;
+import 'models.dart' show Annotation, AnnotationType;
 
 /// Represents a shape annotation, which consists of a series of normalized points,
 /// a stroke width, and a type that defines the shape.

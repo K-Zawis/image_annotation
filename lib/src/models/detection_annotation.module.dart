@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../utils/utils.dart';
-import 'annotation_enums.module.dart';
-import 'shape_annotation.module.dart';
+import '../utils/utils.dart' show OffsetNormalization, convertToRenderFontSize;
+import 'models.dart' show AnnotationType, ShapeAnnotation;
+
 
 /// Represents a detected rectangle annotation with a label and confidence score.
 ///

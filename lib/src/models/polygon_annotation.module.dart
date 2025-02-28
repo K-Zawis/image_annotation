@@ -2,9 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../utils/utils.dart';
-import 'annotation_enums.module.dart';
-import 'shape_annotation.module.dart';
+import '../utils/utils.dart' show OffsetNormalization;
+import 'models.dart' show AnnotationType, ShapeAnnotation;
 
 /// Represents a polygon annotation, which is a closed shape formed by a series of points.
 ///

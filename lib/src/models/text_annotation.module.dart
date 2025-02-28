@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../utils/utils.dart';
-import 'annotation.module.dart';
-import 'annotation_enums.module.dart';
+import '../utils/utils.dart' show OffsetNormalization, convertToRenderFontSize;
+import 'models.dart' show AnnotationType, Annotation;
 
 /// Represents a text annotation, which consists of a normalized position, a text
 /// string, and a normalized font size.

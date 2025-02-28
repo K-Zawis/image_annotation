@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'annotation_enums.module.dart';
-import 'annotation.module.dart';
+import 'models.dart' show Annotation, AnnotationType;
 
 /// A model representing the state and configuration of an image annotation tool.
 class ImageAnnotationModel {
@@ -53,7 +52,7 @@ class ImageAnnotationModel {
   /// Whether the user is currently drawing a polyline.
   ///
   /// When `true`, the user has started drawing a polyline. Similar to
-  /// [drawingPolygon], this can be used to modify the UI when polyline 
+  /// [drawingPolygon], this can be used to modify the UI when polyline
   /// editing is active.
   bool drawingPolyline;
 

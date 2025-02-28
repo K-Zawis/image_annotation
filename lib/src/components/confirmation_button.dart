@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
-import '../models/models.dart';
-import '../utils/utils.dart';
+import '../models/models.dart' show PolygonAnnotation;
+import '../utils/utils.dart' show OffsetClamping;
 
 class DragConfirmationButtons extends StatefulWidget {
   final VoidCallback? onConfirm;
@@ -125,7 +125,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                               ),
                             ),
                             foregroundColor:
-                                colorScheme.onSurfaceVariant.withOpacity(0.8),
+                                colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                           ),
                           child: child!,
                         );
@@ -137,7 +137,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                             Icons.check_rounded,
                             size: 16,
                             color:
-                                colorScheme.onSurfaceVariant.withOpacity(0.8),
+                                colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                           ),
                           const SizedBox(width: 4),
                           const Text("Finish"),
@@ -165,7 +165,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                           borderRadius: BorderRadius.zero,
                         ),
                         foregroundColor:
-                            colorScheme.onSurfaceVariant.withOpacity(0.8),
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -174,7 +174,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                             Icons.close_rounded,
                             size: 16,
                             color:
-                                colorScheme.onSurfaceVariant.withOpacity(0.8),
+                                colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                           ),
                           const SizedBox(width: 4),
                           const Text("Cancel"),
