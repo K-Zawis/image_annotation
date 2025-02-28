@@ -182,42 +182,44 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       return Positioned(
         left: position.dx - 20,
         top: position.dy - 20,
-        child: GestureDetector(
-          onTap: () {
-            final annotation =
-                widget.controller.currentAnnotation as ShapeAnnotation;
-
-            annotation.remove(point);
-
-            if (annotation.annotationType == AnnotationType.polygon &&
-                !_polygonContainsThreePoints()) {
-              widget.controller.polygonContainsThreePoints.value = false;
-            }
-
-            widget.controller.updateCanvas();
-          },
-          onPanUpdate: (details) {
-            final clampedPosition = (position + details.delta).clamp(size);
-            final normalizedPosition = clampedPosition.toNormalized(size);
-
-            final annotation =
-                widget.controller.currentAnnotation as ShapeAnnotation;
-
-            annotation.replaceAt(index, point: normalizedPosition);
-
-            widget.controller.updateCanvas();
-          },
-          child: Container(
-            height: 40,
-            width: 40,
-            color: Colors.transparent,
-            child: Center(
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colorScheme.surfaceDim,
+        child: AbsorbPointer(
+          child: GestureDetector(
+            onTap: () {
+              final annotation =
+                  widget.controller.currentAnnotation as ShapeAnnotation;
+          
+              annotation.remove(point);
+          
+              if (annotation.annotationType == AnnotationType.polygon &&
+                  !_polygonContainsThreePoints()) {
+                widget.controller.polygonContainsThreePoints.value = false;
+              }
+          
+              widget.controller.updateCanvas();
+            },
+            onPanUpdate: (details) {
+              final clampedPosition = (position + details.delta).clamp(size);
+              final normalizedPosition = clampedPosition.toNormalized(size);
+          
+              final annotation =
+                  widget.controller.currentAnnotation as ShapeAnnotation;
+          
+              annotation.replaceAt(index, point: normalizedPosition);
+          
+              widget.controller.updateCanvas();
+            },
+            child: Container(
+              height: 40,
+              width: 40,
+              color: Colors.transparent,
+              child: Center(
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colorScheme.surfaceDim,
+                  ),
                 ),
               ),
             ),
@@ -232,54 +234,52 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     return Center(
       child: RepaintBoundary(
         key: _boundaryKey,
-        child: IgnorePointer(
-          child: GestureDetector(
-            behavior: HitTestBehavior.deferToChild,
-            onPanCancel: _handleDrawEnd,
-            onPanStart: _handleDrawStart,
-            onPanUpdate: (details) {
-              if (_editing &&
-                  widget.controller.isShapeAnnotation &&
-                  !widget.controller.isPolygonalAnnotation) {
-                _draw(details.localPosition);
-              }
-            },
-            onPanEnd: (details) {
-              _handleDrawEnd.call();
-              widget.onDrawEnd?.call(details);
-            },
-            onTapDown: (details) => _handleTap(details.localPosition),
-            child: ListenableBuilder(
-              listenable: widget.controller,
-              builder: (context, child) {
-                return Stack(
-                  children: [
-                    CustomPaint(
-                      foregroundPainter: AnnotationPainter(widget.controller),
-                      child: LayoutBuilder(builder: (context, constrains) {
-                        return Stack(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: widget.controller.aspectRatio!,
-                              child: SizedBox.expand(
-                                child: widget.imageWidget,
-                              ),
+        child: GestureDetector(
+          behavior: HitTestBehavior.deferToChild,
+          onPanCancel: _handleDrawEnd,
+          onPanStart: _handleDrawStart,
+          onPanUpdate: (details) {
+            if (_editing &&
+                widget.controller.isShapeAnnotation &&
+                !widget.controller.isPolygonalAnnotation) {
+              _draw(details.localPosition);
+            }
+          },
+          onPanEnd: (details) {
+            _handleDrawEnd.call();
+            widget.onDrawEnd?.call(details);
+          },
+          onTapDown: (details) => _handleTap(details.localPosition),
+          child: ListenableBuilder(
+            listenable: widget.controller,
+            builder: (context, child) {
+              return Stack(
+                children: [
+                  CustomPaint(
+                    foregroundPainter: AnnotationPainter(widget.controller),
+                    child: LayoutBuilder(builder: (context, constrains) {
+                      return Stack(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: widget.controller.aspectRatio!,
+                            child: SizedBox.expand(
+                              child: widget.imageWidget,
                             ),
-                            if (widget.controller.polyDrawingActiveNotifier.value)
-                              ..._buildOverlayPoints(
-                                (widget.controller.currentAnnotation
-                                        as ShapeAnnotation)
-                                    .normalizedPoints,
-                                constrains,
-                              ),
-                          ],
-                        );
-                      }),
-                    ),
-                  ],
-                );
-              },
-            ),
+                          ),
+                          if (widget.controller.polyDrawingActiveNotifier.value)
+                            ..._buildOverlayPoints(
+                              (widget.controller.currentAnnotation
+                                      as ShapeAnnotation)
+                                  .normalizedPoints,
+                              constrains,
+                            ),
+                        ],
+                      );
+                    }),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
