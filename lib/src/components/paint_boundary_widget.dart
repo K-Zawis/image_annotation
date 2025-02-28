@@ -197,9 +197,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
             widget.controller.updateCanvas();
           },
+          onPanStart: (position) => setState(() => _movingPoint = true),
           onPanUpdate: (details) {
-            setState(() => _movingPoint = true);
-
             final clampedPosition = (position + details.delta).clamp(size);
             final normalizedPosition = clampedPosition.toNormalized(size);
 
@@ -207,8 +206,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 widget.controller.currentAnnotation as ShapeAnnotation;
 
             annotation.replaceAt(index, point: normalizedPosition);
-
-            // widget.controller.updateCanvas();
           },
           onPanDown: (details) => setState(() => _movingPoint = false),
           onPanCancel: () => setState(() => _movingPoint = false),
@@ -238,7 +235,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       child: RepaintBoundary(
         key: _boundaryKey,
         child: GestureDetector(
-          behavior: HitTestBehavior.deferToChild,
           onPanCancel: _handleDrawEnd,
           onPanStart: _handleDrawStart,
           onPanUpdate: (details) {
@@ -252,7 +248,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             _handleDrawEnd.call();
             widget.onDrawEnd?.call(details);
           },
-          onTapDown: (details) => !_movingPoint ? _handleTap(details.localPosition) : null,
+          onTapDown: (details) =>
+              !_movingPoint ? _handleTap(details.localPosition) : null,
           child: ListenableBuilder(
             listenable: widget.controller,
             builder: (context, child) {
@@ -269,8 +266,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                               child: widget.imageWidget,
                             ),
                           ),
-                          if (widget
-                              .controller.polyDrawingActiveNotifier.value)
+                          if (widget.controller.polyDrawingActiveNotifier.value)
                             ..._buildOverlayPoints(
                               (widget.controller.currentAnnotation
                                       as ShapeAnnotation)
