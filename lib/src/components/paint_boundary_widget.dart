@@ -210,8 +210,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
             widget.controller.updateCanvas();
           },
-          onPanDown: (details) => setState(() => _movingPoint = true),
-          onPanCancel: () => setState(() => _movingPoint = true),
+          onPanDown: (details) => setState(() => _movingPoint = false),
+          onPanCancel: () => setState(() => _movingPoint = false),
           child: Container(
             height: 40,
             width: 40,
@@ -237,53 +237,56 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     return Center(
       child: RepaintBoundary(
         key: _boundaryKey,
-        child: GestureDetector(
-          behavior: HitTestBehavior.deferToChild,
-          onPanCancel: _handleDrawEnd,
-          onPanStart: _handleDrawStart,
-          onPanUpdate: (details) {
-            if (_editing &&
-                widget.controller.isShapeAnnotation &&
-                !widget.controller.isPolygonalAnnotation) {
-              _draw(details.localPosition);
-            }
-          },
-          onPanEnd: (details) {
-            _handleDrawEnd.call();
-            widget.onDrawEnd?.call(details);
-          },
-          onTapDown: (details) => !_movingPoint ? _handleTap(details.localPosition) : null,
-          child: ListenableBuilder(
-            listenable: widget.controller,
-            builder: (context, child) {
-              return Stack(
-                children: [
-                  CustomPaint(
-                    foregroundPainter: AnnotationPainter(widget.controller),
-                    child: LayoutBuilder(builder: (context, constrains) {
-                      return Stack(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: widget.controller.aspectRatio!,
-                            child: SizedBox.expand(
-                              child: widget.imageWidget,
-                            ),
-                          ),
-                          if (widget
-                              .controller.polyDrawingActiveNotifier.value)
-                            ..._buildOverlayPoints(
-                              (widget.controller.currentAnnotation
-                                      as ShapeAnnotation)
-                                  .normalizedPoints,
-                              constrains,
-                            ),
-                        ],
-                      );
-                    }),
-                  ),
-                ],
-              );
+        child: IgnorePointer(
+          ignoring: _movingPoint,
+          child: GestureDetector(
+            behavior: HitTestBehavior.deferToChild,
+            onPanCancel: _handleDrawEnd,
+            onPanStart: _handleDrawStart,
+            onPanUpdate: (details) {
+              if (_editing &&
+                  widget.controller.isShapeAnnotation &&
+                  !widget.controller.isPolygonalAnnotation) {
+                _draw(details.localPosition);
+              }
             },
+            onPanEnd: (details) {
+              _handleDrawEnd.call();
+              widget.onDrawEnd?.call(details);
+            },
+            onTapDown: (details) => !_movingPoint ? _handleTap(details.localPosition) : null,
+            child: ListenableBuilder(
+              listenable: widget.controller,
+              builder: (context, child) {
+                return Stack(
+                  children: [
+                    CustomPaint(
+                      foregroundPainter: AnnotationPainter(widget.controller),
+                      child: LayoutBuilder(builder: (context, constrains) {
+                        return Stack(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: widget.controller.aspectRatio!,
+                              child: SizedBox.expand(
+                                child: widget.imageWidget,
+                              ),
+                            ),
+                            if (widget
+                                .controller.polyDrawingActiveNotifier.value)
+                              ..._buildOverlayPoints(
+                                (widget.controller.currentAnnotation
+                                        as ShapeAnnotation)
+                                    .normalizedPoints,
+                                constrains,
+                              ),
+                          ],
+                        );
+                      }),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
