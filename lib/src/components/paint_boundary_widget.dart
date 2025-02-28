@@ -176,6 +176,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         left: position.dx - 20,
         top: position.dy - 20,
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             log(
               "Point: $point",
