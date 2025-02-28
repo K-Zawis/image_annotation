@@ -197,7 +197,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             widget.controller.updateCanvas();
           },
           onPanStart: (details) => log(
-            "Replacing point: $point",
+            "Replacing point: $point at index $index",
             level: 800,
             name: 'D/AnnotationPaintBoundary',
             time: DateTime.now(),
