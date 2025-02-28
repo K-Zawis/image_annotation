@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
 import '../models/models.dart';
+import '../utils/utils.dart';
 
 class DragConfirmationButtons extends StatefulWidget {
   final VoidCallback? onConfirm;
@@ -27,9 +28,9 @@ class DragConfirmationButtons extends StatefulWidget {
 }
 
 class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
-  final Size widgetSize = const Size(187, 26);
+  static const Size widgetSize = Size(187, 26);
   late Offset position;
-  late Size clampSize;
+  late Size sizeConstraint;
   bool moving = false;
 
   @override
@@ -39,7 +40,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
           (widget.size.width * 0.5) - widgetSize.width / 2,
           widget.size.height * 0.9,
         );
-    clampSize = Size(
+    sizeConstraint = Size(
       widget.size.width - widgetSize.width,
       widget.size.height - widgetSize.height,
     );
@@ -185,10 +186,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                         final Offset newPosition = position + details.delta;
 
                         setState(() {
-                          position = Offset(
-                            newPosition.dx.clamp(0.0, clampSize.width),
-                            newPosition.dy.clamp(0.0, clampSize.height),
-                          );
+                          position = newPosition.clamp(sizeConstraint);
                           moving = true;
                         });
                       },

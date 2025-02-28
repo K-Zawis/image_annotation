@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../utils/coordinate.utils.dart';
+import '../utils/utils.dart';
 import 'annotation_enums.module.dart';
 import 'shape_annotation.module.dart';
 
@@ -121,10 +121,7 @@ class PolygonAnnotation extends ShapeAnnotation {
   @override
   void render(Canvas canvas, Size size) {
     List<Offset> visualPoints = normalizedPoints
-        .map((point) => convertToRenderPosition(
-              relativePoint: point,
-              visualImageSize: size,
-            ))
+        .map((point) => point.toAbsolute(size))
         .toList();
 
     if (visualPoints.isEmpty) return;

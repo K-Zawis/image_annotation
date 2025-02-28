@@ -61,15 +61,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       return;
     }
 
-    final clampedPosition = Offset(
-      position.dx.clamp(0.0, boundarySize.width),
-      position.dy.clamp(0.0, boundarySize.height),
-    );
-
-    final normalizedPosition = convertToNormalizedPosition(
-      point: clampedPosition,
-      visualImageSize: boundarySize,
-    );
+    final clampedPosition = position.clamp(boundarySize);
+    final normalizedPosition = clampedPosition.toNormalized(boundarySize);
 
     if (isText) {
       showTextAnnotationDialog(
@@ -100,12 +93,12 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
   }
 
-  bool _isWithinBounds(Offset position, Size size) {
-    return position.dx >= 0 &&
-        position.dy >= 0 &&
-        position.dx <= size.width &&
-        position.dy <= size.height;
-  }
+  // bool _isWithinBounds(Offset position, Size size) {
+  //   return position.dx >= 0 &&
+  //       position.dy >= 0 &&
+  //       position.dx <= size.width &&
+  //       position.dy <= size.height;
+  // }
 
   void _handleDrawStart(_) {
     if (widget.controller.isPolygonalAnnotation) return;
@@ -182,10 +175,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return points.map((point) {
-      final position = convertToRenderPosition(
-        relativePoint: point,
-        visualImageSize: size,
-      );
+      final position = point.toAbsolute(size);
 
       return Positioned(
         left: position.dx - 20,

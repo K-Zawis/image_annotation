@@ -72,10 +72,7 @@ class TextAnnotation extends Annotation {
 
     textPainter.layout();
 
-    final Offset renderPosition = convertToRenderPosition(
-      relativePoint: normalizedPosition,
-      visualImageSize: size,
-    );
+    final Offset renderPosition = normalizedPosition.toAbsolute(size);
 
     final textPosition = Offset(
       renderPosition.dx - textPainter.width / 2,

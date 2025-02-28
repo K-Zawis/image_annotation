@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/coordinate.utils.dart';
-import '../utils/font.utils.dart';
+import '../utils/utils.dart';
 import 'annotation_enums.module.dart';
 import 'shape_annotation.module.dart';
 
@@ -115,10 +114,7 @@ class DetectedAnnotation extends ShapeAnnotation {
       ..style = PaintingStyle.stroke;
 
     List<Offset> visualPoints = normalizedPoints
-        .map((point) => convertToRenderPosition(
-              relativePoint: point,
-              visualImageSize: size,
-            ))
+        .map((point) => point.toAbsolute(size))
         .toList();
 
     final rect = Rect.fromPoints(
@@ -147,10 +143,7 @@ class DetectedAnnotation extends ShapeAnnotation {
 
     textPainter.layout();
 
-    final Offset topLeftCorner = convertToRenderPosition(
-      relativePoint: topLeftPoint!,
-      visualImageSize: size,
-    );
+    final Offset topLeftCorner = topLeftPoint!.toAbsolute(size);
 
     final labelRect = Rect.fromPoints(
       topLeftCorner,

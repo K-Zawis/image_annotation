@@ -97,10 +97,7 @@ class ShapeAnnotation extends Annotation {
     if (_normalizedPoints.isEmpty) return;
 
     List<Offset> visualPoints = _normalizedPoints
-        .map((point) => convertToRenderPosition(
-              relativePoint: point,
-              visualImageSize: size,
-            ))
+        .map((point) => point.toAbsolute(size))
         .toList();
 
     switch (annotationType) {
