@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -66,7 +67,15 @@ class ShapeAnnotation extends Annotation {
   void add(Offset point) {
     assert(point.dx >= 0 && point.dx <= 1, 'X coordinate is not normalized.');
     assert(point.dy >= 0 && point.dy <= 1, 'Y coordinate is not normalized.');
+
     _normalizedPoints.add(point);
+
+    log(
+      "Added $point.",
+      level: 800,
+      name: 'D/ShapeAnnotation',
+      time: DateTime.now(),
+    );
   }
 
   /// Removes a specific point from the list of normalized points.
@@ -76,6 +85,13 @@ class ShapeAnnotation extends Annotation {
   /// - [point] : The point to be removed.
   void remove(Offset point) {
     _normalizedPoints.remove(point);
+
+    log(
+      "Removed $point.",
+      level: 800,
+      name: 'D/ShapeAnnotation',
+      time: DateTime.now(),
+    );
   }
 
   /// Removes a point at a specific index from the list of normalized points.
@@ -90,6 +106,13 @@ class ShapeAnnotation extends Annotation {
     );
 
     _normalizedPoints.removeAt(index);
+
+    log(
+      "Removed point at index $index.",
+      level: 800,
+      name: 'D/ShapeAnnotation',
+      time: DateTime.now(),
+    );
   }
 
   /// Replaces a point at a specific index from the list of normalized points.
@@ -104,6 +127,13 @@ class ShapeAnnotation extends Annotation {
       'Index out of bounds',
     );
 
+    log(
+      "Replacing ${_normalizedPoints[index]} at index $index with $point.",
+      level: 800,
+      name: 'D/ShapeAnnotation',
+      time: DateTime.now(),
+    );
+
     _normalizedPoints[index] = point;
   }
 
@@ -111,9 +141,8 @@ class ShapeAnnotation extends Annotation {
   void render(Canvas canvas, Size size) {
     if (_normalizedPoints.isEmpty) return;
 
-    List<Offset> visualPoints = _normalizedPoints
-        .map((point) => point.toAbsolute(size))
-        .toList();
+    List<Offset> visualPoints =
+        _normalizedPoints.map((point) => point.toAbsolute(size)).toList();
 
     switch (annotationType) {
       case AnnotationType.line:
