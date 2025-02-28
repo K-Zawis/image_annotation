@@ -120,9 +120,8 @@ class PolygonAnnotation extends ShapeAnnotation {
 
   @override
   void render(Canvas canvas, Size size) {
-    List<Offset> visualPoints = normalizedPoints
-        .map((point) => point.toAbsolute(size))
-        .toList();
+    List<Offset> visualPoints =
+        normalizedPoints.map((point) => point.toAbsolute(size)).toList();
 
     if (visualPoints.isEmpty) return;
 
@@ -130,6 +129,13 @@ class PolygonAnnotation extends ShapeAnnotation {
       canvas.drawPoints(PointMode.points, visualPoints, paint);
     } else {
       canvas.drawPoints(PointMode.polygon, visualPoints, paint);
+
+      final firstPoint = visualPoints.first;
+      final lastPoint = visualPoints.last;
+
+      if (firstPoint != lastPoint) {
+        canvas.drawLine(lastPoint, firstPoint, paint);
+      }
     }
   }
 
