@@ -56,7 +56,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   void _draw(Offset position, {bool isText = false}) {
     Size? boundarySize = _boundaryKey.currentContext?.size;
 
-    // || !_isWithinBounds(position, boundarySize)
     if (boundarySize == null) {
       return;
     }
@@ -92,13 +91,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       widget.controller.updateCanvas();
     }
   }
-
-  // bool _isWithinBounds(Offset position, Size size) {
-  //   return position.dx >= 0 &&
-  //       position.dy >= 0 &&
-  //       position.dx <= size.width &&
-  //       position.dy <= size.height;
-  // }
 
   void _handleDrawStart(_) {
     if (widget.controller.isPolygonalAnnotation) return;
@@ -174,7 +166,10 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     );
     final colorScheme = Theme.of(context).colorScheme;
 
-    return points.map((point) {
+    return points.asMap().entries.map((entry) {
+      final int index = entry.key;
+      final Offset point = entry.value;
+
       final position = point.toAbsolute(size);
 
       return Positioned(
@@ -190,7 +185,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             );
 
             final annotation =
-                (widget.controller.currentAnnotation as ShapeAnnotation);
+                widget.controller.currentAnnotation as ShapeAnnotation;
 
             annotation.remove(point);
 
@@ -198,6 +193,23 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 !_polygonContainsThreePoints()) {
               widget.controller.polygonContainsThreePoints.value = false;
             }
+
+            widget.controller.updateCanvas();
+          },
+          onPanStart: (details) => log(
+            "Replacing point: $point",
+            level: 800,
+            name: 'D/AnnotationPaintBoundary',
+            time: DateTime.now(),
+          ),
+          onPanUpdate: (details) {
+            final clampedPosition = (position + details.delta).clamp(size);
+            final normalizedPosition = clampedPosition.toNormalized(size);
+
+            final annotation =
+                widget.controller.currentAnnotation as ShapeAnnotation;
+
+            annotation.replaceAt(index, point: normalizedPosition);
 
             widget.controller.updateCanvas();
           },

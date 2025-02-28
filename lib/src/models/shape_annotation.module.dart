@@ -80,7 +80,7 @@ class ShapeAnnotation extends Annotation {
 
   /// Removes a point at a specific index from the list of normalized points.
   ///
-  /// - [index] : The index of th epoint to be removed
+  /// - [index] : The index of the point to be removed
   ///
   /// @ throws OutOfBounds assertion
   void removeAt(int index) {
@@ -90,6 +90,21 @@ class ShapeAnnotation extends Annotation {
     );
 
     _normalizedPoints.removeAt(index);
+  }
+
+  /// Replaces a point at a specific index from the list of normalized points.
+  ///
+  /// - [index] : The index of the point to be replaced
+  /// - [point] : The new Offset to be places at this index
+  ///
+  /// @ throws OutOfBounds assertion
+  void replaceAt(int index, {required Offset point}) {
+    assert(
+      index >= 0 && index < _normalizedPoints.length,
+      'Index out of bounds',
+    );
+
+    _normalizedPoints[index] = point;
   }
 
   @override
