@@ -206,6 +206,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 widget.controller.currentAnnotation as ShapeAnnotation;
 
             annotation.replaceAt(index, point: normalizedPosition);
+
+            widget.controller.updateCanvas();
           },
           onPanDown: (details) => setState(() => _movingPoint = false),
           onPanCancel: () => setState(() => _movingPoint = false),
