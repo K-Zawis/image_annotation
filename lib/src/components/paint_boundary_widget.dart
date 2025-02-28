@@ -141,6 +141,13 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _handleTap(Offset position) {
+    log(
+      "Tap has been detected.",
+      level: 800,
+      name: 'D/PaintBoundaryWidget',
+      time: DateTime.now(),
+    );
+
     switch (widget.controller.annotationType) {
       case AnnotationType.text:
         _draw(position, isText: true);
@@ -177,13 +184,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         top: position.dy - 20,
         child: GestureDetector(
           onTap: () {
-            log(
-              "Point: $point",
-              level: 800,
-              name: 'D/AnnotationPaintBoundary',
-              time: DateTime.now(),
-            );
-
             final annotation =
                 widget.controller.currentAnnotation as ShapeAnnotation;
 
