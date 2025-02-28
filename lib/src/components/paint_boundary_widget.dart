@@ -209,7 +209,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
             widget.controller.updateCanvas();
           },
-          onPanDown: (details) => setState(() => _movingPoint = false),
+          onPanEnd: (details) => setState(() => _movingPoint = false),
           onPanCancel: () => setState(() => _movingPoint = false),
           child: Container(
             height: 40,
