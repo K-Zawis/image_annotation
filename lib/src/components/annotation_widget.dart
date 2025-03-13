@@ -268,6 +268,28 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
   }
 
   @override
+  void didUpdateWidget(covariant ImageAnnotation oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Check if detectedAnnotations has changed
+    if (widget.detectedAnnotations != oldWidget.detectedAnnotations) {
+      // Compare the old and new annotations
+      if (widget.detectedAnnotations != null) {
+        // Add new detected annotations that are not in the current controller
+        for (var newAnnotation in widget.detectedAnnotations!) {
+          bool exists = _controller.annotations.any((existing) {
+            return existing == newAnnotation;
+          });
+
+          if (!exists) {
+            _controller.add(newAnnotation);
+          }
+        }
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

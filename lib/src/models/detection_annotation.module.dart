@@ -48,6 +48,42 @@ class DetectedAnnotation extends ShapeAnnotation {
     }
   }
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    // Check if other is a DetectedAnnotation
+    if (other is! DetectedAnnotation) return false;
+
+    return other.label == label &&
+        other.confidenceScore == confidenceScore &&
+        other.strokeWidth == strokeWidth &&
+        other.color == color &&
+        _arePointsEqual(other.normalizedPoints);
+  }
+
+  @override
+  int get hashCode {
+    // Combine the hash codes of all relevant fields
+    int result = label.hashCode;
+    result = result * 31 + confidenceScore.hashCode;
+    result = result * 31 + strokeWidth.hashCode;
+    result = result * 31 + color.hashCode;
+    for (var point in normalizedPoints) {
+      result = result * 31 + point.hashCode;
+    }
+    return result;
+  }
+
+  // Helper function to compare normalized points
+  bool _arePointsEqual(List<Offset> otherPoints) {
+    if (normalizedPoints.length != otherPoints.length) return false;
+    for (int i = 0; i < normalizedPoints.length; i++) {
+      if (normalizedPoints[i] != otherPoints[i]) return false;
+    }
+    return true;
+  }
+
   /// Finds the top-left point from the list of points.
   Offset? get topLeftPoint {
     if (normalizedPoints.isEmpty) return null;
