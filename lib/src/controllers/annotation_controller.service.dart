@@ -361,6 +361,38 @@ class AnnotationController extends ChangeNotifier {
     updateView();
   }
 
+  /// Removes the detected annotations from the controller.
+  ///
+  /// This function removes all instances of [DetectedAnnotation] from the
+  /// [annotations] list. It does not add them to the redo stack. This is an
+  /// internal function used for handling update events of the [DetectedAnnotation]
+  /// list passed into the [ImageAnnotation].
+  ///
+  /// **Warning:** This method should only be called from the `didUpdateWidget`
+  /// method of the [ImageAnnotation]. Calling it from any other location
+  /// may result in unexpected behavior or bugs.
+  void removeDetectedAnnotations() {
+    _model.annotations.removeWhere(
+      (existing) => existing is DetectedAnnotation,
+    );
+    updateCanvas();
+  }
+
+  /// Adds a [DetectedAnnotation] to the controller.
+  ///
+  /// This function adds a [DetectedAnnotation] to the beginning of the
+  /// [annotations] list.
+  ///
+  /// **Warning:** This method is primarily for internal use during widget
+  /// updates. If manually called by the programmer, it should only be used
+  /// when adding a new [DetectedAnnotation] in exceptional cases. It is
+  /// advised that you rely on the internal handling of annotations during
+  /// widget updates to ensure proper behavior and avoid unexpected bugs.
+  void addDetectedAnnotation(DetectedAnnotation annotation) {
+    _model.annotations.insert(0, annotation);
+    updateCanvas();
+  }
+
   @override
   void dispose() {
     _model.annotations.clear();
