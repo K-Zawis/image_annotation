@@ -274,7 +274,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
     if (widget.detectedAnnotations == oldWidget.detectedAnnotations) return;
 
     if (widget.detectedAnnotations == null) {
-      _controller.removeDetectedAnnotations();
+      _controller.purgeDetectedAnnotations();
       return;
     }
 

@@ -371,10 +371,18 @@ class AnnotationController extends ChangeNotifier {
   /// **Warning:** This method should only be called from the `didUpdateWidget`
   /// method of the [ImageAnnotation]. Calling it from any other location
   /// may result in unexpected behavior or bugs.
-  void removeDetectedAnnotations() {
+  void purgeDetectedAnnotations() {
     _model.annotations.removeWhere(
       (existing) => existing is DetectedAnnotation,
     );
+
+    log(
+      'All DetectedAnnotation objects have been purged',
+      level: 800,
+      name: 'I/AnnotationController',
+      time: DateTime.now(),
+    );
+
     updateCanvas();
   }
 
@@ -390,6 +398,14 @@ class AnnotationController extends ChangeNotifier {
   /// widget updates to ensure proper behavior and avoid unexpected bugs.
   void addDetectedAnnotation(DetectedAnnotation annotation) {
     _model.annotations.insert(0, annotation);
+
+    log(
+      'DetectAnnotation added at position 0',
+      level: 800,
+      name: 'I/AnnotationController',
+      time: DateTime.now(),
+    );
+
     updateCanvas();
   }
 
