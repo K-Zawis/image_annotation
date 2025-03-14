@@ -175,6 +175,13 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     List<Offset> points,
     BoxConstraints constraints,
   ) {
+    final RenderBox? renderBox =
+        _boundaryKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (renderBox == null) {
+      return [];
+    }
+
     final Size size = Size(
       constraints.biggest.shortestSide,
       constraints.biggest.shortestSide,
@@ -210,7 +217,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             onDraggableCanceled: (_, __) =>
                 setState(() => _movingPoint = false),
             onDragUpdate: (details) {
-              final clampedPosition = (details.globalPosition).clamp(size);
+              final position = renderBox.globalToLocal(details.globalPosition);
+              final clampedPosition = (position).clamp(size);
               final normalizedPosition = clampedPosition.toNormalized(size);
 
               final annotation =
