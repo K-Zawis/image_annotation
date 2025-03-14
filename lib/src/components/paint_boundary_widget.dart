@@ -38,6 +38,13 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _initializeFontSizes());
   }
 
+  @override
+  void didUpdateWidget(covariant AnnotationPaintBoundary oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeFontSizes());
+  }
+
   void _initializeFontSizes() {
     final boundarySize = _boundaryKey.currentContext?.size;
     if (boundarySize == null) return;
