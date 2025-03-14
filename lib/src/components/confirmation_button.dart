@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
-import '../models/models.dart' show PolygonAnnotation;
 import '../utils/utils.dart' show OffsetClamping;
+import '../models/models.dart' show PolygonAnnotation;
 
 class DragConfirmationButtons extends StatefulWidget {
   final VoidCallback? onConfirm;
@@ -31,21 +31,35 @@ class DragConfirmationButtons extends StatefulWidget {
 
 class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
   static const Size widgetSize = Size(187, 26);
+  late final EdgeInsets resolvedPadding;
+  late final Rect clampLimits;
   late Offset position;
-  late Size sizeConstraint;
   bool moving = false;
 
   @override
   void initState() {
-    position = widget.position ??
-        Offset(
-          (widget.size.width * 0.5) - widgetSize.width / 2,
-          widget.size.height * 0.9,
-        );
-    sizeConstraint = Size(
+    Size sizeConstraint = Size(
       widget.size.width - widgetSize.width,
       widget.size.height - widgetSize.height,
     );
+
+    resolvedPadding =
+        (widget.padding ?? EdgeInsets.zero).resolve(TextDirection.ltr);
+
+    final double leftLimit = resolvedPadding.left;
+    final double rightLimit = sizeConstraint.width - resolvedPadding.right;
+    final double topLimit = resolvedPadding.top;
+    final double bottomLimit = sizeConstraint.height - resolvedPadding.bottom;
+
+    clampLimits = Rect.fromLTRB(leftLimit, topLimit, rightLimit, bottomLimit);
+
+    position = (widget.position ??
+            Offset(
+              (widget.size.width * 0.5) - widgetSize.width / 2,
+              widget.size.height * 0.9,
+            ))
+        .clampFromRect(clampLimits);
+
     super.initState();
   }
 
@@ -185,25 +199,10 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                     ),
                     GestureDetector(
                       onPanUpdate: (details) {
-                        final EdgeInsets resolvedPadding =
-                            (widget.padding ?? EdgeInsets.zero)
-                                .resolve(TextDirection.ltr);
-
-                        final double leftLimit = resolvedPadding.left;
-                        final double rightLimit =
-                            sizeConstraint.width - resolvedPadding.right;
-                        final double topLimit = resolvedPadding.top;
-                        final double bottomLimit =
-                            sizeConstraint.height - resolvedPadding.bottom;
-
                         final Offset newPosition = position + details.delta;
 
                         setState(() {
-                          // position = newPosition.clamp(sizeConstraint);
-                          position = Offset(
-                            newPosition.dx.clamp(leftLimit, rightLimit),
-                            newPosition.dy.clamp(topLimit, bottomLimit),
-                          );
+                          position = newPosition.clampFromRect(clampLimits);
                           moving = true;
                         });
                       },

@@ -7,6 +7,13 @@ extension OffsetClamping on Offset {
       dy.clamp(0.0, size.height),
     );
   }
+
+  Offset clampFromRect(Rect rect) {
+    return Offset(
+      dx.clamp(rect.left, rect.right),
+      dy.clamp(rect.top, rect.bottom),
+    );
+  }
 }
 
 extension OffsetNormalization on Offset {
