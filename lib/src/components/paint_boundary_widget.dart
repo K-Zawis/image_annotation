@@ -22,14 +22,13 @@ class AnnotationPaintBoundary extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AnnotationPaintBoundary> createState() =>
-      _AnnotationPaintBoundaryState();
+  State<AnnotationPaintBoundary> createState() => _AnnotationPaintBoundaryState();
 }
 
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
   RenderBox? renderBox;
-  Size? size;
+  Size? boundarySize;
   bool _editing = true;
   bool _movingPoint = false;
 
@@ -45,11 +44,15 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _initializeFontSizes());
   }
 
+  // To access the [RenderBox] and [Size] of our [_boundaryKey] during build, we must
+  // add a post frame callback here. This retrieves these details when they change and
+  // stores them in global vars.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _getCustomPaintRenderBox());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _getPaintBoundaryRenderBox(),
+    );
   }
 
   void _initializeFontSizes() {
@@ -68,32 +71,30 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     widget.controller.updateCanvas();
   }
 
-  void _getCustomPaintRenderBox() {
+  void _getPaintBoundaryRenderBox() {
     final BuildContext? boundaryContext = _boundaryKey.currentContext;
     if (boundaryContext == null) return;
 
     renderBox = boundaryContext.findRenderObject() as RenderBox;
     if (renderBox == null) return;
 
-    size = renderBox!.size;
+    boundarySize = renderBox!.size;
   }
 
   void _draw(Offset position, {bool isText = false}) {
-    Size? boundarySize = _boundaryKey.currentContext?.size;
-
     if (boundarySize == null) {
       return;
     }
 
-    final clampedPosition = position.clamp(boundarySize);
-    final normalizedPosition = clampedPosition.toNormalized(boundarySize);
+    final clampedPosition = position.clamp(boundarySize!);
+    final normalizedPosition = clampedPosition.toNormalized(boundarySize!);
 
     if (isText) {
       showTextAnnotationDialog(
         context: context,
         relativePosition: normalizedPosition,
         controller: widget.controller,
-        visualImageSize: boundarySize,
+        visualImageSize: boundarySize!,
       );
       return;
     }
@@ -103,7 +104,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         context: context,
         relativePosition: normalizedPosition,
         controller: widget.controller,
-        visualImageSize: boundarySize,
+        visualImageSize: boundarySize!,
       );
       return;
     }
@@ -191,7 +192,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   List<Widget> _buildOverlayPoints(
     List<Offset> points,
   ) {
-    if (renderBox == null || size == null) return [];
+    if (renderBox == null || boundarySize == null) return [];
 
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -199,7 +200,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       final int index = entry.key;
       final Offset point = entry.value;
 
-      final position = point.toAbsolute(size!);
+      final Offset position = point.toAbsolute(boundarySize!);
 
       return Positioned(
         left: position.dx - 20,
@@ -218,35 +219,44 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
             widget.controller.updateCanvas();
           },
-          child: Draggable(
-            onDragStarted: () => setState(() => _movingPoint = true),
-            onDragEnd: (_) => setState(() => _movingPoint = false),
-            onDraggableCanceled: (_, __) =>
-                setState(() => _movingPoint = false),
-            onDragUpdate: (details) {
-              final position = renderBox!.globalToLocal(details.globalPosition);
-              final clampedPosition = (position).clamp(size!);
-              final normalizedPosition = clampedPosition.toNormalized(size!);
+          onPanStart: (_) => setState(() => _movingPoint = true),
+          onPanEnd: (_) => setState(() => _movingPoint = false),
+          onPanCancel: () => setState(() => _movingPoint = false),
+          onPanUpdate: (details) {
+            final position = renderBox!.globalToLocal(details.globalPosition);
+            final clampedPosition = (position).clamp(boundarySize!);
+            final normalizedPosition =
+                clampedPosition.toNormalized(boundarySize!);
 
-              final annotation =
-                  widget.controller.currentAnnotation as ShapeAnnotation;
+            final annotation =
+                widget.controller.currentAnnotation as ShapeAnnotation;
 
-              annotation.replaceAt(index, point: normalizedPosition);
+            annotation.replaceAt(index, point: normalizedPosition);
 
-              widget.controller.updateCanvas();
-            },
-            feedback: const SizedBox(),
-            child: Container(
-              height: 40,
-              width: 40,
-              color: Colors.transparent,
-              child: Center(
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: colorScheme.surfaceDim,
+            widget.controller.updateCanvas();
+          },
+          child: Container(
+            height: 40,
+            width: 40,
+            color: Colors.transparent,
+            child: Center(
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colorScheme.surfaceDim,
+                ),
+                child: Center(
+                  child: Container(
+                    width: 5,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.6,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -272,12 +282,12 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
               _draw(details.localPosition);
             }
           },
-          onPanEnd: (details) {
+          onPanEnd: (_) {
             _handleDrawEnd.call();
-            widget.onDrawEnd?.call(details);
+            widget.onDrawEnd?.call(_);
           },
           onTapUp: (details) =>
-              !_movingPoint ? _handleTap(details.localPosition) : null,
+              _movingPoint ? null : _handleTap(details.localPosition),
           child: ListenableBuilder(
             listenable: widget.controller,
             builder: (context, child) {

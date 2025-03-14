@@ -56,7 +56,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
     position = (widget.position ??
             Offset(
               (widget.size.width * 0.5) - widgetSize.width / 2,
-              widget.size.height * 0.9,
+              widget.size.height * 0.85,
             ))
         .clampFromRect(clampLimits);
 
@@ -197,8 +197,10 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                         ],
                       ),
                     ),
-                    Draggable(
-                      onDragUpdate: (details) {
+                    GestureDetector(
+                      onPanEnd: (_) => setState(() => moving = false),
+                      onPanCancel: () => setState(() => moving = false),
+                      onPanUpdate: (details) {
                         final Offset newPosition = position + details.delta;
 
                         setState(() {
@@ -206,8 +208,6 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                           moving = true;
                         });
                       },
-                      onDragEnd: (details) => setState(() => moving = false),
-                      feedback: const SizedBox(),
                       child: Icon(
                         Icons.drag_indicator_rounded,
                         color: colorScheme.outlineVariant,
