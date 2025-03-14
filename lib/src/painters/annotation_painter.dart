@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../controllers/controllers.dart';
@@ -22,7 +20,7 @@ class AnnotationPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(AnnotationPainter oldDelegate) {
+    return true; // TODO: add dirty flag for repaint logic?
   }
 }

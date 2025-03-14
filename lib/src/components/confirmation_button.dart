@@ -197,8 +197,8 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                         ],
                       ),
                     ),
-                    GestureDetector(
-                      onPanUpdate: (details) {
+                    Draggable(
+                      onDragUpdate: (details) {
                         final Offset newPosition = position + details.delta;
 
                         setState(() {
@@ -206,16 +206,13 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                           moving = true;
                         });
                       },
-                      onPanEnd: (details) {
-                        setState(() {
-                          moving = false;
-                        });
-                      },
+                      onDragEnd: (details) => setState(() => moving = false),
+                      feedback: const SizedBox(),
                       child: Icon(
                         Icons.drag_indicator_rounded,
                         color: colorScheme.outlineVariant,
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
