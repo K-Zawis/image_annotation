@@ -364,11 +364,10 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                       ),
                 DragConfirmationButtons(
                   controller: _controller,
+                  padding: widget.dragBoundaryPadding,
                   size: Size(
                     constraints.biggest.width,
-                    constraints.biggest.height -
-                        (padding.bottom +
-                            (widget.dragBoundaryPadding?.vertical ?? 0)),
+                    constraints.biggest.height - padding.bottom,
                   ),
                   onConfirm: () {},
                   onCancel: () {},

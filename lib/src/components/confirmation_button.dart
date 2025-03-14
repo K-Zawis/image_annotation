@@ -12,6 +12,7 @@ class DragConfirmationButtons extends StatefulWidget {
   final AnnotationController controller;
   final Size size;
   final Offset? position;
+  final EdgeInsetsGeometry? padding;
 
   const DragConfirmationButtons({
     super.key,
@@ -20,6 +21,7 @@ class DragConfirmationButtons extends StatefulWidget {
     this.onConfirm,
     this.onCancel,
     this.position,
+    this.padding,
   });
 
   @override
@@ -124,8 +126,8 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                                 bottomLeft: Radius.circular(4),
                               ),
                             ),
-                            foregroundColor:
-                                colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                            foregroundColor: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.8),
                           ),
                           child: child!,
                         );
@@ -136,8 +138,8 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                           Icon(
                             Icons.check_rounded,
                             size: 16,
-                            color:
-                                colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                            color: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.8),
                           ),
                           const SizedBox(width: 4),
                           const Text("Finish"),
@@ -173,8 +175,8 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                           Icon(
                             Icons.close_rounded,
                             size: 16,
-                            color:
-                                colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                            color: colorScheme.onSurfaceVariant
+                                .withValues(alpha: 0.8),
                           ),
                           const SizedBox(width: 4),
                           const Text("Cancel"),
@@ -183,10 +185,25 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                     ),
                     GestureDetector(
                       onPanUpdate: (details) {
+                        final EdgeInsets resolvedPadding =
+                            (widget.padding ?? EdgeInsets.zero)
+                                .resolve(TextDirection.ltr);
+
+                        final double leftLimit = resolvedPadding.left;
+                        final double rightLimit =
+                            sizeConstraint.width - resolvedPadding.right;
+                        final double topLimit = resolvedPadding.top;
+                        final double bottomLimit =
+                            sizeConstraint.height - resolvedPadding.bottom;
+
                         final Offset newPosition = position + details.delta;
 
                         setState(() {
-                          position = newPosition.clamp(sizeConstraint);
+                          // position = newPosition.clamp(sizeConstraint);
+                          position = Offset(
+                            newPosition.dx.clamp(leftLimit, rightLimit),
+                            newPosition.dy.clamp(topLimit, bottomLimit),
+                          );
                           moving = true;
                         });
                       },
