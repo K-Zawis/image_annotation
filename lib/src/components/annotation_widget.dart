@@ -310,6 +310,8 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
 
   @override
   Widget build(BuildContext context) {
+    final padding = MediaQuery.of(context).padding;
+
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return ValueListenableBuilder<bool>(
@@ -352,7 +354,10 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                       ),
                 DragConfirmationButtons(
                   controller: _controller,
-                  size: constraints.biggest,
+                  size: Size(
+                    constraints.biggest.width,
+                    constraints.biggest.height - padding.bottom,
+                  ),
                   onConfirm: () {},
                   onCancel: () {},
                 ),
