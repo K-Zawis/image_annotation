@@ -122,6 +122,11 @@ class PolygonAnnotation extends ShapeAnnotation {
     List<Offset> visualPoints =
         normalizedPoints.map((point) => point.toAbsolute(size)).toList();
 
+    final Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
     if (visualPoints.isEmpty) return;
 
     if (visualPoints.length == 1) {
@@ -136,8 +141,6 @@ class PolygonAnnotation extends ShapeAnnotation {
         final Paint lastLinePaint = paint..color = color.withValues(alpha: 0.6);
         canvas.drawLine(lastPoint, firstPoint, lastLinePaint);
       }
-
-      paint.color = color;
     }
   }
 
