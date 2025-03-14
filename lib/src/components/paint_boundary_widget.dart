@@ -220,7 +220,21 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
               widget.controller.updateCanvas();
             },
-            feedback: const SizedBox(),
+            feedback: Container(
+              height: 40,
+              width: 40,
+              color: Colors.transparent,
+              child: Center(
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colorScheme.surfaceDim,
+                  ),
+                ),
+              ),
+            ),
             child: Container(
               height: 40,
               width: 40,
