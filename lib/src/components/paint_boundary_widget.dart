@@ -210,7 +210,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             onDraggableCanceled: (_, __) =>
                 setState(() => _movingPoint = false),
             onDragUpdate: (details) {
-              final clampedPosition = (details.localPosition).clamp(size);
+              final clampedPosition = (position - details.localPosition).clamp(size);
               final normalizedPosition = clampedPosition.toNormalized(size);
 
               final annotation =
