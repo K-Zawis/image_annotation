@@ -28,21 +28,28 @@ class AnnotationPaintBoundary extends StatefulWidget {
 
 class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   final GlobalKey _boundaryKey = GlobalKey();
+  RenderBox? renderBox;
+  Size? size;
   bool _editing = true;
   bool _movingPoint = false;
 
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) => _initializeFontSizes());
   }
 
   @override
   void didUpdateWidget(covariant AnnotationPaintBoundary oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     WidgetsBinding.instance.addPostFrameCallback((_) => _initializeFontSizes());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _getCustomPaintRenderBox());
   }
 
   void _initializeFontSizes() {
@@ -59,6 +66,16 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
 
     widget.controller.updateCanvas();
+  }
+
+  void _getCustomPaintRenderBox() {
+    final BuildContext? boundaryContext = _boundaryKey.currentContext;
+    if (boundaryContext == null) return;
+
+    renderBox = boundaryContext.findRenderObject() as RenderBox;
+    if (renderBox == null) return;
+
+    size = renderBox!.size;
   }
 
   void _draw(Offset position, {bool isText = false}) {
@@ -174,12 +191,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   List<Widget> _buildOverlayPoints(
     List<Offset> points,
   ) {
-    final BuildContext? boundaryContext = _boundaryKey.currentContext;
-
-    if (boundaryContext == null) return [];
-
-    final RenderBox renderBox = boundaryContext.findRenderObject() as RenderBox;
-    final Size size = boundaryContext.size!;
+    if (renderBox == null || size == null) return [];
 
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -187,7 +199,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       final int index = entry.key;
       final Offset point = entry.value;
 
-      final position = point.toAbsolute(size);
+      final position = point.toAbsolute(size!);
 
       return Positioned(
         left: position.dx - 20,
@@ -212,9 +224,9 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             onDraggableCanceled: (_, __) =>
                 setState(() => _movingPoint = false),
             onDragUpdate: (details) {
-              final position = renderBox.globalToLocal(details.globalPosition);
-              final clampedPosition = (position).clamp(size);
-              final normalizedPosition = clampedPosition.toNormalized(size);
+              final position = renderBox!.globalToLocal(details.globalPosition);
+              final clampedPosition = (position).clamp(size!);
+              final normalizedPosition = clampedPosition.toNormalized(size!);
 
               final annotation =
                   widget.controller.currentAnnotation as ShapeAnnotation;
