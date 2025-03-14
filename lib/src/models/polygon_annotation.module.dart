@@ -133,7 +133,9 @@ class PolygonAnnotation extends ShapeAnnotation {
       final lastPoint = visualPoints.last;
 
       if (firstPoint != lastPoint) {
-        canvas.drawLine(lastPoint, firstPoint, paint);
+        final Paint lastLinePaint = paint
+          ..color = paint.color.withValues(alpha: 0.5);
+        canvas.drawLine(lastPoint, firstPoint, lastLinePaint);
       }
     }
   }

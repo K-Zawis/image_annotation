@@ -249,12 +249,12 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 ),
                 child: Center(
                   child: Container(
-                    width: 5,
-                    height: 5,
+                    width: widget.controller.strokeWidth,
+                    height: widget.controller.strokeWidth,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: colorScheme.onSurfaceVariant.withValues(
-                        alpha: 0.6,
+                        alpha: 0.2,
                       ),
                     ),
                   ),
