@@ -109,6 +109,11 @@ class ImageAnnotation extends StatefulWidget {
   /// null means no limit
   final int? annotationLimit;
 
+  /// Optional padding for the drag boundary of the confirmation button.
+  ///
+  /// Useful if you want to prevent the button from overlapping certain parts of the UI.
+  final EdgeInsetsGeometry? dragBoundaryPadding;
+
   /// Optional custom UI builder.
   ///
   /// Allows users to create their own UI using the
@@ -145,6 +150,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.dragBoundaryPadding,
   })  : assert(strokeWidth == null || strokeWidth > 0.0),
         assert(fontSize == null || fontSize > 0.0);
 
@@ -162,6 +168,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.dragBoundaryPadding,
   })  : imageWidget = Image.network(
           src,
           fit: BoxFit.fill,
@@ -183,6 +190,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.dragBoundaryPadding,
   })  : imageWidget = Image.asset(
           name,
           fit: BoxFit.fill,
@@ -204,6 +212,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.dragBoundaryPadding,
   })  : assert(
           !kIsWeb,
           'ImageAnnotation.file is not supported on Flutter Web. '
@@ -230,6 +239,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.dragBoundaryPadding,
   })  : imageWidget = Image.memory(
           bytes,
           fit: BoxFit.fill,
@@ -356,7 +366,9 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                   controller: _controller,
                   size: Size(
                     constraints.biggest.width,
-                    constraints.biggest.height - padding.bottom,
+                    constraints.biggest.height -
+                        (padding.bottom +
+                            (widget.dragBoundaryPadding?.vertical ?? 0)),
                   ),
                   onConfirm: () {},
                   onCancel: () {},
