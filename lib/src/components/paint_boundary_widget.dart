@@ -210,7 +210,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             onDraggableCanceled: (_, __) =>
                 setState(() => _movingPoint = false),
             onDragUpdate: (details) {
-              final clampedPosition = (position + details.delta).clamp(size);
+              final clampedPosition = (details.localPosition).clamp(size);
               final normalizedPosition = clampedPosition.toNormalized(size);
 
               final annotation =
@@ -220,21 +220,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
               widget.controller.updateCanvas();
             },
-            feedback: Container(
-              height: 40,
-              width: 40,
-              color: Colors.transparent,
-              child: Center(
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: colorScheme.surfaceDim,
-                  ),
-                ),
-              ),
-            ),
+            feedback: const SizedBox(),
             child: Container(
               height: 40,
               width: 40,
