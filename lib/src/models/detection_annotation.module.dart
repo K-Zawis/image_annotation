@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import '../utils/utils.dart' show OffsetNormalization, convertToRenderFontSize;
@@ -188,6 +190,8 @@ class DetectedAnnotation extends ShapeAnnotation {
         topLeftCorner.dy - textPainter.height,
       ),
     );
+
+    log('TextRect: $labelRect', name: 'D/DetectedAnnotation');
 
     canvas.drawRect(labelRect, labelPaint);
 
