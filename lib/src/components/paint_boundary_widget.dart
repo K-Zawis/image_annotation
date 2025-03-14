@@ -204,31 +204,35 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
             widget.controller.updateCanvas();
           },
-          onPanStart: (position) => setState(() => _movingPoint = true),
-          onPanUpdate: (details) {
-            final clampedPosition = (position + details.delta).clamp(size);
-            final normalizedPosition = clampedPosition.toNormalized(size);
+          child: Draggable(
+            onDragStarted: () => setState(() => _movingPoint = true),
+            onDragEnd: (_) => setState(() => _movingPoint = false),
+            onDraggableCanceled: (_, __) =>
+                setState(() => _movingPoint = false),
+            onDragUpdate: (details) {
+              final clampedPosition = (position + details.delta).clamp(size);
+              final normalizedPosition = clampedPosition.toNormalized(size);
 
-            final annotation =
-                widget.controller.currentAnnotation as ShapeAnnotation;
+              final annotation =
+                  widget.controller.currentAnnotation as ShapeAnnotation;
 
-            annotation.replaceAt(index, point: normalizedPosition);
+              annotation.replaceAt(index, point: normalizedPosition);
 
-            widget.controller.updateCanvas();
-          },
-          onPanEnd: (details) => setState(() => _movingPoint = false),
-          onPanCancel: () => setState(() => _movingPoint = false),
-          child: Container(
-            height: 40,
-            width: 40,
-            color: Colors.transparent,
-            child: Center(
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colorScheme.surfaceDim,
+              widget.controller.updateCanvas();
+            },
+            feedback: const SizedBox(),
+            child: Container(
+              height: 40,
+              width: 40,
+              color: Colors.transparent,
+              child: Center(
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colorScheme.surfaceDim,
+                  ),
                 ),
               ),
             ),
