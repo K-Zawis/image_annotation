@@ -136,6 +136,8 @@ class PolygonAnnotation extends ShapeAnnotation {
         final Paint lastLinePaint = paint..color = color.withValues(alpha: 0.8);
         canvas.drawLine(lastPoint, firstPoint, lastLinePaint);
       }
+
+      paint.color = color;
     }
   }
 
