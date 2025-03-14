@@ -173,19 +173,14 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
   List<Widget> _buildOverlayPoints(
     List<Offset> points,
-    BoxConstraints constraints,
   ) {
-    final RenderBox? renderBox =
-        _boundaryKey.currentContext?.findRenderObject() as RenderBox?;
+    final BuildContext? boundaryContext = _boundaryKey.currentContext;
 
-    if (renderBox == null) {
-      return [];
-    }
+    if (boundaryContext == null) return [];
 
-    final Size size = Size(
-      constraints.biggest.shortestSide,
-      constraints.biggest.shortestSide,
-    );
+    final RenderBox renderBox = boundaryContext.findRenderObject() as RenderBox;
+    final Size size = boundaryContext.size!;
+
     final colorScheme = Theme.of(context).colorScheme;
 
     return points.asMap().entries.map((entry) {
@@ -278,26 +273,18 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
                 children: [
                   CustomPaint(
                     foregroundPainter: AnnotationPainter(widget.controller),
-                    child: LayoutBuilder(builder: (context, constrains) {
-                      return Stack(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: widget.controller.aspectRatio!,
-                            child: SizedBox.expand(
-                              child: widget.imageWidget,
-                            ),
-                          ),
-                          if (widget.controller.polyDrawingActiveNotifier.value)
-                            ..._buildOverlayPoints(
-                              (widget.controller.currentAnnotation
-                                      as ShapeAnnotation)
-                                  .normalizedPoints,
-                              constrains,
-                            ),
-                        ],
-                      );
-                    }),
+                    child: AspectRatio(
+                      aspectRatio: widget.controller.aspectRatio!,
+                      child: SizedBox.expand(
+                        child: widget.imageWidget,
+                      ),
+                    ),
                   ),
+                  if (widget.controller.polyDrawingActiveNotifier.value)
+                    ..._buildOverlayPoints(
+                      (widget.controller.currentAnnotation as ShapeAnnotation)
+                          .normalizedPoints,
+                    ),
                 ],
               );
             },
