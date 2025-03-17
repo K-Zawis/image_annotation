@@ -132,6 +132,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
+      _draw(position);
     } else {
       _draw(position);
     }
@@ -143,6 +144,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
+      _draw(position);
     } else {
       _draw(position);
       if (_polygonContainsThreePoints()) {
