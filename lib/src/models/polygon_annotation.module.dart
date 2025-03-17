@@ -23,10 +23,12 @@ class PolygonAnnotation extends ShapeAnnotation {
   PolygonAnnotation({
     double strokeWidth = 2.0,
     Color color = Colors.red,
+    Offset? point,
   }) : super(
           AnnotationType.polygon,
           strokeWidth: strokeWidth,
           color: color,
+          points: point != null ? [point] : null,
         );
 
   /// Determines whether the polygon is valid.

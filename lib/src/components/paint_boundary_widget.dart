@@ -127,12 +127,16 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
   void _startPolylineDrawing(Offset position) {
     if (!widget.controller.polyDrawingActive) {
+      if (boundarySize == null) return;
+      final clampedPosition = position.clamp(boundarySize!);
+      final normalizedPosition = clampedPosition.toNormalized(boundarySize!);
+
       widget.controller.add(ShapeAnnotation(
         AnnotationType.polyline,
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
+        points: [normalizedPosition],
       ));
-      _draw(position);
     } else {
       _draw(position);
     }
@@ -140,13 +144,18 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
 
   void _startPolygonDrawing(Offset position) {
     if (!widget.controller.polyDrawingActive) {
+      if (boundarySize == null) return;
+      final clampedPosition = position.clamp(boundarySize!);
+      final normalizedPosition = clampedPosition.toNormalized(boundarySize!);
+
       widget.controller.add(PolygonAnnotation(
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
+        point: normalizedPosition,
       ));
-      _draw(position);
     } else {
       _draw(position);
+
       if (_polygonContainsThreePoints()) {
         widget.controller.polygonContainsThreePoints.value = true;
       }

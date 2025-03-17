@@ -39,8 +39,17 @@ class ShapeAnnotation extends Annotation {
     AnnotationType annotationType, {
     this.strokeWidth = 2.0, // TODO: normalize this value
     Color color = Colors.red,
+    List<Offset>? points,
   })  : assert(strokeWidth > 0, 'strokeWidth must be greater than 0.'),
-        _normalizedPoints = [],
+        assert(
+            points == null ||
+                points.every((point) => point.dx >= 0 && point.dx <= 1),
+            'X coordinates are not normalized.'),
+        assert(
+            points == null ||
+                points.every((point) => point.dy >= 0 && point.dy <= 1),
+            'Y coordinates are not normalized.'),
+        _normalizedPoints = points ?? [],
         paint = Paint()
           ..color = color
           ..strokeWidth = strokeWidth
