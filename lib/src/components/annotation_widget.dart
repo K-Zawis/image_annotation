@@ -74,13 +74,21 @@ class ImageAnnotation extends StatefulWidget {
   ///
   /// When [finalizeOnRelease] is enabled, you will recieve the screen start position of the
   /// shape annotation.
-  final GestureDragStartCallback? onDrawStart;
+  final void Function(
+      DragStartDetails details, AnnotationController controller)? onDrawStart;
 
   /// Callback triggered when [onPadEnd] fires.
   ///
   /// When [finalizeOnRelease] is enabled, you will recieve the screen end position of the
   /// shape annotation.
-  final GestureDragEndCallback? onDrawEnd;
+  final void Function(DragEndDetails details, AnnotationController controller)?
+      onDrawEnd;
+
+  /// Callback triggered when [onTapUp] fires.
+  ///
+  /// Used for [AnnotationType.text], [AnnotationType.polyline] and [AnnotationType.polyline]
+  final void Function(TapUpDetails details, AnnotationController controller)?
+      onTapUp;
 
   /// Color of the current [Annotation]
   ///
@@ -142,6 +150,7 @@ class ImageAnnotation extends StatefulWidget {
     required this.annotationType,
     this.onDrawStart,
     this.onDrawEnd,
+    this.onTapUp,
     this.builder,
     this.loadingBuilder,
     this.color,
@@ -160,6 +169,7 @@ class ImageAnnotation extends StatefulWidget {
     required this.annotationType,
     this.onDrawStart,
     this.onDrawEnd,
+    this.onTapUp,
     this.builder,
     this.loadingBuilder,
     this.color,
@@ -182,6 +192,7 @@ class ImageAnnotation extends StatefulWidget {
     required this.annotationType,
     this.onDrawStart,
     this.onDrawEnd,
+    this.onTapUp,
     this.builder,
     this.loadingBuilder,
     this.color,
@@ -204,6 +215,7 @@ class ImageAnnotation extends StatefulWidget {
     required this.annotationType,
     this.onDrawStart,
     this.onDrawEnd,
+    this.onTapUp,
     this.builder,
     this.loadingBuilder,
     this.color,
@@ -231,6 +243,7 @@ class ImageAnnotation extends StatefulWidget {
     required this.annotationType,
     this.onDrawStart,
     this.onDrawEnd,
+    this.onTapUp,
     this.builder,
     this.loadingBuilder,
     this.color,
@@ -315,7 +328,7 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
         ),
       );
     }
-    widget.onDrawStart?.call(details);
+    widget.onDrawStart?.call(details, _controller);
   }
 
   @override
@@ -342,10 +355,14 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
             final annotationBoundary = AnnotationPaintBoundary(
               imageWidget: widget.imageWidget,
               controller: _controller,
-              onDrawEnd: widget.onDrawEnd,
-              onDrawStart: _controller.finalizeOnRelease
-                  ? _handleDrawStartWithFinalize
-                  : widget.onDrawStart,
+              onDrawEnd: (details) => widget.onDrawEnd?.call(
+                details,
+                _controller,
+              ),
+              onDrawStart: (details) => _controller.finalizeOnRelease
+                  ? _handleDrawStartWithFinalize(details)
+                  : widget.onDrawStart?.call(details, _controller),
+              onTapUp: (details) => widget.onTapUp?.call(details, _controller),
             );
 
             return Stack(

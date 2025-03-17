@@ -11,6 +11,7 @@ class AnnotationPaintBoundary extends StatefulWidget {
   final Image imageWidget;
   final GestureDragStartCallback? onDrawStart;
   final GestureDragEndCallback? onDrawEnd;
+  final GestureTapUpCallback? onTapUp;
   final AnnotationController controller;
 
   const AnnotationPaintBoundary({
@@ -19,6 +20,7 @@ class AnnotationPaintBoundary extends StatefulWidget {
     required this.controller,
     this.onDrawStart,
     this.onDrawEnd,
+    this.onTapUp,
   }) : super(key: key);
 
   @override
@@ -288,8 +290,11 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
             _handleDrawEnd.call();
             widget.onDrawEnd?.call(_);
           },
-          onTapUp: (details) =>
-              _movingPoint ? null : _handleTap(details.localPosition),
+          onTapUp: (details) {
+            if (_movingPoint) return;
+            _handleTap(details.localPosition);
+            widget.onTapUp?.call(details);
+          },
           child: ListenableBuilder(
             listenable: widget.controller,
             builder: (context, child) {
