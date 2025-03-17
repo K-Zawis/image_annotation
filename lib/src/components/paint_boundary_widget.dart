@@ -132,8 +132,9 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
+    } else {
+      _draw(position);
     }
-    _draw(position);
   }
 
   void _startPolygonDrawing(Offset position) {
@@ -142,10 +143,11 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
-    }
-    _draw(position);
-    if (_polygonContainsThreePoints()) {
-      widget.controller.polygonContainsThreePoints.value = true;
+    } else {
+      _draw(position);
+      if (_polygonContainsThreePoints()) {
+        widget.controller.polygonContainsThreePoints.value = true;
+      }
     }
   }
 
