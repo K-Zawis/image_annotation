@@ -100,16 +100,6 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       return;
     }
 
-    if (isText) {
-      showTextAnnotationDialog(
-        context: context,
-        relativePosition: normalizedPosition,
-        controller: widget.controller,
-        visualImageSize: boundarySize!,
-      );
-      return;
-    }
-
     final Annotation? annotation = widget.controller.currentAnnotation;
     if (annotation == null) return;
 
@@ -136,32 +126,26 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   void _startPolylineDrawing(Offset position) {
-    if (!widget.controller.polyDrawingActive &&
-        !widget.controller.limitExceeded) {
+    if (!widget.controller.polyDrawingActive) {
       widget.controller.add(ShapeAnnotation(
         AnnotationType.polyline,
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
-      widget.controller.polylineDrawingActive = true;
-    } else {
-      _draw(position);
     }
+    _draw(position);
   }
 
   void _startPolygonDrawing(Offset position) {
-    if (!widget.controller.polyDrawingActive &&
-        !widget.controller.limitExceeded) {
+    if (!widget.controller.polyDrawingActive) {
       widget.controller.add(PolygonAnnotation(
         strokeWidth: widget.controller.strokeWidth,
         color: widget.controller.color,
       ));
-      widget.controller.polygonDrawingActive = true;
-    } else {
-      _draw(position);
-      if (_polygonContainsThreePoints()) {
-        widget.controller.polygonContainsThreePoints.value = true;
-      }
+    }
+    _draw(position);
+    if (_polygonContainsThreePoints()) {
+      widget.controller.polygonContainsThreePoints.value = true;
     }
   }
 

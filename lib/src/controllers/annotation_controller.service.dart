@@ -291,6 +291,12 @@ class AnnotationController extends ChangeNotifier {
     _model.annotations.add(annotation);
     _model.redoStack.clear();
 
+    if (annotation.annotationType == AnnotationType.polygon) {
+      polygonDrawingActive = true;
+    } else if (annotation.annotationType == AnnotationType.polyline) {
+      polylineDrawingActive = true;
+    }
+
     log(
       '${annotationType.name} annotation added',
       level: 800,
