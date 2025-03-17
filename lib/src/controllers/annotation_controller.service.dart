@@ -165,6 +165,9 @@ class AnnotationController extends ChangeNotifier {
   /// that no annotation has been set or is available at the moment.
   bool get hasNoAnnotation => currentAnnotation == null;
 
+  bool get limitExceeded =>
+      _annotationLimit != null && annotations.length >= _annotationLimit;
+
   // ==== SETTERS ====
 
   /// Updates the colour for new annotations.
@@ -281,8 +284,7 @@ class AnnotationController extends ChangeNotifier {
   ///
   /// Notifies listeners if the value changes. Does nothing if the annotation limit is reached.
   void add(Annotation annotation) {
-    if ((_annotationLimit != null && annotations.length >= _annotationLimit) ||
-        polyDrawingActive) {
+    if (limitExceeded || polyDrawingActive) {
       return;
     }
 
