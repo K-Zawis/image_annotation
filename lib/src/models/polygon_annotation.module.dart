@@ -24,11 +24,13 @@ class PolygonAnnotation extends ShapeAnnotation {
     double strokeWidth = 2.0,
     Color color = Colors.red,
     Offset? point,
-  }) : super(
+    List<Offset>? points,
+  })  : assert(point == null || points == null, "Only one can be defined at once"),
+        super(
           AnnotationType.polygon,
           strokeWidth: strokeWidth,
           color: color,
-          points: point != null ? [point] : null,
+          points: point != null ? [point] : points,
         );
 
   /// Determines whether the polygon is valid.
@@ -121,8 +123,7 @@ class PolygonAnnotation extends ShapeAnnotation {
 
   @override
   void render(Canvas canvas, Size size) {
-    List<Offset> visualPoints =
-        normalizedPoints.map((point) => point.toAbsolute(size)).toList();
+    List<Offset> visualPoints = normalizedPoints.map((point) => point.toAbsolute(size)).toList();
 
     final Paint paint = Paint()
       ..color = color
