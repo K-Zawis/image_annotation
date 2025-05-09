@@ -58,6 +58,7 @@ class AnnotationController extends ChangeNotifier {
     double? fontSize,
     int? annotationLimit,
     bool finalizeOnRelease = false,
+    List<Annotation>? initialAnnotations,
   })  : assert(strokeWidth == null || strokeWidth > 0.0),
         assert(fontSize == null || fontSize > 0.0),
         _annotationLimit = annotationLimit,
@@ -67,6 +68,7 @@ class AnnotationController extends ChangeNotifier {
           color: color,
           strokeWidth: strokeWidth,
           fontSize: fontSize,
+          annotations: initialAnnotations,
         );
 
   // ==== GETTERS ====

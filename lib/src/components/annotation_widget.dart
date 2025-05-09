@@ -74,21 +74,18 @@ class ImageAnnotation extends StatefulWidget {
   ///
   /// When [finalizeOnRelease] is enabled, you will recieve the screen start position of the
   /// shape annotation.
-  final void Function(
-      DragStartDetails details, AnnotationController controller)? onDrawStart;
+  final void Function(DragStartDetails details, AnnotationController controller)? onDrawStart;
 
   /// Callback triggered when [onPadEnd] fires.
   ///
   /// When [finalizeOnRelease] is enabled, you will recieve the screen end position of the
   /// shape annotation.
-  final void Function(DragEndDetails details, AnnotationController controller)?
-      onDrawEnd;
+  final void Function(DragEndDetails details, AnnotationController controller)? onDrawEnd;
 
   /// Callback triggered when [onTapUp] fires.
   ///
   /// Used for [AnnotationType.text], [AnnotationType.polyline] and [AnnotationType.polyline]
-  final void Function(TapUpDetails details, AnnotationController controller)?
-      onTapUp;
+  final void Function(TapUpDetails details, AnnotationController controller)? onTapUp;
 
   /// Color of the current [Annotation]
   ///
@@ -144,6 +141,11 @@ class ImageAnnotation extends StatefulWidget {
   /// This is used for adding initial annotations when using an object detection model.
   final List<DetectedAnnotation>? detectedAnnotations;
 
+  /// Optional list of initial annotations
+  ///
+  /// This is used for adding initial annotations when coming back to an annotation.
+  final List<Annotation>? initialAnnotations;
+
   const ImageAnnotation({
     super.key,
     required this.imageWidget,
@@ -159,6 +161,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.initialAnnotations,
     this.dragBoundaryPadding,
   })  : assert(strokeWidth == null || strokeWidth > 0.0),
         assert(fontSize == null || fontSize > 0.0);
@@ -178,6 +181,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.initialAnnotations,
     this.dragBoundaryPadding,
   })  : imageWidget = Image.network(
           src,
@@ -201,6 +205,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.initialAnnotations,
     this.dragBoundaryPadding,
   })  : imageWidget = Image.asset(
           name,
@@ -224,6 +229,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.initialAnnotations,
     this.dragBoundaryPadding,
   })  : assert(
           !kIsWeb,
@@ -252,6 +258,7 @@ class ImageAnnotation extends StatefulWidget {
     this.finalizeOnRelease = false,
     this.annotationLimit,
     this.detectedAnnotations,
+    this.initialAnnotations,
     this.dragBoundaryPadding,
   })  : imageWidget = Image.memory(
           bytes,
@@ -279,14 +286,11 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
       fontSize: widget.fontSize,
       annotationLimit: widget.annotationLimit,
       finalizeOnRelease: widget.finalizeOnRelease,
+      initialAnnotations: [...(widget.detectedAnnotations ?? []), ...(widget.initialAnnotations ?? [])],
     );
 
     _controller.loadImageSize(
       widget.imageWidget.image,
-    );
-
-    widget.detectedAnnotations?.forEach(
-      (annotation) => _controller.add(annotation),
     );
   }
 
