@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 
@@ -88,8 +89,8 @@ class ImageAnnotation extends StatefulWidget {
   /// Used for [AnnotationType.text], [AnnotationType.polyline] and [AnnotationType.polyline]
   final void Function(TapUpDetails details, AnnotationController controller)? onTapUp;
 
-  final void Function(AnnotationController controller)? onConfirm;
-  final void Function(AnnotationController controller)? onCancel;
+  final FutureOr<void> Function(AnnotationController controller)? onConfirm;
+  final FutureOr<void> Function(AnnotationController controller)? onCancel;
 
   /// Color of the current [Annotation]
   ///

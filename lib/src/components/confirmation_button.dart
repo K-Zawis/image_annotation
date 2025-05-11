@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 
@@ -8,8 +9,8 @@ import '../utils/utils.dart' show OffsetClamping;
 import '../models/models.dart' show PolygonAnnotation;
 
 class DragConfirmationButtons extends StatefulWidget {
-  final void Function(AnnotationController controller)? onConfirm;
-  final void Function(AnnotationController controller)? onCancel;
+  final FutureOr<void> Function(AnnotationController controller)? onConfirm;
+  final FutureOr<void> Function(AnnotationController controller)? onCancel;
   final AnnotationController controller;
   final Size size;
   final Offset? position;
