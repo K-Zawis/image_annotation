@@ -7,8 +7,8 @@ import '../utils/utils.dart' show OffsetClamping;
 import '../models/models.dart' show PolygonAnnotation;
 
 class DragConfirmationButtons extends StatefulWidget {
-  final VoidCallback? onConfirm;
-  final VoidCallback? onCancel;
+  final Function(AnnotationController controller)? onConfirm;
+  final Function(AnnotationController controller)? onCancel;
   final AnnotationController controller;
   final Size size;
   final Offset? position;
@@ -25,8 +25,7 @@ class DragConfirmationButtons extends StatefulWidget {
   });
 
   @override
-  State<DragConfirmationButtons> createState() =>
-      _DragConfirmationButtonsState();
+  State<DragConfirmationButtons> createState() => _DragConfirmationButtonsState();
 }
 
 class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
@@ -43,8 +42,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
       widget.size.height - widgetSize.height,
     );
 
-    resolvedPadding =
-        (widget.padding ?? EdgeInsets.zero).resolve(TextDirection.ltr);
+    resolvedPadding = (widget.padding ?? EdgeInsets.zero).resolve(TextDirection.ltr);
 
     final double leftLimit = resolvedPadding.left;
     final double rightLimit = sizeConstraint.width - resolvedPadding.right;
@@ -63,34 +61,50 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
     super.initState();
   }
 
-  void _completePolyline() {
+  void _completePolyline() async {
     widget.controller.polylineDrawingActive = false;
-    widget.onConfirm?.call();
+    if (widget.onConfirm is Future<void> Function(AnnotationController controller)?) {
+      await (widget.onConfirm as Future<void> Function(AnnotationController controller)?)?.call(widget.controller);
+    } else {
+      widget.onConfirm?.call(widget.controller);
+    }
     widget.controller.updateView();
     widget.controller.updateCanvas();
   }
 
-  void _cancelPolyline() {
+  void _cancelPolyline() async {
     widget.controller.polylineDrawingActive = false;
     widget.controller.undoAnnotation();
-    widget.onCancel?.call();
+    if (widget.onCancel is Future<void> Function(AnnotationController controller)?) {
+      await (widget.onCancel as Future<void> Function(AnnotationController controller)?)?.call(widget.controller);
+    } else {
+      widget.onCancel?.call(widget.controller);
+    }
   }
 
-  void _completePolygon() {
+  void _completePolygon() async {
     final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
     polygon?.close();
     widget.controller.polygonDrawingActive = false;
     widget.controller.polygonContainsThreePoints.value = false;
     widget.controller.updateCanvas();
-    widget.onConfirm?.call();
+    if (widget.onConfirm is Future<void> Function(AnnotationController controller)?) {
+      await (widget.onConfirm as Future<void> Function(AnnotationController controller)?)?.call(widget.controller);
+    } else {
+      widget.onConfirm?.call(widget.controller);
+    }
     widget.controller.updateView();
   }
 
-  void _cancelPolygon() {
+  void _cancelPolygon() async {
     widget.controller.polygonDrawingActive = false;
     widget.controller.polygonContainsThreePoints.value = false;
     widget.controller.undoAnnotation();
-    widget.onCancel?.call();
+    if (widget.onCancel is Future<void> Function(AnnotationController controller)?) {
+      await (widget.onCancel as Future<void> Function(AnnotationController controller)?)?.call(widget.controller);
+    } else {
+      widget.onCancel?.call(widget.controller);
+    }
   }
 
   @override
@@ -121,8 +135,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                 child: Row(
                   children: [
                     ValueListenableBuilder(
-                      valueListenable:
-                          widget.controller.polygonContainsThreePoints,
+                      valueListenable: widget.controller.polygonContainsThreePoints,
                       builder: (context, value, child) {
                         return TextButton(
                           onPressed: !moving
@@ -140,8 +153,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                                 bottomLeft: Radius.circular(4),
                               ),
                             ),
-                            foregroundColor: colorScheme.onSurfaceVariant
-                                .withValues(alpha: 0.8),
+                            foregroundColor: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                           ),
                           child: child!,
                         );
@@ -152,8 +164,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                           Icon(
                             Icons.check_rounded,
                             size: 16,
-                            color: colorScheme.onSurfaceVariant
-                                .withValues(alpha: 0.8),
+                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                           ),
                           const SizedBox(width: 4),
                           const Text("Finish"),
@@ -180,8 +191,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.zero,
                         ),
-                        foregroundColor:
-                            colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                        foregroundColor: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -189,8 +199,7 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
                           Icon(
                             Icons.close_rounded,
                             size: 16,
-                            color: colorScheme.onSurfaceVariant
-                                .withValues(alpha: 0.8),
+                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                           ),
                           const SizedBox(width: 4),
                           const Text("Cancel"),
