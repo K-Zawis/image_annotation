@@ -87,6 +87,9 @@ class ImageAnnotation extends StatefulWidget {
   /// Used for [AnnotationType.text], [AnnotationType.polyline] and [AnnotationType.polyline]
   final void Function(TapUpDetails details, AnnotationController controller)? onTapUp;
 
+  final void Function()? onConfirm;
+  final void Function()? onCancel;
+
   /// Color of the current [Annotation]
   ///
   /// Modifiable only using the [AnnotationController]
@@ -163,6 +166,8 @@ class ImageAnnotation extends StatefulWidget {
     this.detectedAnnotations,
     this.initialAnnotations,
     this.dragBoundaryPadding,
+    this.onCancel,
+    this.onConfirm,
   })  : assert(strokeWidth == null || strokeWidth > 0.0),
         assert(fontSize == null || fontSize > 0.0);
 
@@ -183,6 +188,8 @@ class ImageAnnotation extends StatefulWidget {
     this.detectedAnnotations,
     this.initialAnnotations,
     this.dragBoundaryPadding,
+    this.onCancel,
+    this.onConfirm,
   })  : imageWidget = Image.network(
           src,
           fit: BoxFit.fill,
@@ -207,6 +214,8 @@ class ImageAnnotation extends StatefulWidget {
     this.detectedAnnotations,
     this.initialAnnotations,
     this.dragBoundaryPadding,
+    this.onCancel,
+    this.onConfirm,
   })  : imageWidget = Image.asset(
           name,
           fit: BoxFit.fill,
@@ -231,6 +240,8 @@ class ImageAnnotation extends StatefulWidget {
     this.detectedAnnotations,
     this.initialAnnotations,
     this.dragBoundaryPadding,
+    this.onCancel,
+    this.onConfirm,
   })  : assert(
           !kIsWeb,
           'ImageAnnotation.file is not supported on Flutter Web. '
@@ -260,6 +271,8 @@ class ImageAnnotation extends StatefulWidget {
     this.detectedAnnotations,
     this.initialAnnotations,
     this.dragBoundaryPadding,
+    this.onCancel,
+    this.onConfirm,
   })  : imageWidget = Image.memory(
           bytes,
           fit: BoxFit.fill,
@@ -390,8 +403,8 @@ class _ImageAnnotationState extends State<ImageAnnotation> {
                     constraints.biggest.width,
                     constraints.biggest.height - padding.bottom,
                   ),
-                  onConfirm: () {},
-                  onCancel: () {},
+                  onConfirm: widget.onConfirm,
+                  onCancel: widget.onCancel,
                 ),
               ],
             );
