@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -57,6 +58,9 @@ class _DragConfirmationButtonsState extends State<DragConfirmationButtons> {
               widget.size.height * 0.85,
             ))
         .clampFromRect(clampLimits);
+
+
+    log(widget.onConfirm.runtimeType.toString(), name: "initState");
 
     super.initState();
   }
