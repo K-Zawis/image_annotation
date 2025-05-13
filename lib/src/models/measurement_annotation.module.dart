@@ -36,7 +36,7 @@ class MeasurementAnnotation extends ShapeAnnotation {
     } else {
       canvas.drawLine(visualPoints.first, visualPoints.last, paint);
       const arrowLength = 10.0;
-      const tickLength = 6.0;
+      const tickLength = 12.0;
 
       // Draw | at a point, perpendicular to the line
       void drawBar(Offset point, double angle) {
