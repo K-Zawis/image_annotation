@@ -165,6 +165,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
   }
 
   bool _polygonContainsThreePoints() {
+    if (widget.controller.currentAnnotation is! PolygonAnnotation) return false;
     final polygon = widget.controller.currentAnnotation as PolygonAnnotation?;
     if (polygon == null) return false;
     return polygon.normalizedPoints.length >= 3;
