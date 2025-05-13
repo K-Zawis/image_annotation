@@ -35,26 +35,37 @@ class MeasurementAnnotation extends ShapeAnnotation {
       canvas.drawPoints(PointMode.points, visualPoints, paint);
     } else {
       canvas.drawLine(visualPoints.first, visualPoints.last, paint);
-      // Direction vector
-      const tickLength = 10.0; // Arrow size
+      const arrowLength = 10.0;
+      const tickLength = 6.0;
 
-      // Function to draw inward-pointing arrow lines at a given point
-      void drawTick(Offset center, double angle) {
-        final perpendicularAngle1 = angle + pi / 6;
-        final perpendicularAngle2 = angle - pi / 6;
+      // Draw | at a point, perpendicular to the line
+      void drawBar(Offset point, double angle) {
+        final perpAngle = angle + pi / 2;
 
-        final pLeft = center + Offset.fromDirection(perpendicularAngle1, tickLength);
-        final pRight = center + Offset.fromDirection(perpendicularAngle2, tickLength);
+        final offset1 = point + Offset.fromDirection(perpAngle, tickLength / 2);
+        final offset2 = point - Offset.fromDirection(perpAngle, tickLength / 2);
 
-        canvas.drawLine(center, pLeft, paint);
-        canvas.drawLine(center, pRight, paint);
+        canvas.drawLine(offset1, offset2, paint);
       }
 
-      // Draw start tick pointing inward
-      drawTick(visualPoints.first, (visualPoints.last - visualPoints.first).direction);
+      // Draw arrowhead at a point pointing along 'angle'
+      void drawArrow(Offset center, double angle) {
+        final arrowAngle1 = angle + pi / 6;
+        final arrowAngle2 = angle - pi / 6;
 
-      // Draw end tick pointing inward
-      drawTick(visualPoints.last, (visualPoints.first - visualPoints.last).direction);
+        final arrowP1 = center + Offset.fromDirection(arrowAngle1, arrowLength);
+        final arrowP2 = center + Offset.fromDirection(arrowAngle2, arrowLength);
+
+        canvas.drawLine(center, arrowP1, paint);
+        canvas.drawLine(center, arrowP2, paint);
+
+        // Also draw the vertical bar "|"
+        drawBar(center, angle);
+      }
+
+      // Draw at both ends
+      drawArrow(visualPoints.first, (visualPoints.last - visualPoints.first).direction);
+      drawArrow(visualPoints.last, (visualPoints.first - visualPoints.last).direction);
     }
   }
 }
