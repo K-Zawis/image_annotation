@@ -144,6 +144,22 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     }
   }
 
+  void _startMeasurementDrawing(Offset position) {
+    if (!widget.controller.polyDrawingActive) {
+      if (boundarySize == null) return;
+      final clampedPosition = position.clamp(boundarySize!);
+      final normalizedPosition = clampedPosition.toNormalized(boundarySize!);
+
+      widget.controller.add(MeasurementAnnotation(
+        strokeWidth: widget.controller.strokeWidth,
+        color: widget.controller.color,
+        points: [normalizedPosition],
+      ));
+    } else {
+      _draw(position);
+    }
+  }
+
   void _startPolygonDrawing(Offset position) {
     if (!widget.controller.polyDrawingActive) {
       if (boundarySize == null) return;
@@ -189,6 +205,8 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
       case AnnotationType.polygon:
         _startPolygonDrawing(position);
         break;
+      case AnnotationType.measurement:
+        _startMeasurementDrawing(position);
       default:
         break;
     }

@@ -17,4 +17,5 @@ enum AnnotationType {
   rectangle,
   oval,
   text,
+  measurement,
 }

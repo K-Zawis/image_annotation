@@ -90,9 +90,7 @@ class AnnotationController extends ChangeNotifier {
   /// the package
   ///
   /// Returns `null` if the size has not been loaded yet.
-  double? get aspectRatio => originalImageSize != null
-      ? originalImageSize!.width / originalImageSize!.height
-      : null;
+  double? get aspectRatio => originalImageSize != null ? originalImageSize!.width / originalImageSize!.height : null;
 
   /// The current colour for annotations.
   Color get color => _model.currentColor;
@@ -132,13 +130,10 @@ class AnnotationController extends ChangeNotifier {
 
   /// Whether the current annotation can be edited after being drawn
   bool get canEditCurrentAnnotation =>
-      !finalizeOnRelease ||
-      annotationLimit == null ||
-      annotations.length < annotationLimit!;
+      !finalizeOnRelease || annotationLimit == null || annotations.length < annotationLimit!;
 
   /// The most recently added annotation, if any.
-  Annotation? get currentAnnotation =>
-      annotations.isNotEmpty ? annotations.last : null;
+  Annotation? get currentAnnotation => annotations.isNotEmpty ? annotations.last : null;
 
   /// Checks if the current [Annotation] is of type [ShapeAnnotation].
   ///
@@ -153,7 +148,8 @@ class AnnotationController extends ChangeNotifier {
   /// open polygonal shape.
   bool get isPolygonalAnnotation =>
       annotationType == AnnotationType.polygon ||
-      annotationType == AnnotationType.polyline;
+      annotationType == AnnotationType.polyline ||
+      annotationType == AnnotationType.measurement;
 
   /// Checks if the current [Annotation] is of type [TextAnnotation].
   ///
@@ -167,8 +163,7 @@ class AnnotationController extends ChangeNotifier {
   /// that no annotation has been set or is available at the moment.
   bool get hasNoAnnotation => currentAnnotation == null;
 
-  bool get limitExceeded =>
-      _annotationLimit != null && annotations.length >= _annotationLimit;
+  bool get limitExceeded => _annotationLimit != null && annotations.length >= _annotationLimit;
 
   // ==== SETTERS ====
 
@@ -219,8 +214,7 @@ class AnnotationController extends ChangeNotifier {
   /// Notifies listeners if the value changes.
   set polygonDrawingActive(bool newState) {
     _model.drawingPolygon = newState;
-    polyDrawingActiveNotifier.value =
-        _model.drawingPolygon || _model.drawingPolyline;
+    polyDrawingActiveNotifier.value = _model.drawingPolygon || _model.drawingPolyline;
   }
 
   /// Updates the state for polylione drawing mode.
@@ -228,8 +222,7 @@ class AnnotationController extends ChangeNotifier {
   /// Notifies listeners if the value changes.
   set polylineDrawingActive(bool newState) {
     _model.drawingPolyline = newState;
-    polyDrawingActiveNotifier.value =
-        _model.drawingPolygon || _model.drawingPolyline;
+    polyDrawingActiveNotifier.value = _model.drawingPolygon || _model.drawingPolyline;
   }
 
   // ==== FUNCTIONS ====
@@ -295,7 +288,8 @@ class AnnotationController extends ChangeNotifier {
 
     if (annotation.annotationType == AnnotationType.polygon) {
       polygonDrawingActive = true;
-    } else if (annotation.annotationType == AnnotationType.polyline) {
+    } else if (annotation.annotationType == AnnotationType.polyline ||
+        annotation.annotationType == AnnotationType.measurement) {
       polylineDrawingActive = true;
     }
 
