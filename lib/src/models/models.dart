@@ -7,3 +7,4 @@ export 'shape_annotation.module.dart';
 export 'polygon_annotation.module.dart';
 export 'text_annotation.module.dart';
 export 'detection_annotation.module.dart';
+export 'measurement_annotation.module.dart';

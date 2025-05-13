@@ -105,7 +105,7 @@ class _AnnotationPaintBoundaryState extends State<AnnotationPaintBoundary> {
     final Annotation? annotation = widget.controller.currentAnnotation;
     if (annotation == null) return;
 
-    if (annotation is PolygonAnnotation || annotation is ShapeAnnotation) {
+    if (annotation is PolygonAnnotation || annotation is ShapeAnnotation || annotation is MeasurementAnnotation) {
       (annotation as dynamic).add(normalizedPosition);
       widget.controller.updateCanvas();
     }
