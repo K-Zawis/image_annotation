@@ -1,3 +1,4 @@
+import 'dart:math' show pi;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -33,7 +34,27 @@ class MeasurementAnnotation extends ShapeAnnotation {
     if (visualPoints.length == 1) {
       canvas.drawPoints(PointMode.points, visualPoints, paint);
     } else {
-      canvas.drawPoints(PointMode.polygon, visualPoints, paint);
+      canvas.drawLine(visualPoints.first, visualPoints.last, paint);
+      // Direction vector
+      const tickLength = 10.0; // Arrow size
+
+      // Function to draw inward-pointing arrow lines at a given point
+      void drawTick(Offset center, double angle) {
+        final perpendicularAngle1 = angle + pi / 6;
+        final perpendicularAngle2 = angle - pi / 6;
+
+        final pLeft = center + Offset.fromDirection(perpendicularAngle1, tickLength);
+        final pRight = center + Offset.fromDirection(perpendicularAngle2, tickLength);
+
+        canvas.drawLine(center, pLeft, paint);
+        canvas.drawLine(center, pRight, paint);
+      }
+
+      // Draw start tick pointing inward
+      drawTick(visualPoints.first, (visualPoints.last - visualPoints.first).direction);
+
+      // Draw end tick pointing inward
+      drawTick(visualPoints.last, (visualPoints.first - visualPoints.last).direction);
     }
   }
 }
