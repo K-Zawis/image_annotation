@@ -30,6 +30,16 @@ abstract class Annotation {
   /// @see [AnnotationType]
   final AnnotationType annotationType;
 
+  /// Whether the annotation is currently in an editable state.
+  ///
+  /// When set to `true`, this indicates that the annotation is being actively
+  /// modified by the user — for example, displaying interactive handles or 
+  /// allowing point manipulation. This flag can be used by the rendering logic
+  /// or interaction handlers to provide visual feedback or enable editing behavior.
+  ///
+  /// Defaults to `false`.
+  bool editing;
+
   /// Creates an [Annotation] with the specified [color] and [annotationType].
   ///
   /// The constructor initializes the [Annotation] with the provided
@@ -38,7 +48,7 @@ abstract class Annotation {
   /// - [annotationType] : The type of the annotation, specifying its shape or
   /// structure.
   /// - [color] : The color used to render the annotation.
-  Annotation(this.annotationType, {required this.color});
+  Annotation(this.annotationType, {required this.color, this.editing = false});
 
   /// Renders the annotation on the given [canvas] within the specified [size].
   ///
